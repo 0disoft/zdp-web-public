@@ -1,10 +1,11 @@
 :root {
   color-scheme: light;
-  --color-page: #f7f5ed;
-  --color-surface: #fffdf6;
+  --color-page: #f4f7f2;
+  --color-surface: #ffffff;
+  --color-code: #e8eee5;
   --color-ink: #12130f;
-  --color-muted: #5c6256;
-  --color-line: #d7d2bf;
+  --color-muted: #596458;
+  --color-line: #cbd8ca;
   --color-accent: #c9ef3b;
   --color-accent-strong: #7a9917;
   --color-sea: #0f766e;
@@ -17,7 +18,10 @@
   --space-5: 1.5rem;
   --space-6: 2rem;
   --space-7: 3rem;
+  --space-8: 4.5rem;
+  --radius-xs: 3px;
   --radius-sm: 4px;
   --radius-md: 8px;
+  --radius-pill: 999px;
   --shadow-soft: 0 16px 44px rgb(18 19 15 / 0.1);
 }
