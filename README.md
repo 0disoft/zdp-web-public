@@ -4,6 +4,7 @@ ZDP 공개 웹 표면 저장소다. 초기 목적은 `8ailors.xyz` 본체 사이
 
 ## 현재 범위
 
+- Astro 정적 사이트 골격
 - 8ailors 본체 사이트 후보 정보 구조
 - ZDP 공개 제품과 실험 목록
 - 공개 문서, 블로그, 정책, 문의 경로
@@ -24,3 +25,10 @@ ZDP 공개 웹 표면 저장소다. 초기 목적은 `8ailors.xyz` 본체 사이
 ## 검증
 
 아키텍처 검증은 `zdp-architecture-linter`에서 이 저장소를 대상으로 실행한다.
+
+```bash
+bun run check
+bun run build
+```
+
+`robots.txt`와 페이지 메타 태그는 공개 전까지 검색 노출을 막는다.

@@ -1,0 +1,130 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const title = "8ailors";
+const description = "ZDP 제품과 실험을 묶는 공개 웹 표면 후보.";
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="hero" aria-labelledby="home-title">
+    <div>
+      <p class="eyebrow">Candidate home surface</p>
+      <h1 id="home-title">8ailors</h1>
+      <p class="hero-copy">
+        ZDP 기반 제품과 실험을 한곳에 묶는 공개 허브 후보. 지금은 첫 공개 구조와 정책
+        경계를 준비하는 정적 사이트다.
+      </p>
+      <div class="actions" aria-label="주요 이동">
+        <a class="button" href="#products">제품 보기</a>
+        <a class="button secondary" href="#trust">정책 보기</a>
+      </div>
+    </div>
+
+    <div class="signal-board" aria-label="공개 표면 구성">
+      <div class="signal-card products">
+        <strong>Products</strong>
+        <span>공개 제품과 실험 목록</span>
+      </div>
+      <div class="signal-card docs">
+        <strong>Notes</strong>
+        <span>문서, 블로그, 공개 기록</span>
+      </div>
+      <div class="signal-card policies">
+        <strong>Trust</strong>
+        <span>약관, 개인정보, 보안 제보</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="products" class="section" aria-labelledby="products-title">
+    <div class="section-inner">
+      <h2 id="products-title" class="section-heading">제품</h2>
+      <div class="surface-grid">
+        <article class="surface-item">
+          <h3>공개 제품</h3>
+          <p>첫 공개 제품이 준비되면 상태, 소개, 문서 링크를 이곳에 둔다.</p>
+          <span class="status">준비 중</span>
+        </article>
+        <article class="surface-item">
+          <h3>실험실</h3>
+          <p>검증 전 실험은 내부 경계와 kill criteria가 정리된 뒤 공개한다.</p>
+          <span class="status">비공개</span>
+        </article>
+        <article class="surface-item">
+          <h3>문서</h3>
+          <p>공개 가능한 글, 정책, 제품 노트만 별도로 분리한다.</p>
+          <span class="status">초안</span>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="notes" class="section" aria-labelledby="notes-title">
+    <div class="section-inner">
+      <h2 id="notes-title" class="section-heading">노트</h2>
+      <div class="surface-grid">
+        <article class="surface-item">
+          <h3>공개 기록</h3>
+          <p>제품 방향, 실험 결과, 운영 변경을 외부에 말할 수 있는 수준으로 정리한다.</p>
+          <span class="status">예정</span>
+        </article>
+        <article class="surface-item">
+          <h3>개발 문서</h3>
+          <p>내부 아키텍처 문서는 그대로 노출하지 않고 공개용 문서만 선별한다.</p>
+          <span class="status">분리 필요</span>
+        </article>
+        <article class="surface-item">
+          <h3>업데이트</h3>
+          <p>실제 출시 전까지 과장된 수치나 고객 사례를 쓰지 않는다.</p>
+          <span class="status">원칙 확정</span>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="trust" class="section" aria-labelledby="trust-title">
+    <div class="section-inner">
+      <h2 id="trust-title" class="section-heading">정책</h2>
+      <div class="surface-grid">
+        <article class="surface-item">
+          <h3>개인정보</h3>
+          <p>로그인, 결제, AI 사용자 데이터 접근이 생기기 전까지 원본 사용자 데이터를 저장하지 않는다.</p>
+          <span class="status">초안 필요</span>
+        </article>
+        <article class="surface-item">
+          <h3>약관</h3>
+          <p>첫 공개 제품의 책임 범위가 정해진 뒤 제품별 약관과 연결한다.</p>
+          <span class="status">초안 필요</span>
+        </article>
+        <article class="surface-item">
+          <h3>보안 제보</h3>
+          <p>실제 공개 전 연락 경로와 처리 기준을 고정한다.</p>
+          <span class="status">초안 필요</span>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="section" aria-labelledby="contact-title">
+    <div class="section-inner">
+      <h2 id="contact-title" class="section-heading">문의</h2>
+      <div class="surface-grid">
+        <article class="surface-item">
+          <h3>공개 연락 경로</h3>
+          <p>도메인과 메일 발신 경로가 확정되기 전까지 공개 이메일 주소를 고정하지 않는다.</p>
+          <span class="status">후보 단계</span>
+        </article>
+        <article class="surface-item">
+          <h3>보안 연락</h3>
+          <p>보안 제보 경로는 공개 전 별도 정책과 함께 연결한다.</p>
+          <span class="status">정책 필요</span>
+        </article>
+        <article class="surface-item">
+          <h3>제품 문의</h3>
+          <p>첫 공개 제품이 생긴 뒤 제품별 문의 경로를 분리한다.</p>
+          <span class="status">예정</span>
+        </article>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

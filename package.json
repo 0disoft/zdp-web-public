@@ -1,0 +1,17 @@
+{
+  "name": "zdp-web-public",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "ZDP public web surface for the candidate 8ailors home site.",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "check": "astro check"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.9",
+    "astro": "^6.3.8",
+    "typescript": "^6.0.3"
+  }
+}
