@@ -48,7 +48,7 @@ runtime:
   domain_status: candidate
 
 cost:
-  cost_center: web-public
+  cost_center: zdp-web-public
   owner: 0disoft
   monthly_budget_limit_usd: 5
   warn_at_percent: 80
