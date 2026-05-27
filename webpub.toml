@@ -20,30 +20,30 @@ section = "home"
 status = "draft"
 indexing = "blocked"
 
-[[planned_pages]]
+[[pages]]
 url = "/products"
 title = "제품"
 section = "products"
-status = "planned"
+status = "draft"
 indexing = "blocked"
 
-[[planned_pages]]
+[[pages]]
 url = "/notes"
 title = "노트"
 section = "notes"
-status = "planned"
+status = "draft"
 indexing = "blocked"
 
-[[planned_pages]]
+[[pages]]
 url = "/trust"
 title = "정책"
 section = "trust"
-status = "planned"
+status = "draft"
 indexing = "blocked"
 
-[[planned_pages]]
+[[pages]]
 url = "/contact"
 title = "문의"
 section = "contact"
-status = "planned"
+status = "draft"
 indexing = "blocked"

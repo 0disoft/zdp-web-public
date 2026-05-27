@@ -1,0 +1,48 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { publicPages, type PublicPage } from "../content/public-pages";
+
+export function getStaticPaths() {
+  return publicPages.map((page) => ({
+    params: {
+      surface: page.id
+    },
+    props: {
+      page
+    }
+  }));
+}
+
+interface Props {
+  page: PublicPage;
+}
+
+const { page } = Astro.props;
+const title = `${page.label} - 8ailors`;
+const description = page.summary;
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="page-hero" aria-labelledby="page-title">
+    <a class="back-link" href="/">8ailors 홈</a>
+    <p class="eyebrow">{page.label}</p>
+    <h1 id="page-title">{page.heading}</h1>
+    <p>{page.summary}</p>
+  </section>
+
+  <section class="detail-section" aria-labelledby={`${page.id}-detail-title`}>
+    <div class="detail-intro">
+      <h2 id={`${page.id}-detail-title`}>현재 공개 기준</h2>
+      <p>{page.detail}</p>
+    </div>
+    <div class="surface-grid">
+      {page.items.map((item) => (
+        <article class="surface-item">
+          <span class="status">{item.status}</span>
+          <h3>{item.title}</h3>
+          <p>{item.body}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+</BaseLayout>
