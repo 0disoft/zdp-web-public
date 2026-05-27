@@ -1,0 +1,49 @@
+version = "https://zdp.local/spec/webpub/v0.1"
+title = "8ailors"
+language = "ko"
+site_url = ""
+canonical_domain = ""
+domain_status = "candidate"
+candidate_public_domains = ["8ailors.xyz"]
+
+[robots]
+enabled = true
+policy = "private-preview"
+user_agent = "*"
+disallow = ["/"]
+allow = []
+
+[[pages]]
+url = "/"
+title = "8ailors"
+section = "home"
+status = "draft"
+indexing = "blocked"
+
+[[planned_pages]]
+url = "/products"
+title = "제품"
+section = "products"
+status = "planned"
+indexing = "blocked"
+
+[[planned_pages]]
+url = "/notes"
+title = "노트"
+section = "notes"
+status = "planned"
+indexing = "blocked"
+
+[[planned_pages]]
+url = "/trust"
+title = "정책"
+section = "trust"
+status = "planned"
+indexing = "blocked"
+
+[[planned_pages]]
+url = "/contact"
+title = "문의"
+section = "contact"
+status = "planned"
+indexing = "blocked"
