@@ -175,8 +175,8 @@ button:focus-visible {
   border: 2px solid var(--color-ink);
   border-radius: var(--radius-md);
   background:
-    linear-gradient(135deg, rgb(15 118 110 / 0.14), transparent 34%),
-    linear-gradient(315deg, rgb(184 92 56 / 0.16), transparent 34%),
+    linear-gradient(135deg, var(--color-sea-wash), transparent 34%),
+    linear-gradient(315deg, var(--color-clay-wash), transparent 34%),
     var(--color-surface);
   box-shadow: var(--shadow-soft);
   overflow: hidden;
@@ -186,7 +186,7 @@ button:focus-visible {
   content: "";
   position: absolute;
   inset: var(--space-5);
-  border: 1px solid rgb(18 19 15 / 0.14);
+  border: 1px solid var(--color-ink-line-subtle);
   border-radius: var(--radius-sm);
 }
 
@@ -195,8 +195,8 @@ button:focus-visible {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(90deg, rgb(18 19 15 / 0.08) 1px, transparent 1px),
-    linear-gradient(rgb(18 19 15 / 0.08) 1px, transparent 1px);
+    linear-gradient(90deg, var(--color-grid-line) 1px, transparent 1px),
+    linear-gradient(var(--color-grid-line) 1px, transparent 1px);
   background-size: 40px 40px;
   mask-image: linear-gradient(transparent, black 12%, black 88%, transparent);
 }
@@ -406,9 +406,9 @@ button:focus-visible {
   width: fit-content;
   max-width: 100%;
   padding: 0.18rem 0.5rem;
-  border: 1px solid rgb(122 153 23 / 0.36);
+  border: 1px solid var(--color-accent-border);
   border-radius: var(--radius-pill);
-  background: rgb(201 239 59 / 0.24);
+  background: var(--color-accent-wash);
   color: var(--color-accent-strong);
   font-size: 0.78rem;
   font-weight: 850;

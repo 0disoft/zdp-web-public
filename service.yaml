@@ -237,3 +237,6 @@ exit:
 
 notes:
   - This service starts as a static public surface; backend-owned data and private user flows stay out of this repository.
+  - Cross-cutting product standards are owned by zdp-architecture/docs/45-cross-cutting-product-standards.md.
+  - Public discovery files must not contain internal URLs, staging URLs, private customer data, or non-public architecture documents.
+  - Public feeds must be generated as static build artifacts once real public content exists; runtime feed generation is not the default.

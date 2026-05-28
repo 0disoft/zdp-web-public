@@ -27,6 +27,16 @@ ZDP 공개 웹 표면 저장소다. 초기 목적은 `8ailors.xyz` 본체 사이
 
 루트 `webpub.toml`은 공개 발행 메타데이터 계약이다. 도메인 구매 전에는 `domain_status = "candidate"`와 검색 노출 차단 정책을 유지한다. 현재 생성된 페이지도 `indexing = "blocked"` 상태로 둔다.
 
+## 교차 제품 표준 적용
+
+이 저장소는 `zdp-architecture/docs/45-cross-cutting-product-standards.md`의 공개 웹 표준을 따른다.
+
+- 사용자에게 보이는 문구와 페이지 구조는 공개 가능한 정적 콘텐츠만 둔다.
+- 색상 원본은 OKLCH 기반 토큰으로 관리하고, 화면 CSS는 의미 토큰을 참조한다.
+- `robots.txt`, `webpub.toml`, `llms.txt`는 후보 도메인 상태를 기준으로 작성하며 내부 URL, staging URL, 고객 데이터, 비공개 문서를 넣지 않는다.
+- RSS, Atom, JSON Feed는 공개 콘텐츠가 실제로 생긴 뒤 빌드 타임 정적 산출물로 생성한다. 런타임 피드 생성은 기본값이 아니다.
+- 로그인, 결제, 개인정보, AI 사용자 데이터 흐름이 필요해지면 이 저장소가 아니라 별도 서비스 계약에서 먼저 소유권을 정한다.
+
 ## 검증
 
 아키텍처 검증은 `zdp-architecture-linter`에서 이 저장소를 대상으로 실행한다.

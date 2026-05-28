@@ -10,6 +10,7 @@
 - 실제 도메인 구매 전에는 `8ailors.xyz`를 후보 도메인으로만 다룬다.
 - 백엔드가 준비되기 전에는 정적 정보 구조와 공개 콘텐츠 골격만 만든다.
 - `service.yaml`이 이 저장소의 운영 계약이며, 변경 시 `zdp-architecture`의 카탈로그와 함께 맞춘다.
+- 제품 공통 기준은 `zdp-architecture/docs/45-cross-cutting-product-standards.md`를 따른다. 특히 공개 discovery 파일, OKLCH 색상 토큰, 정적 feed 원칙을 이 저장소의 기본값으로 둔다.
 - 사용자에게 보여줄 수 없는 내부 아키텍처 문서, 비밀값, 계정 정보, API 키는 절대 넣지 않는다.
 
 ## 금지
@@ -22,6 +23,8 @@
 ## 구현 메모
 
 - Astro는 공개 정적 페이지와 SEO 중심 콘텐츠에 사용한다.
+- 색상은 OKLCH 원시 토큰과 의미 토큰을 거쳐 사용한다. 컴포넌트 CSS에서 새 원시 색상값을 직접 추가하지 않는다.
+- `robots.txt`, `webpub.toml`, `llms.txt`에는 공개 가능한 후보 사이트 링크만 둔다. staging URL, 내부 문서, 고객 데이터 경로는 넣지 않는다.
 - Svelte island는 상태가 있는 작은 상호작용이 실제로 필요할 때만 사용한다.
 - Jiffy는 나중에 반복 전환 블록이 충분히 검증된 뒤 제한적으로 붙인다.
 - Cloudflare Static Assets 배포를 목표로 하되, 배포 계약과 비밀값 이름은 저장소 안에서 재구성 가능해야 한다.

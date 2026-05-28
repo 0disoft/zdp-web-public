@@ -1,0 +1,19 @@
+# 8ailors
+
+> Candidate public home surface for ZDP products and experiments.
+
+This site is a static public preview. Treat `8ailors.xyz` as a candidate domain until `service.yaml` and `webpub.toml` mark the domain as live.
+
+## Core Links
+
+- `/`: Public home and route map
+- `/products`: Public product and experiment list
+- `/notes`: Public notes and changelog placeholder
+- `/trust`: Trust, policy, and public-boundary placeholder
+- `/contact`: Public contact path placeholder
+
+## Boundaries
+
+- No login, payment, ledger, admin, or private user-data flow is implemented here.
+- No internal architecture documents, staging URLs, customer data, or secrets should appear in this file.
+- Public feeds should be static build artifacts before launch; runtime feed generation is out of scope for this repository.
