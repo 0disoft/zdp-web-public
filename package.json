@@ -6,11 +6,13 @@
   "description": "ZDP public web surface for the candidate 8ailors home site.",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro check && astro build",
-    "check": "astro check"
+    "build": "bun run check && astro build",
+    "check": "astro check && bun run check:discovery",
+    "check:discovery": "bun scripts/check-public-discovery.ts"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
+    "@types/node": "^25.9.1",
     "astro": "^6.3.8",
     "typescript": "^6.0.3"
   }
