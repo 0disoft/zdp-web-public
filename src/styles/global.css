@@ -44,7 +44,6 @@ button:focus-visible {
 .site-header,
 .site-footer,
 .hero,
-.domain-strip,
 .section-inner {
   width: min(100% - 2rem, 1120px);
   margin: 0 auto;
@@ -104,16 +103,7 @@ button:focus-visible {
 }
 
 .hero {
-  display: grid;
-  grid-template-columns: minmax(0, 0.95fr) minmax(310px, 1.05fr);
-  gap: var(--space-8);
-  align-items: center;
-  min-height: 70vh;
-  padding: var(--space-6) 0 var(--space-8);
-}
-
-.hero-copy-block {
-  max-width: 42rem;
+  padding: var(--space-8) 0 var(--space-7);
 }
 
 .eyebrow,
@@ -132,14 +122,6 @@ button:focus-visible {
   font-size: clamp(3.4rem, 9vw, 7rem);
   line-height: 0.92;
   letter-spacing: 0;
-}
-
-.hero-copy {
-  margin: var(--space-5) 0 0;
-  max-width: 39rem;
-  color: var(--color-muted);
-  font-size: 1.12rem;
-  line-height: 1.72;
 }
 
 .actions {
@@ -169,113 +151,7 @@ button:focus-visible {
   color: var(--color-ink);
 }
 
-.route-map {
-  position: relative;
-  min-height: 31rem;
-  border: 2px solid var(--color-ink);
-  border-radius: var(--radius-md);
-  background:
-    linear-gradient(135deg, var(--color-sea-wash), transparent 34%),
-    linear-gradient(315deg, var(--color-clay-wash), transparent 34%),
-    var(--color-surface);
-  box-shadow: var(--shadow-soft);
-  overflow: hidden;
-}
 
-.route-map::before {
-  content: "";
-  position: absolute;
-  inset: var(--space-5);
-  border: 1px solid var(--color-ink-line-subtle);
-  border-radius: var(--radius-sm);
-}
-
-.route-map::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(90deg, var(--color-grid-line) 1px, transparent 1px),
-    linear-gradient(var(--color-grid-line) 1px, transparent 1px);
-  background-size: 40px 40px;
-  mask-image: linear-gradient(transparent, black 12%, black 88%, transparent);
-}
-
-.route-node {
-  position: absolute;
-  z-index: 1;
-  display: grid;
-  gap: var(--space-2);
-  width: min(48%, 14rem);
-  padding: var(--space-4);
-  border: 2px solid var(--color-ink);
-  border-radius: var(--radius-sm);
-  background: var(--color-page);
-}
-
-.route-node strong {
-  font-size: 1.08rem;
-}
-
-.route-node span {
-  color: var(--color-muted);
-  font-size: 0.92rem;
-  line-height: 1.35;
-}
-
-.route-node-1 {
-  top: var(--space-5);
-  left: var(--space-5);
-  border-color: var(--color-accent-strong);
-}
-
-.route-node-2 {
-  top: 29%;
-  right: var(--space-5);
-  border-color: var(--color-sea);
-}
-
-.route-node-3 {
-  top: 47%;
-  left: 16%;
-}
-
-.route-node-4 {
-  right: 14%;
-  bottom: 20%;
-  border-color: var(--color-clay);
-}
-
-.route-node-5 {
-  bottom: var(--space-5);
-  left: var(--space-5);
-}
-
-.domain-strip {
-  display: grid;
-  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
-  gap: var(--space-5);
-  align-items: start;
-  padding: var(--space-5);
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-}
-
-.domain-strip h2,
-.domain-strip p {
-  margin: 0;
-}
-
-.domain-strip h2 {
-  font-size: clamp(1.35rem, 3vw, 2.1rem);
-  line-height: 1.18;
-}
-
-.domain-strip > p {
-  color: var(--color-muted);
-  line-height: 1.7;
-}
 
 .section {
   border-top: 1px solid var(--color-line);
@@ -292,6 +168,10 @@ button:focus-visible {
   position: sticky;
   top: var(--space-5);
   align-self: start;
+}
+
+.section-intro:only-child {
+  grid-column: 1 / -1;
 }
 
 .section-heading {
@@ -347,27 +227,8 @@ button:focus-visible {
 }
 
 .detail-section {
-  display: grid;
-  grid-template-columns: minmax(13rem, 0.7fr) minmax(0, 1.3fr);
-  gap: var(--space-6);
-  padding: var(--space-7) 0 var(--space-8);
+  padding: var(--space-6) 0 var(--space-8);
   border-top: 1px solid var(--color-line);
-}
-
-.detail-intro h2,
-.detail-intro p {
-  margin: 0;
-}
-
-.detail-intro h2 {
-  font-size: clamp(1.6rem, 3vw, 2.5rem);
-  line-height: 1.05;
-}
-
-.detail-intro p {
-  margin-top: var(--space-4);
-  color: var(--color-muted);
-  line-height: 1.7;
 }
 
 .surface-grid {
@@ -422,18 +283,10 @@ button:focus-visible {
 }
 
 @media (max-width: 920px) {
-  .hero,
-  .domain-strip,
   .section-inner,
   .detail-section,
   .surface-grid {
     grid-template-columns: 1fr;
-  }
-
-  .hero {
-    gap: var(--space-5);
-    min-height: auto;
-    padding-top: var(--space-4);
   }
 
   .section-intro {
@@ -462,40 +315,6 @@ button:focus-visible {
   .actions,
   .button {
     width: 100%;
-  }
-
-  .route-map {
-    min-height: 35rem;
-  }
-
-  .route-node {
-    left: var(--space-4);
-    right: auto;
-    width: calc(100% - 2rem);
-  }
-
-  .route-node-1 {
-    top: var(--space-4);
-  }
-
-  .route-node-2 {
-    top: 23%;
-  }
-
-  .route-node-3 {
-    top: 42%;
-  }
-
-  .route-node-4 {
-    bottom: 22%;
-  }
-
-  .route-node-5 {
-    bottom: var(--space-4);
-  }
-
-  .domain-strip {
-    padding: var(--space-4);
   }
 
   .section-inner {

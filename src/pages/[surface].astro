@@ -30,19 +30,17 @@ const description = page.summary;
     <p>{page.summary}</p>
   </section>
 
-  <section class="detail-section" aria-labelledby={`${page.id}-detail-title`}>
-    <div class="detail-intro">
-      <h2 id={`${page.id}-detail-title`}>현재 공개 기준</h2>
-      <p>{page.detail}</p>
-    </div>
-    <div class="surface-grid">
-      {page.items.map((item) => (
-        <article class="surface-item">
-          <span class="status">{item.status}</span>
-          <h3>{item.title}</h3>
-          <p>{item.body}</p>
-        </article>
-      ))}
-    </div>
-  </section>
+  {page.items.length > 0 && (
+    <section class="detail-section" aria-label={`${page.label} 항목`}>
+      <div class="surface-grid">
+        {page.items.map((item) => (
+          <article class="surface-item">
+            <span class="status">{item.status}</span>
+            <h2>{item.title}</h2>
+            <p>{item.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+  )}
 </BaseLayout>

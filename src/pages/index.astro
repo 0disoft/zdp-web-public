@@ -3,52 +3,18 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import { publicPages } from "../content/public-pages";
 
 const title = "8ailors";
-const description =
-  "8ailors는 ZDP 기반 제품, 실험, 공개 문서와 신뢰 정책을 묶는 본체 사이트 후보입니다.";
-
-const routeNodes = [
-  { label: "8ailors", meta: "home" },
-  { label: "Products", meta: "public surfaces" },
-  { label: "Notes", meta: "records" },
-  { label: "Trust", meta: "policies" },
-  { label: "Contact", meta: "channels" }
-];
+const description = "8ailors — 제품, 기록, 정책, 문의 포털";
 ---
 
 <BaseLayout title={title} description={description}>
   <section class="hero" aria-labelledby="home-title">
     <div class="hero-copy-block">
-      <p class="eyebrow">Candidate company surface</p>
       <h1 id="home-title">8ailors</h1>
-      <p class="hero-copy">
-        ZDP에서 나올 제품, 실험, 공개 문서, 신뢰 정책을 한곳에 묶는 본체 사이트 후보.
-        아직 도메인은 구매 전이고, 지금은 공개 구조와 말해도 되는 경계를 먼저 세운다.
-      </p>
       <div class="actions" aria-label="주요 이동">
-        <a class="button" href="#products">제품 구조 보기</a>
-        <a class="button secondary" href="#trust">신뢰 경계 보기</a>
+        <a class="button" href="#products">제품</a>
+        <a class="button secondary" href="#trust">정책</a>
       </div>
     </div>
-
-    <div class="route-map" aria-label="8ailors 공개 사이트 정보 구조">
-      {routeNodes.map((node, index) => (
-        <div class={`route-node route-node-${index + 1}`}>
-          <strong>{node.label}</strong>
-          <span>{node.meta}</span>
-        </div>
-      ))}
-    </div>
-  </section>
-
-  <section class="domain-strip" aria-labelledby="domain-title">
-    <div>
-      <p class="eyebrow">Domain status</p>
-      <h2 id="domain-title">8ailors.xyz는 아직 후보 도메인이다.</h2>
-    </div>
-    <p>
-      <code>service.yaml</code>과 <code>webpub.toml</code> 모두 후보 상태로 유지한다.
-      실제 구매, DNS, canonical 배포가 끝나기 전까지 sitemap/feed 기준 URL로 쓰지 않는다.
-    </p>
   </section>
 
   {publicPages.map((section) => (
@@ -60,17 +26,19 @@ const routeNodes = [
             {section.heading}
           </h2>
           <p>{section.summary}</p>
-          <a class="text-link" href={section.path}>{section.label} 페이지 보기</a>
+          <a class="text-link" href={section.path}>{section.label} 보기</a>
         </div>
-        <div class="surface-grid">
-          {section.items.map((item) => (
-            <article class="surface-item">
-              <span class="status">{item.status}</span>
-              <h3>{item.title}</h3>
-              <p>{item.body}</p>
-            </article>
-          ))}
-        </div>
+        {section.items.length > 0 && (
+          <div class="surface-grid">
+            {section.items.map((item) => (
+              <article class="surface-item">
+                <span class="status">{item.status}</span>
+                <h3>{item.title}</h3>
+                <p>{item.body}</p>
+              </article>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   ))}
