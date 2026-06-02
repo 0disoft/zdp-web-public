@@ -173,16 +173,16 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     readText("../zdp-design-system/src/styles/components.css")
   ]);
 
-  if (packageJson.version !== "0.4.16") {
-    failures.push("package.json version must be 0.4.16 for the design-system layout primitive adoption contract.");
+  if (packageJson.version !== "0.4.17") {
+    failures.push("package.json version must be 0.4.17 for the design-system data surface adoption contract.");
   }
 
   if (packageJson.dependencies["zdp-design-system"] !== "file:../zdp-design-system") {
     failures.push('package.json dependencies.zdp-design-system must stay "file:../zdp-design-system".');
   }
 
-  if (designSystemPackageJson.version !== "0.24.0") {
-    failures.push("Sibling zdp-design-system package must be version 0.24.0 for the form accessibility consumer contract.");
+  if (designSystemPackageJson.version !== "0.26.0") {
+    failures.push("Sibling zdp-design-system package must be version 0.26.0 for the layout composition consumer contract.");
   }
 
   if (
@@ -217,10 +217,15 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     "Tauri",
     "Flutter",
     "Divider",
+    "EmptyState",
+    "Grid",
     "Inline",
+    "KeyValue",
     "Link",
     "SkipLink",
     "Stack",
+    "Table",
+    "Toolbar",
     "VisuallyHidden",
     "tokens/zdp.tokens.json",
     ".zdp-surface-reset",
@@ -232,6 +237,8 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     ".zdp-stack",
     ".zdp-inline",
     ".zdp-divider",
+    ".zdp-grid",
+    ".zdp-toolbar",
     "readonly",
     "zdp-design-system/src/..."
   ]) {
@@ -273,7 +280,14 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
         "section zdp-section zdp-section--spacing-lg zdp-divider zdp-divider--horizontal zdp-divider--subtle",
         "section-inner zdp-container zdp-container--lg zdp-container--padding-md",
         "zdp-inline zdp-inline--gap-sm zdp-inline--align-center",
+        "zdp-toolbar zdp-toolbar--gap-md zdp-toolbar--align-center",
+        "zdp-toolbar__main",
+        "zdp-toolbar__actions",
+        "surface-grid zdp-grid zdp-grid--columns-three zdp-grid--gap-md",
         "zdp-surface zdp-surface--panel zdp-surface--padding-lg",
+        "zdp-empty-state zdp-empty-state--raised",
+        "zdp-empty-state__body",
+        "zdp-empty-state__actions",
         "zdp-badge zdp-badge--primary zdp-badge--sm",
         "zdp-link"
       ]
@@ -295,14 +309,25 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
         "zdp-callout__body",
         "zdp-badge zdp-badge--primary zdp-badge--sm",
         "zdp-button zdp-button--md zdp-button--secondary",
+        "zdp-page-header__actions",
+        "surface-grid zdp-grid zdp-grid--columns-three zdp-grid--gap-md",
         "zdp-breadcrumb page-breadcrumb",
         "zdp-breadcrumb__link",
         "zdp-breadcrumb__current",
         "zdp-visually-hidden",
         "zdp-stack zdp-stack--gap-md",
+        "zdp-key-value zdp-key-value--columns-two",
+        "zdp-table-wrap",
+        "zdp-table zdp-table--density-compact",
+        "zdp-table__caption zdp-table__caption--hidden",
+        'scope="col"',
+        'scope="row"',
+        "zdp-empty-state surface-placeholder",
+        "zdp-empty-state__body",
+        "zdp-empty-state__actions",
         "evidence-block",
-        "evidence-list",
         "이 페이지가 지키는 선",
+        "핵심 정보",
         'aria-current="page"'
       ]
     ]
@@ -337,6 +362,16 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     ".zdp-inline--gap-sm",
     ".zdp-divider",
     ".zdp-divider--horizontal",
+    ".zdp-grid",
+    ".zdp-grid--columns-three",
+    ".zdp-grid--gap-md",
+    ".zdp-key-value",
+    ".zdp-table-wrap",
+    ".zdp-table",
+    ".zdp-empty-state",
+    ".zdp-toolbar",
+    ".zdp-toolbar__main",
+    ".zdp-toolbar__actions",
     "var(--zdp-color-focus-surface)",
     "var(--zdp-color-focus-line)",
     "position: fixed",

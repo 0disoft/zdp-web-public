@@ -4,6 +4,17 @@ export interface PublicPageItem {
   readonly status: string;
 }
 
+export interface PublicPageFact {
+  readonly term: string;
+  readonly description: string;
+}
+
+export interface PublicPageCheck {
+  readonly item: string;
+  readonly status: string;
+  readonly note: string;
+}
+
 export interface PublicPage {
   readonly id: string;
   readonly path: `/${string}`;
@@ -11,7 +22,8 @@ export interface PublicPage {
   readonly heading: string;
   readonly summary: string;
   readonly items: readonly PublicPageItem[];
-  readonly checks: readonly string[];
+  readonly facts: readonly PublicPageFact[];
+  readonly checks: readonly PublicPageCheck[];
 }
 
 export const publicPages: readonly PublicPage[] = [
@@ -22,6 +34,7 @@ export const publicPages: readonly PublicPage[] = [
     heading: "제품",
     summary: "출시 예정 서비스입니다.",
     items: [],
+    facts: [],
     checks: []
   },
   {
@@ -47,10 +60,36 @@ export const publicPages: readonly PublicPage[] = [
         status: "원칙"
       }
     ],
+    facts: [
+      {
+        term: "기준 저장소",
+        description: "zdp-design-system"
+      },
+      {
+        term: "적용 표면",
+        description: "공개 사이트, 제품 실험실, 앱 셸 후보"
+      },
+      {
+        term: "기본 방향",
+        description: "Pretendard-first 글꼴, 선명한 focus, flat UI, responsive layout"
+      }
+    ],
     checks: [
-      "공유 CSS와 컴포넌트는 `zdp-design-system` public export만 사용합니다.",
-      "링크, 버튼, 입력류는 키보드 focus가 보이는 상태로 유지합니다.",
-      "그림자와 그라데이션 대신 여백, 테두리, 글자 위계로 화면을 나눕니다."
+      {
+        item: "Public export",
+        status: "유지",
+        note: "공유 CSS와 컴포넌트는 zdp-design-system public export만 사용합니다."
+      },
+      {
+        item: "Focus",
+        status: "유지",
+        note: "링크, 버튼, 입력류는 키보드 focus가 보이는 상태로 유지합니다."
+      },
+      {
+        item: "Flat UI",
+        status: "유지",
+        note: "그림자와 그라데이션 대신 여백, 테두리, 글자 위계로 화면을 나눕니다."
+      }
     ]
   },
   {
@@ -76,10 +115,36 @@ export const publicPages: readonly PublicPage[] = [
         status: "검사"
       }
     ],
+    facts: [
+      {
+        term: "공개 단계",
+        description: "candidate domain, noindex, robots blocked"
+      },
+      {
+        term: "비밀값 정책",
+        description: "API 키, 토큰, 내부 계정 정보, 대시보드 링크 비공개"
+      },
+      {
+        term: "운영 원천",
+        description: "service.yaml, webpub.toml, discovery check"
+      }
+    ],
     checks: [
-      "공개 사이트에는 비밀값, 내부 대시보드, staging URL을 넣지 않습니다.",
-      "후보 도메인 단계에서는 `noindex,nofollow`와 robots 차단을 유지합니다.",
-      "로그인, 관리자, 사용자별 데이터 처리는 이 저장소 밖에서 먼저 계약을 정합니다."
+      {
+        item: "Secrets",
+        status: "차단",
+        note: "공개 사이트에는 비밀값, 내부 대시보드, staging URL을 넣지 않습니다."
+      },
+      {
+        item: "Indexing",
+        status: "차단",
+        note: "후보 도메인 단계에서는 noindex,nofollow와 robots 차단을 유지합니다."
+      },
+      {
+        item: "Private flows",
+        status: "분리",
+        note: "로그인, 관리자, 사용자별 데이터 처리는 이 저장소 밖에서 먼저 계약을 정합니다."
+      }
     ]
   },
   {
@@ -105,10 +170,36 @@ export const publicPages: readonly PublicPage[] = [
         status: "보류"
       }
     ],
+    facts: [
+      {
+        term: "결제 구현",
+        description: "이 공개 사이트에는 checkout, 환불, 크레딧 차감 코드가 없습니다."
+      },
+      {
+        term: "원장 소유",
+        description: "돈의 진실은 별도 money platform 계약에서 다룹니다."
+      },
+      {
+        term: "공개 조건",
+        description: "정책, provider 준비, rollback 기준이 확인된 뒤 가격/결제 문구를 공개합니다."
+      }
+    ],
     checks: [
-      "이 사이트는 가격표, checkout, 환불, 크레딧 차감을 직접 구현하지 않습니다.",
-      "돈의 상태는 공개 페이지 문구가 아니라 별도 원장 계약에서 검증합니다.",
-      "결제 안내는 실제 정책, provider 준비, rollback 기준이 생긴 뒤 공개합니다."
+      {
+        item: "Checkout",
+        status: "없음",
+        note: "이 사이트는 가격표, checkout, 환불, 크레딧 차감을 직접 구현하지 않습니다."
+      },
+      {
+        item: "Ledger",
+        status: "분리",
+        note: "돈의 상태는 공개 페이지 문구가 아니라 별도 원장 계약에서 검증합니다."
+      },
+      {
+        item: "Payment copy",
+        status: "보류",
+        note: "결제 안내는 실제 정책, provider 준비, rollback 기준이 생긴 뒤 공개합니다."
+      }
     ]
   },
   {
@@ -134,10 +225,36 @@ export const publicPages: readonly PublicPage[] = [
         status: "검토"
       }
     ],
+    facts: [
+      {
+        term: "기준 저장소",
+        description: "zdp-products-lab"
+      },
+      {
+        term: "격리선",
+        description: "실험은 인증, 결제, 개인정보, 권한 판단을 직접 소유하지 않습니다."
+      },
+      {
+        term: "승격 조건",
+        description: "소유자, 비용 상한, 운영 증거, 종료 기준이 확인된 뒤 제품 저장소로 이동합니다."
+      }
+    ],
     checks: [
-      "제품 후보는 성공 기준, 종료 기준, 비용 상한이 없으면 구현하지 않습니다.",
-      "실험 화면도 디자인 시스템 public contract를 먼저 소비합니다.",
-      "인증, 결제, 개인정보, 권한 판단이 필요해지면 실험실 밖으로 승격 검토합니다."
+      {
+        item: "Experiment rule",
+        status: "필수",
+        note: "제품 후보는 성공 기준, 종료 기준, 비용 상한이 없으면 구현하지 않습니다."
+      },
+      {
+        item: "Design system",
+        status: "필수",
+        note: "실험 화면도 디자인 시스템 public contract를 먼저 소비합니다."
+      },
+      {
+        item: "Promotion",
+        status: "검토",
+        note: "인증, 결제, 개인정보, 권한 판단이 필요해지면 실험실 밖으로 승격 검토합니다."
+      }
     ]
   },
   {
@@ -163,10 +280,36 @@ export const publicPages: readonly PublicPage[] = [
         status: "보류"
       }
     ],
+    facts: [
+      {
+        term: "현재",
+        description: "공개 사이트, 디자인 시스템, 제품 실험실의 초기 표면을 정리합니다."
+      },
+      {
+        term: "다음",
+        description: "보안, 개인정보, 결제 안전, 실험 기준을 공개 가능한 문서와 화면으로 엮습니다."
+      },
+      {
+        term: "보류",
+        description: "운영 흐름이 생기기 전에는 네이티브 앱, 관리자 콘솔, 결제 화면을 만들지 않습니다."
+      }
+    ],
     checks: [
-      "지금 하는 일, 다음에 할 일, 아직 안 할 일을 분리해서 공개합니다.",
-      "네이티브 앱과 관리자 콘솔은 실제 운영 흐름이 생기기 전까지 만들지 않습니다.",
-      "로드맵 문구는 검증되지 않은 일정, 매출, 고객 수를 약속하지 않습니다."
+      {
+        item: "Roadmap shape",
+        status: "유지",
+        note: "지금 하는 일, 다음에 할 일, 아직 안 할 일을 분리해서 공개합니다."
+      },
+      {
+        item: "Deferred apps",
+        status: "보류",
+        note: "네이티브 앱과 관리자 콘솔은 실제 운영 흐름이 생기기 전까지 만들지 않습니다."
+      },
+      {
+        item: "Claims",
+        status: "차단",
+        note: "로드맵 문구는 검증되지 않은 일정, 매출, 고객 수를 약속하지 않습니다."
+      }
     ]
   },
   {
@@ -176,6 +319,7 @@ export const publicPages: readonly PublicPage[] = [
     heading: "기록",
     summary: "개발 과정의 기록입니다.",
     items: [],
+    facts: [],
     checks: []
   },
   {
@@ -191,9 +335,18 @@ export const publicPages: readonly PublicPage[] = [
         status: "수집 없음"
       }
     ],
+    facts: [],
     checks: [
-      "정적 사이트 단계에서는 사용자를 식별하는 데이터를 수집하지 않습니다.",
-      "개인정보 처리 흐름이 필요하면 별도 privacy 계약에서 먼저 소유권을 정합니다."
+      {
+        item: "Collection",
+        status: "없음",
+        note: "정적 사이트 단계에서는 사용자를 식별하는 데이터를 수집하지 않습니다."
+      },
+      {
+        item: "Privacy owner",
+        status: "분리",
+        note: "개인정보 처리 흐름이 필요하면 별도 privacy 계약에서 먼저 소유권을 정합니다."
+      }
     ]
   },
   {
@@ -203,6 +356,7 @@ export const publicPages: readonly PublicPage[] = [
     heading: "문의",
     summary: "서비스 개방 시 연락 채널을 공개합니다.",
     items: [],
+    facts: [],
     checks: []
   }
 ];

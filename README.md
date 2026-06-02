@@ -8,8 +8,9 @@ ZDP 공개 웹 표면 저장소다. 초기 목적은 `8ailors.xyz` 본체 사이
 - 8ailors 본체 사이트 후보 정보 구조
 - 첫 홈 화면의 제품, 디자인, 보안, 결제 안전, 실험실, 로드맵, 노트, 정책, 문의 섹션
 - `/products`, `/design`, `/security`, `/payment-safety`, `/labs`, `/roadmap`, `/notes`, `/trust`, `/contact` 정적 페이지
-- 디자인 시스템 Breadcrumb, Badge, Inline, Link, SkipLink, Stack, VisuallyHidden, 현재 페이지 표시를 적용한 정적 페이지 탐색
+- 디자인 시스템 Breadcrumb, Badge, EmptyState, Grid, Inline, KeyValue, Link, SkipLink, Stack, Table, Toolbar, VisuallyHidden, 현재 페이지 표시를 적용한 정적 페이지 탐색
 - 디자인, 보안, 결제 안전, 실험실, 로드맵 페이지의 공개 검증 기준 블록
+- 디자인, 보안, 결제 안전, 실험실, 로드맵 페이지의 핵심 정보 표면
 - 키보드 사용자를 위한 디자인 시스템 본문 건너뛰기 링크
 - 후보 도메인 상태를 설명하는 공개 전 안내 블록
 - ZDP 공개 제품과 실험 목록
@@ -50,6 +51,6 @@ bun run check:discovery
 bun run build
 ```
 
-`check:discovery`는 후보 도메인 단계의 `webpub.toml`, `robots.txt`, `llms.txt`, 페이지 목록, 디자인 시스템 소비 계약, 검색 제출용 산출물 부재를 함께 확인한다. `sitemap.xml`, `rss.xml`, `atom.xml`, `feed.json`은 지금 빠진 것이 아니라 `domain_status = "live"`가 되기 전까지 의도적으로 만들지 않는 파일이다.
+`check:discovery`는 후보 도메인 단계의 `webpub.toml`, `robots.txt`, `llms.txt`, 페이지 목록, 디자인 시스템 소비 계약, 검색 제출용 산출물 부재를 함께 확인한다. 홈과 상세 페이지가 `zdp-design-system`의 grid, toolbar, key-value, table, empty-state public utility를 실제로 소비하는지도 함께 본다. `sitemap.xml`, `rss.xml`, `atom.xml`, `feed.json`은 지금 빠진 것이 아니라 `domain_status = "live"`가 되기 전까지 의도적으로 만들지 않는 파일이다.
 
 `robots.txt`와 페이지 메타 태그는 공개 전까지 검색 노출을 막는다.

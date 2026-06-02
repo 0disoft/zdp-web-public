@@ -46,6 +46,11 @@ const description = page.summary;
             <p>{page.summary}</p>
           </div>
         </div>
+        <div class="zdp-page-header__actions">
+          <a class="zdp-button zdp-button--md zdp-button--secondary" href="/">
+            <span class="zdp-visually-hidden">{page.label} 페이지에서 </span>홈으로 돌아가기
+          </a>
+        </div>
       </header>
     </div>
   </section>
@@ -56,7 +61,7 @@ const description = page.summary;
       aria-label={`${page.label} 항목`}
     >
       <div class="detail-section__inner zdp-container zdp-container--lg zdp-container--padding-md">
-        <div class="surface-grid">
+        <div class="surface-grid zdp-grid zdp-grid--columns-three zdp-grid--gap-md">
           {page.items.map((item) => (
             <article class="surface-item zdp-surface zdp-surface--panel zdp-surface--padding-lg">
               <span class="zdp-badge zdp-badge--primary zdp-badge--sm">{item.status}</span>
@@ -65,6 +70,28 @@ const description = page.summary;
             </article>
           ))}
         </div>
+      </div>
+    </section>
+  )}
+
+  {page.facts.length > 0 && (
+    <section
+      class="detail-section zdp-section zdp-section--spacing-lg zdp-divider zdp-divider--horizontal zdp-divider--subtle"
+      aria-labelledby={`${page.id}-facts-title`}
+    >
+      <div class="detail-section__inner zdp-container zdp-container--lg zdp-container--padding-md">
+        <div class="detail-intro">
+          <p class="section-label">Facts</p>
+          <h2 id={`${page.id}-facts-title`}>핵심 정보</h2>
+        </div>
+        <dl class="zdp-key-value zdp-key-value--columns-two" aria-labelledby={`${page.id}-facts-title`}>
+          {page.facts.map((fact) => (
+            <>
+              <dt>{fact.term}</dt>
+              <dd>{fact.description}</dd>
+            </>
+          ))}
+        </dl>
       </div>
     </section>
   )}
@@ -80,14 +107,27 @@ const description = page.summary;
           <div class="zdp-callout__body zdp-stack zdp-stack--gap-md">
             <span class="zdp-badge zdp-badge--primary zdp-badge--sm">검증 기준</span>
             <h2 id={`${page.id}-checks-title`}>이 페이지가 지키는 선</h2>
-            <ul class="evidence-list">
-              {page.checks.map((check) => (
-                <li>{check}</li>
-              ))}
-            </ul>
-            <a class="zdp-button zdp-button--md zdp-button--secondary" href="/">
-              <span class="zdp-visually-hidden">{page.label} 페이지에서 </span>홈으로 돌아가기
-            </a>
+            <div class="zdp-table-wrap">
+              <table class="zdp-table zdp-table--density-compact" aria-labelledby={`${page.id}-checks-title`}>
+                <caption class="zdp-table__caption zdp-table__caption--hidden">검증 기준</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">항목</th>
+                    <th scope="col">상태</th>
+                    <th scope="col">기준</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {page.checks.map((check) => (
+                    <tr>
+                      <th scope="row">{check.item}</th>
+                      <td>{check.status}</td>
+                      <td>{check.note}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -100,17 +140,18 @@ const description = page.summary;
       aria-label={`${page.label} 준비 상태`}
     >
       <div class="detail-section__inner zdp-container zdp-container--lg zdp-container--padding-md">
-        <div class="zdp-callout zdp-callout--info surface-placeholder" role="note">
-          <span class="zdp-callout__mark" aria-hidden="true">i</span>
-          <div class="zdp-callout__body zdp-stack zdp-stack--gap-md">
+        <section class="zdp-empty-state surface-placeholder" aria-labelledby={`${page.id}-empty-title`}>
+          <div class="zdp-empty-state__body">
             <span class="zdp-badge zdp-badge--primary zdp-badge--sm">준비 중</span>
-            <h2>공개 전 기준을 정리하고 있습니다.</h2>
+            <h2 id={`${page.id}-empty-title`}>공개 전 기준을 정리하고 있습니다.</h2>
             <p>{page.summary}</p>
+          </div>
+          <div class="zdp-empty-state__actions">
             <a class="zdp-button zdp-button--md zdp-button--secondary" href="/">
               <span class="zdp-visually-hidden">{page.label} 페이지에서 </span>홈으로 돌아가기
             </a>
           </div>
-        </div>
+        </section>
       </div>
     </section>
   )}
