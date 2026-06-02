@@ -41,6 +41,7 @@ await checkLlms();
 await checkForbiddenDiscoveryOutputs();
 await checkLayoutNoindex();
 await checkDesignSystemConsumerContract();
+checkPublicPageContentContract();
 
 if (failures.length > 0) {
   console.error("Public discovery check failed:");
@@ -193,6 +194,28 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
       if (!content.includes(requiredText)) {
         failures.push(`${path} is missing design system usage ${requiredText}.`);
       }
+    }
+  }
+}
+
+function checkPublicPageContentContract(): void {
+  const pagesThatMustHaveTrustCards = [
+    "design",
+    "security",
+    "payment-safety",
+    "labs",
+    "roadmap"
+  ] as const;
+
+  for (const pageId of pagesThatMustHaveTrustCards) {
+    const page = publicPages.find((entry) => entry.id === pageId);
+    if (page === undefined) {
+      failures.push(`publicPages is missing ${pageId}.`);
+      continue;
+    }
+
+    if (page.items.length === 0) {
+      failures.push(`publicPages.${pageId} must expose at least one public trust card.`);
     }
   }
 }
