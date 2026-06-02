@@ -173,16 +173,16 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     readText("../zdp-design-system/src/styles/components.css")
   ]);
 
-  if (packageJson.version !== "0.4.14") {
-    failures.push("package.json version must be 0.4.14 for the design-system nav focus contract.");
+  if (packageJson.version !== "0.4.15") {
+    failures.push("package.json version must be 0.4.15 for the design-system layout primitive contract.");
   }
 
   if (packageJson.dependencies["zdp-design-system"] !== "file:../zdp-design-system") {
     failures.push('package.json dependencies.zdp-design-system must stay "file:../zdp-design-system".');
   }
 
-  if (designSystemPackageJson.version !== "0.22.0") {
-    failures.push("Sibling zdp-design-system package must be version 0.22.0 for the consumer contract.");
+  if (designSystemPackageJson.version !== "0.23.0") {
+    failures.push("Sibling zdp-design-system package must be version 0.23.0 for the consumer contract.");
   }
 
   if (
