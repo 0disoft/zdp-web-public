@@ -52,6 +52,7 @@ await checkNoLocalTextLink();
 await checkNoLocalSkipLink();
 await checkNoViewportScaledTypography();
 checkPublicPageContentContract();
+checkPublicPageRouteContract();
 
 if (failures.length > 0) {
   console.error("Public discovery check failed:");
@@ -86,6 +87,12 @@ async function checkWebpubContract(): Promise<void> {
     }
   }
 
+  expectExactStringList(
+    contract.pages,
+    REQUIRED_WEBPUB_PAGES,
+    "webpub.toml pages must exactly match src/content/public-pages.ts."
+  );
+
   expectEqual(contract.robotsEnabled, true, "webpub.toml robots.enabled must be true before launch.");
 
   if (!contract.robotsDisallow.includes("/")) {
@@ -113,6 +120,12 @@ async function checkLlms(): Promise<void> {
       failures.push(`public/llms.txt is missing core link ${path}.`);
     }
   }
+
+  expectExactStringList(
+    readLlmsCoreLinks(content),
+    REQUIRED_WEBPUB_PAGES,
+    "public/llms.txt Core Links must exactly match src/content/public-pages.ts."
+  );
 
   for (const { pattern, reason } of FORBIDDEN_LLMS_PATTERNS) {
     if (pattern.test(content)) {
@@ -160,8 +173,8 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     readText("../zdp-design-system/src/styles/components.css")
   ]);
 
-  if (packageJson.version !== "0.4.12") {
-    failures.push("package.json version must be 0.4.12 for the public readonly form control adoption contract.");
+  if (packageJson.version !== "0.4.13") {
+    failures.push("package.json version must be 0.4.13 for the public page registry sync contract.");
   }
 
   if (packageJson.dependencies["zdp-design-system"] !== "file:../zdp-design-system") {
@@ -396,6 +409,36 @@ function checkPublicPageContentContract(): void {
   }
 }
 
+function checkPublicPageRouteContract(): void {
+  const seenIds = new Set<string>();
+  const seenPaths = new Set<string>();
+
+  for (const page of publicPages) {
+    if (seenIds.has(page.id)) {
+      failures.push(`publicPages has duplicate id ${page.id}.`);
+    }
+
+    if (seenPaths.has(page.path)) {
+      failures.push(`publicPages has duplicate path ${page.path}.`);
+    }
+
+    seenIds.add(page.id);
+    seenPaths.add(page.path);
+
+    if (page.path !== `/${page.id}`) {
+      failures.push(`publicPages.${page.id} path must be /${page.id}. Found ${page.path}.`);
+    }
+
+    if (page.label.trim().length === 0 || page.heading.trim().length === 0) {
+      failures.push(`publicPages.${page.id} must expose a non-empty label and heading.`);
+    }
+
+    if (page.summary.trim().length === 0) {
+      failures.push(`publicPages.${page.id} must expose a non-empty public summary.`);
+    }
+  }
+}
+
 function parseWebpubCandidateContract(content: string): WebpubCandidateContract {
   return {
     siteUrl: readTomlString(content, "site_url"),
@@ -436,6 +479,24 @@ function readTomlPageUrls(content: string): readonly string[] {
   return urls;
 }
 
+function readLlmsCoreLinks(content: string): readonly string[] {
+  const links: string[] = [];
+  const coreLinksStart = content.indexOf("## Core Links");
+  if (coreLinksStart === -1) {
+    return links;
+  }
+
+  const rest = content.slice(coreLinksStart + "## Core Links".length);
+  const nextSection = rest.search(/\n##\s+/);
+  const coreLinksBlock = nextSection === -1 ? rest : rest.slice(0, nextSection);
+
+  for (const match of coreLinksBlock.matchAll(/^- `([^`]+)`:/gm)) {
+    links.push(match[1]);
+  }
+
+  return links;
+}
+
 function readRobotsBoolean(content: string, key: string): boolean | null {
   const robotsBlock = readRobotsBlock(content);
   const match = robotsBlock.match(new RegExp(`^${escapeRegExp(key)}\\s*=\\s*(true|false)`, "m"));
@@ -460,6 +521,18 @@ function readRobotsBlock(content: string): string {
 function expectEqual<T>(actual: T, expected: T, message: string): void {
   if (actual !== expected) {
     failures.push(`${message} Found ${JSON.stringify(actual)}.`);
+  }
+}
+
+function expectExactStringList(
+  actual: readonly string[],
+  expected: readonly string[],
+  message: string
+): void {
+  const actualJson = JSON.stringify(actual);
+  const expectedJson = JSON.stringify(expected);
+  if (actualJson !== expectedJson) {
+    failures.push(`${message} Expected ${expectedJson}. Found ${actualJson}.`);
   }
 }
 
