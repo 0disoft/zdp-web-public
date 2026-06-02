@@ -1,3 +1,4 @@
+@import "zdp-design-system/locale-fonts.css";
 @import "zdp-design-system/styles.css";
 @import "./tokens.css";
 
@@ -7,6 +8,7 @@
 
 html {
   font-family: var(--font-sans);
+  font-size: var(--zdp-font-size-md);
   background: var(--color-page);
   color: var(--color-ink);
   scroll-behavior: smooth;
@@ -19,8 +21,8 @@ body {
 
 a {
   color: inherit;
-  text-decoration-thickness: 0.08em;
-  text-underline-offset: 0.18em;
+  text-decoration: none;
+  transition: color var(--zdp-motion-fast) ease;
 }
 
 code {
@@ -30,12 +32,6 @@ code {
   background: var(--color-code);
   font-family: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   font-size: 0.94em;
-}
-
-a:focus-visible,
-button:focus-visible {
-  outline: 3px solid var(--color-sea);
-  outline-offset: 4px;
 }
 
 .shell {
@@ -66,7 +62,8 @@ button:focus-visible {
   display: inline-flex;
   align-items: center;
   gap: var(--space-3);
-  font-weight: 850;
+  color: var(--color-ink);
+  font-weight: var(--zdp-font-weight-semibold);
   letter-spacing: 0;
   text-decoration: none;
 }
@@ -95,12 +92,12 @@ button:focus-visible {
 }
 
 .nav-list a {
+  color: var(--color-muted);
   text-decoration: none;
 }
 
 .nav-list a:hover {
   color: var(--color-ink);
-  text-decoration: underline;
 }
 
 .hero {
@@ -111,8 +108,8 @@ button:focus-visible {
 .section-label {
   margin: 0 0 var(--space-3);
   color: var(--color-accent-strong);
-  font-size: 0.82rem;
-  font-weight: 850;
+  font-size: var(--zdp-font-size-xs);
+  font-weight: var(--zdp-font-weight-semibold);
   letter-spacing: 0;
   text-transform: uppercase;
 }
@@ -172,7 +169,13 @@ button:focus-visible {
   width: fit-content;
   margin-top: var(--space-4);
   color: var(--color-sea);
-  font-weight: 850;
+  font-weight: var(--zdp-font-weight-semibold);
+  transition: color var(--zdp-motion-fast) ease;
+}
+
+.text-link:hover,
+.back-link:hover {
+  color: var(--color-ink);
 }
 
 .back-link {
@@ -208,6 +211,26 @@ button:focus-visible {
 .detail-section {
   padding: var(--space-6) 0 var(--space-8);
   border-top: 1px solid var(--color-line);
+}
+
+.surface-placeholder {
+  max-width: 42rem;
+}
+
+.surface-placeholder h2 {
+  margin: var(--space-3) 0 0;
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  line-height: 1.12;
+}
+
+.surface-placeholder p {
+  margin: var(--space-3) 0 0;
+  color: var(--color-muted);
+  line-height: 1.7;
+}
+
+.surface-placeholder .zdp-button {
+  margin-top: var(--space-4);
 }
 
 .surface-grid {
@@ -247,7 +270,7 @@ button:focus-visible {
   background: var(--color-accent-wash);
   color: var(--color-accent-strong);
   font-size: 0.78rem;
-  font-weight: 850;
+  font-weight: var(--zdp-font-weight-semibold);
   line-height: 1.25;
   text-transform: uppercase;
 }

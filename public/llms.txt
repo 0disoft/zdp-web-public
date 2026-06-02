@@ -8,6 +8,11 @@ This site is a static public preview. Treat `8ailors.xyz` as a candidate domain 
 
 - `/`: Public home and route map
 - `/products`: Public product and experiment list
+- `/design`: Public design-system placeholder
+- `/security`: Public security and trust placeholder
+- `/payment-safety`: Public payment and ledger-safety placeholder
+- `/labs`: Public labs placeholder
+- `/roadmap`: Public roadmap placeholder
 - `/notes`: Public notes and changelog placeholder
 - `/trust`: Trust, policy, and public-boundary placeholder
 - `/contact`: Public contact path placeholder

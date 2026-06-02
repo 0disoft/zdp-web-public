@@ -6,8 +6,8 @@ ZDP 공개 웹 표면 저장소다. 초기 목적은 `8ailors.xyz` 본체 사이
 
 - Astro 정적 사이트 골격
 - 8ailors 본체 사이트 후보 정보 구조
-- 첫 홈 화면의 제품, 노트, 정책, 문의 섹션
-- `/products`, `/notes`, `/trust`, `/contact` 정적 페이지
+- 첫 홈 화면의 제품, 디자인, 보안, 결제 안전, 실험실, 로드맵, 노트, 정책, 문의 섹션
+- `/products`, `/design`, `/security`, `/payment-safety`, `/labs`, `/roadmap`, `/notes`, `/trust`, `/contact` 정적 페이지
 - 후보 도메인 상태를 설명하는 공개 전 안내 블록
 - ZDP 공개 제품과 실험 목록
 - 공개 문서, 블로그, 정책, 문의 경로

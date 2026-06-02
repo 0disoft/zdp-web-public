@@ -28,6 +28,41 @@ status = "draft"
 indexing = "blocked"
 
 [[pages]]
+url = "/design"
+title = "디자인"
+section = "design"
+status = "draft"
+indexing = "blocked"
+
+[[pages]]
+url = "/security"
+title = "보안"
+section = "security"
+status = "draft"
+indexing = "blocked"
+
+[[pages]]
+url = "/payment-safety"
+title = "결제 안전"
+section = "payment-safety"
+status = "draft"
+indexing = "blocked"
+
+[[pages]]
+url = "/labs"
+title = "실험실"
+section = "labs"
+status = "draft"
+indexing = "blocked"
+
+[[pages]]
+url = "/roadmap"
+title = "로드맵"
+section = "roadmap"
+status = "draft"
+indexing = "blocked"
+
+[[pages]]
 url = "/notes"
 title = "노트"
 section = "notes"

@@ -40,6 +40,7 @@ await checkRobots();
 await checkLlms();
 await checkForbiddenDiscoveryOutputs();
 await checkLayoutNoindex();
+await checkDesignSystemConsumerContract();
 
 if (failures.length > 0) {
   console.error("Public discovery check failed:");
@@ -122,6 +123,77 @@ async function checkLayoutNoindex(): Promise<void> {
 
   if (!content.includes('name="robots"') || !content.includes('content="noindex,nofollow"')) {
     failures.push("BaseLayout.astro must keep noindex,nofollow before launch.");
+  }
+}
+
+async function checkDesignSystemConsumerContract(): Promise<void> {
+  const [packageJson, globalCss, tokensCss, homePage, surfacePage, layout] = await Promise.all([
+    readText("package.json"),
+    readText("src/styles/global.css"),
+    readText("src/styles/tokens.css"),
+    readText("src/pages/index.astro"),
+    readText("src/pages/[surface].astro"),
+    readText("src/layouts/BaseLayout.astro")
+  ]);
+
+  for (const requiredText of [
+    '"zdp-design-system": "file:../zdp-design-system"',
+    '@import "zdp-design-system/styles.css";',
+    '@import "zdp-design-system/locale-fonts.css";',
+    "--font-sans: var(--zdp-font-family-multiscript);",
+    "--shadow-soft: none;",
+    "--radius-pill: var(--zdp-radius-md);"
+  ]) {
+    const source = requiredText.startsWith('"zdp-design-system"')
+      ? packageJson
+      : requiredText.startsWith("@import")
+        ? globalCss
+        : tokensCss;
+
+    if (!source.includes(requiredText)) {
+      failures.push(`Design system consumer contract is missing ${requiredText}.`);
+    }
+  }
+
+  for (const [path, content, requiredTexts] of [
+    [
+      "src/layouts/BaseLayout.astro",
+      layout,
+      [
+        'body class="zdp-surface-reset"',
+        'href="/design"',
+        'href="/security"',
+        'href="/payment-safety"',
+        'href="/labs"',
+        'href="/roadmap"'
+      ]
+    ],
+    [
+      "src/pages/index.astro",
+      homePage,
+      [
+        "zdp-button zdp-button--md zdp-button--primary",
+        "zdp-button zdp-button--md zdp-button--secondary",
+        "zdp-surface zdp-surface--panel zdp-surface--padding-lg"
+      ]
+    ],
+    [
+      "src/pages/[surface].astro",
+      surfacePage,
+      [
+        "zdp-callout zdp-callout--info",
+        "zdp-callout__mark",
+        "zdp-callout__body",
+        "zdp-badge zdp-badge--primary zdp-badge--sm",
+        "zdp-button zdp-button--md zdp-button--secondary"
+      ]
+    ]
+  ] as const) {
+    for (const requiredText of requiredTexts) {
+      if (!content.includes(requiredText)) {
+        failures.push(`${path} is missing design system usage ${requiredText}.`);
+      }
+    }
   }
 }
 

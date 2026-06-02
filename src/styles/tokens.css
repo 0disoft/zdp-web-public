@@ -12,12 +12,12 @@
   --color-sea: var(--zdp-color-accent-primary);
   --color-clay: var(--zdp-color-accent-warning);
   --color-sea-wash: var(--zdp-color-accent-primary-soft);
-  --color-clay-wash: oklch(56% 0.14 55 / 0.16);
-  --color-ink-line-subtle: oklch(21% 0.035 265 / 0.14);
-  --color-grid-line: oklch(21% 0.035 265 / 0.08);
+  --color-clay-wash: var(--zdp-color-surface-raised);
+  --color-ink-line-subtle: var(--zdp-color-line-subtle);
+  --color-grid-line: var(--zdp-color-line-subtle);
   --color-accent-border: var(--zdp-color-line-focus);
   --color-accent-wash: var(--zdp-color-accent-primary-soft);
-  --font-sans: var(--zdp-font-family-sans);
+  --font-sans: var(--zdp-font-family-multiscript);
   --space-1: var(--zdp-space-1);
   --space-2: var(--zdp-space-2);
   --space-3: var(--zdp-space-3);
@@ -29,6 +29,6 @@
   --radius-xs: var(--zdp-radius-sm);
   --radius-sm: var(--zdp-radius-md);
   --radius-md: var(--zdp-radius-lg);
-  --radius-pill: var(--zdp-radius-pill);
-  --shadow-soft: var(--zdp-shadow-md);
+  --radius-pill: var(--zdp-radius-md);
+  --shadow-soft: none;
 }
