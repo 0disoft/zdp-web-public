@@ -42,7 +42,11 @@ const navItems = [
           <ul class="nav-list">
             {navItems.map((item) => (
               <li>
-                <a href={item.href} aria-current={item.href === currentPath ? "page" : undefined}>
+                <a
+                  class="zdp-link zdp-link--muted"
+                  href={item.href}
+                  aria-current={item.href === currentPath ? "page" : undefined}
+                >
                   {item.label}
                 </a>
               </li>

@@ -72,6 +72,23 @@ code {
   text-decoration: none;
 }
 
+.zdp-surface-reset .brand {
+  color: var(--color-ink);
+  font-weight: var(--zdp-font-weight-semibold);
+}
+
+.zdp-surface-reset .brand:hover {
+  color: var(--color-accent-strong);
+}
+
+.zdp-surface-reset .brand:focus-visible {
+  background: var(--zdp-color-focus-surface);
+  border-bottom: var(--zdp-control-focus-underline-width) solid var(--zdp-color-focus-line);
+  color: var(--zdp-color-focus-text);
+  outline: var(--zdp-control-focus-outline-width) solid var(--zdp-color-focus-surface);
+  outline-offset: 0;
+}
+
 .brand-mark {
   display: grid;
   width: 2.1rem;
@@ -95,17 +112,18 @@ code {
   list-style: none;
 }
 
-.nav-list a {
+.zdp-surface-reset .nav-list .zdp-link--muted:not(:focus-visible) {
   color: var(--color-muted);
-  text-decoration: none;
+  font-weight: var(--zdp-font-weight-regular);
 }
 
-.nav-list a:hover {
+.zdp-surface-reset .nav-list .zdp-link--muted:hover:not(:focus-visible) {
   color: var(--color-ink);
 }
 
-.nav-list a[aria-current="page"] {
+.zdp-surface-reset .nav-list .zdp-link--muted[aria-current="page"]:not(:focus-visible) {
   color: var(--color-ink);
+  font-weight: var(--zdp-font-weight-medium);
 }
 
 .hero {

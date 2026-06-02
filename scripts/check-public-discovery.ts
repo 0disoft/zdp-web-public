@@ -173,8 +173,8 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     readText("../zdp-design-system/src/styles/components.css")
   ]);
 
-  if (packageJson.version !== "0.4.13") {
-    failures.push("package.json version must be 0.4.13 for the public page registry sync contract.");
+  if (packageJson.version !== "0.4.14") {
+    failures.push("package.json version must be 0.4.14 for the design-system nav focus contract.");
   }
 
   if (packageJson.dependencies["zdp-design-system"] !== "file:../zdp-design-system") {
@@ -246,6 +246,7 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
         'href="#content"',
         'main id="content"',
         'tabindex="-1"',
+        'class="zdp-link zdp-link--muted"',
         'aria-current={item.href === currentPath ? "page" : undefined}',
         '{ href: "/design", label: "디자인" }',
         '{ href: "/security", label: "보안" }',
@@ -342,9 +343,10 @@ async function checkNoLocalStatusBadge(): Promise<void> {
 }
 
 async function checkNoLocalTextLink(): Promise<void> {
-  const [globalCss, homePage] = await Promise.all([
+  const [globalCss, homePage, layout] = await Promise.all([
     readText("src/styles/global.css"),
-    readText("src/pages/index.astro")
+    readText("src/pages/index.astro"),
+    readText("src/layouts/BaseLayout.astro")
   ]);
 
   if (/(^|\n)\s*\.text-link\b/.test(globalCss)) {
@@ -353,6 +355,20 @@ async function checkNoLocalTextLink(): Promise<void> {
 
   if (homePage.includes('class="text-link"')) {
     failures.push("src/pages/index.astro must use zdp-link instead of local text-link markup.");
+  }
+
+  if (layout.includes("<a href={item.href}")) {
+    failures.push("BaseLayout.astro nav links must use zdp-link instead of local anchor-only markup.");
+  }
+
+  for (const requiredText of [
+    ".zdp-surface-reset .brand:focus-visible",
+    ".zdp-surface-reset .nav-list .zdp-link--muted:not(:focus-visible)",
+    ".zdp-surface-reset .nav-list .zdp-link--muted[aria-current=\"page\"]:not(:focus-visible)"
+  ]) {
+    if (!globalCss.includes(requiredText)) {
+      failures.push(`src/styles/global.css is missing shared link focus bridge ${requiredText}.`);
+    }
   }
 }
 
