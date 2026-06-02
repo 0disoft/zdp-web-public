@@ -154,16 +154,16 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     readText("../zdp-design-system/docs/CONSUMER_CONTRACT.md")
   ]);
 
-  if (packageJson.version !== "0.4.1") {
-    failures.push("package.json version must be 0.4.1 for the design-system consumer smoke contract.");
+  if (packageJson.version !== "0.4.2") {
+    failures.push("package.json version must be 0.4.2 for the design-system consumer smoke contract.");
   }
 
   if (packageJson.dependencies["zdp-design-system"] !== "file:../zdp-design-system") {
     failures.push('package.json dependencies.zdp-design-system must stay "file:../zdp-design-system".');
   }
 
-  if (designSystemPackageJson.version !== "0.13.0") {
-    failures.push("Sibling zdp-design-system package must be version 0.13.0 for the consumer contract.");
+  if (designSystemPackageJson.version !== "0.14.0") {
+    failures.push("Sibling zdp-design-system package must be version 0.14.0 for the consumer contract.");
   }
 
   if (
