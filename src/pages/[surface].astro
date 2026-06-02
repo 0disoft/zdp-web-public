@@ -22,9 +22,19 @@ const title = `${page.label} - 8ailors`;
 const description = page.summary;
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description} currentPath={page.path}>
   <section class="page-hero" aria-labelledby="page-title">
-    <a class="back-link" href="/">8ailors 홈</a>
+    <nav class="zdp-breadcrumb page-breadcrumb" aria-label="현재 위치">
+      <ol class="zdp-breadcrumb__list">
+        <li class="zdp-breadcrumb__item">
+          <a class="zdp-breadcrumb__link" href="/">8ailors</a>
+        </li>
+        <li class="zdp-breadcrumb__item">
+          <span class="zdp-breadcrumb__separator" aria-hidden="true">/</span>
+          <span class="zdp-breadcrumb__current" aria-current="page">{page.label}</span>
+        </li>
+      </ol>
+    </nav>
     <p class="eyebrow">{page.label}</p>
     <h1 id="page-title">{page.heading}</h1>
     <p>{page.summary}</p>
@@ -35,7 +45,7 @@ const description = page.summary;
       <div class="surface-grid">
         {page.items.map((item) => (
           <article class="surface-item zdp-surface zdp-surface--panel zdp-surface--padding-lg">
-            <span class="status">{item.status}</span>
+            <span class="zdp-badge zdp-badge--primary zdp-badge--sm">{item.status}</span>
             <h2>{item.title}</h2>
             <p>{item.body}</p>
           </article>
@@ -44,15 +54,37 @@ const description = page.summary;
     </section>
   )}
 
+  {page.checks.length > 0 && (
+    <section class="detail-section" aria-labelledby={`${page.id}-checks-title`}>
+      <div class="zdp-callout zdp-callout--info evidence-block" role="note">
+        <span class="zdp-callout__mark" aria-hidden="true">i</span>
+        <div class="zdp-callout__body zdp-stack zdp-stack--gap-md">
+          <span class="zdp-badge zdp-badge--primary zdp-badge--sm">검증 기준</span>
+          <h2 id={`${page.id}-checks-title`}>이 페이지가 지키는 선</h2>
+          <ul class="evidence-list">
+            {page.checks.map((check) => (
+              <li>{check}</li>
+            ))}
+          </ul>
+          <a class="zdp-button zdp-button--md zdp-button--secondary" href="/">
+            <span class="zdp-visually-hidden">{page.label} 페이지에서 </span>홈으로 돌아가기
+          </a>
+        </div>
+      </div>
+    </section>
+  )}
+
   {page.items.length === 0 && (
     <section class="detail-section" aria-label={`${page.label} 준비 상태`}>
       <div class="zdp-callout zdp-callout--info surface-placeholder" role="note">
         <span class="zdp-callout__mark" aria-hidden="true">i</span>
-        <div class="zdp-callout__body">
+        <div class="zdp-callout__body zdp-stack zdp-stack--gap-md">
           <span class="zdp-badge zdp-badge--primary zdp-badge--sm">준비 중</span>
           <h2>공개 전 기준을 정리하고 있습니다.</h2>
           <p>{page.summary}</p>
-          <a class="zdp-button zdp-button--md zdp-button--secondary" href="/">홈으로 돌아가기</a>
+          <a class="zdp-button zdp-button--md zdp-button--secondary" href="/">
+            <span class="zdp-visually-hidden">{page.label} 페이지에서 </span>홈으로 돌아가기
+          </a>
         </div>
       </div>
     </section>

@@ -4,9 +4,21 @@ import "../styles/global.css";
 interface Props {
   title: string;
   description: string;
+  currentPath?: string;
 }
 
-const { title, description } = Astro.props;
+const { title, description, currentPath } = Astro.props;
+const navItems = [
+  { href: "/products", label: "제품" },
+  { href: "/design", label: "디자인" },
+  { href: "/security", label: "보안" },
+  { href: "/payment-safety", label: "결제 안전" },
+  { href: "/labs", label: "실험실" },
+  { href: "/roadmap", label: "로드맵" },
+  { href: "/notes", label: "기록" },
+  { href: "/trust", label: "정책" },
+  { href: "/contact", label: "문의" }
+] as const;
 ---
 
 <!doctype html>
@@ -19,6 +31,7 @@ const { title, description } = Astro.props;
     <title>{title}</title>
   </head>
   <body class="zdp-surface-reset">
+    <a class="zdp-skip-link" href="#content">본문으로 건너뛰기</a>
     <div class="shell">
       <header class="site-header" aria-label="사이트 상단">
         <a class="brand" href="/" aria-label="8ailors 홈">
@@ -27,19 +40,17 @@ const { title, description } = Astro.props;
         </a>
         <nav aria-label="주요 링크">
           <ul class="nav-list">
-            <li><a href="/products">제품</a></li>
-            <li><a href="/design">디자인</a></li>
-            <li><a href="/security">보안</a></li>
-            <li><a href="/payment-safety">결제 안전</a></li>
-            <li><a href="/labs">실험실</a></li>
-            <li><a href="/roadmap">로드맵</a></li>
-            <li><a href="/notes">기록</a></li>
-            <li><a href="/trust">정책</a></li>
-            <li><a href="/contact">문의</a></li>
+            {navItems.map((item) => (
+              <li>
+                <a href={item.href} aria-current={item.href === currentPath ? "page" : undefined}>
+                  {item.label}
+                </a>
+              </li>
+            ))}
           </ul>
         </nav>
       </header>
-      <main>
+      <main id="content" tabindex="-1">
         <slot />
       </main>
       <footer class="site-footer">

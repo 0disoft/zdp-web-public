@@ -8,6 +8,9 @@ ZDP 공개 웹 표면 저장소다. 초기 목적은 `8ailors.xyz` 본체 사이
 - 8ailors 본체 사이트 후보 정보 구조
 - 첫 홈 화면의 제품, 디자인, 보안, 결제 안전, 실험실, 로드맵, 노트, 정책, 문의 섹션
 - `/products`, `/design`, `/security`, `/payment-safety`, `/labs`, `/roadmap`, `/notes`, `/trust`, `/contact` 정적 페이지
+- 디자인 시스템 Breadcrumb, Badge, Inline, Link, SkipLink, Stack, VisuallyHidden, 현재 페이지 표시를 적용한 정적 페이지 탐색
+- 디자인, 보안, 결제 안전, 실험실, 로드맵 페이지의 공개 검증 기준 블록
+- 키보드 사용자를 위한 디자인 시스템 본문 건너뛰기 링크
 - 후보 도메인 상태를 설명하는 공개 전 안내 블록
 - ZDP 공개 제품과 실험 목록
 - 공개 문서, 블로그, 정책, 문의 경로

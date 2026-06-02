@@ -38,6 +38,10 @@ code {
   min-height: 100vh;
 }
 
+#content:focus {
+  outline: 0;
+}
+
 .site-header,
 .site-footer,
 .hero,
@@ -100,6 +104,10 @@ code {
   color: var(--color-ink);
 }
 
+.nav-list a[aria-current="page"] {
+  color: var(--color-ink);
+}
+
 .hero {
   padding: var(--space-8) 0 var(--space-7);
 }
@@ -117,20 +125,13 @@ code {
 .hero h1 {
   margin: 0;
   max-width: 10ch;
-  font-size: clamp(3.4rem, 9vw, 7rem);
-  line-height: 0.92;
+  font-size: 6rem;
+  line-height: 1.04;
   letter-spacing: 0;
 }
 
 .actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3);
   margin-top: var(--space-5);
-}
-
-.section {
-  border-top: 1px solid var(--color-line);
 }
 
 .section-inner {
@@ -152,8 +153,8 @@ code {
 
 .section-heading {
   margin: 0;
-  font-size: clamp(1.9rem, 4vw, 3.3rem);
-  line-height: 1;
+  font-size: 3rem;
+  line-height: var(--zdp-type-title-line-height);
   letter-spacing: 0;
 }
 
@@ -163,22 +164,12 @@ code {
   line-height: 1.7;
 }
 
-.text-link,
-.back-link {
-  display: inline-flex;
-  width: fit-content;
+.section-intro .zdp-link {
+  display: inline-block;
   margin-top: var(--space-4);
-  color: var(--color-sea);
-  font-weight: var(--zdp-font-weight-semibold);
-  transition: color var(--zdp-motion-fast) ease;
 }
 
-.text-link:hover,
-.back-link:hover {
-  color: var(--color-ink);
-}
-
-.back-link {
+.page-breadcrumb {
   margin: 0 0 var(--space-5);
 }
 
@@ -195,8 +186,8 @@ code {
 .page-hero h1 {
   margin: 0;
   max-width: 13ch;
-  font-size: clamp(3rem, 8vw, 6rem);
-  line-height: 0.94;
+  font-size: 5rem;
+  line-height: 1.06;
   letter-spacing: 0;
 }
 
@@ -213,23 +204,33 @@ code {
   border-top: 1px solid var(--color-line);
 }
 
-.surface-placeholder {
+.surface-placeholder,
+.evidence-block {
   max-width: 42rem;
 }
 
-.surface-placeholder h2 {
+.surface-placeholder h2,
+.evidence-block h2 {
   margin: var(--space-3) 0 0;
-  font-size: clamp(1.5rem, 3vw, 2.25rem);
-  line-height: 1.12;
+  font-size: 2rem;
+  line-height: var(--zdp-type-title-line-height);
 }
 
-.surface-placeholder p {
+.surface-placeholder p,
+.evidence-list {
   margin: var(--space-3) 0 0;
   color: var(--color-muted);
   line-height: 1.7;
 }
 
-.surface-placeholder .zdp-button {
+.evidence-list {
+  display: grid;
+  gap: var(--space-2);
+  padding-left: 1.25rem;
+}
+
+.surface-placeholder .zdp-button,
+.evidence-block .zdp-button {
   margin-top: var(--space-4);
 }
 
@@ -259,20 +260,6 @@ code {
 .surface-item p {
   color: var(--color-muted);
   line-height: 1.65;
-}
-
-.status {
-  width: fit-content;
-  max-width: 100%;
-  padding: 0.18rem 0.5rem;
-  border: 1px solid var(--color-accent-border);
-  border-radius: var(--radius-pill);
-  background: var(--color-accent-wash);
-  color: var(--color-accent-strong);
-  font-size: 0.78rem;
-  font-weight: var(--zdp-font-weight-semibold);
-  line-height: 1.25;
-  text-transform: uppercase;
 }
 
 .site-footer {
@@ -307,7 +294,20 @@ code {
   }
 
   .hero h1 {
-    font-size: clamp(3rem, 18vw, 4.6rem);
+    font-size: 4rem;
+  }
+
+  .page-hero h1 {
+    font-size: 3.5rem;
+  }
+
+  .section-heading {
+    font-size: 2.35rem;
+  }
+
+  .surface-placeholder h2,
+  .evidence-block h2 {
+    font-size: 1.65rem;
   }
 
   .actions,

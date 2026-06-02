@@ -47,6 +47,10 @@ await checkLlms();
 await checkForbiddenDiscoveryOutputs();
 await checkLayoutNoindex();
 await checkDesignSystemConsumerContract();
+await checkNoLocalStatusBadge();
+await checkNoLocalTextLink();
+await checkNoLocalSkipLink();
+await checkNoViewportScaledTypography();
 checkPublicPageContentContract();
 
 if (failures.length > 0) {
@@ -142,7 +146,8 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     surfacePage,
     layout,
     designSystemPackageJson,
-    designSystemConsumerContract
+    designSystemConsumerContract,
+    designSystemComponentCss
   ] = await Promise.all([
     readPackageJson("package.json"),
     readText("src/styles/global.css"),
@@ -151,19 +156,20 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     readText("src/pages/[surface].astro"),
     readText("src/layouts/BaseLayout.astro"),
     readPackageJson("../zdp-design-system/package.json"),
-    readText("../zdp-design-system/docs/CONSUMER_CONTRACT.md")
+    readText("../zdp-design-system/docs/CONSUMER_CONTRACT.md"),
+    readText("../zdp-design-system/src/styles/components.css")
   ]);
 
-  if (packageJson.version !== "0.4.3") {
-    failures.push("package.json version must be 0.4.3 for the design-system consumer smoke contract.");
+  if (packageJson.version !== "0.4.12") {
+    failures.push("package.json version must be 0.4.12 for the public readonly form control adoption contract.");
   }
 
   if (packageJson.dependencies["zdp-design-system"] !== "file:../zdp-design-system") {
     failures.push('package.json dependencies.zdp-design-system must stay "file:../zdp-design-system".');
   }
 
-  if (designSystemPackageJson.version !== "0.15.0") {
-    failures.push("Sibling zdp-design-system package must be version 0.15.0 for the consumer contract.");
+  if (designSystemPackageJson.version !== "0.22.0") {
+    failures.push("Sibling zdp-design-system package must be version 0.22.0 for the consumer contract.");
   }
 
   if (
@@ -180,7 +186,11 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     "--shadow-soft: none;",
     "--radius-pill: var(--zdp-radius-md);"
   ]) {
-    const source = requiredText.startsWith("@import") ? globalCss : tokensCss;
+    const source =
+      requiredText.startsWith("@import") ||
+      requiredText.startsWith("var(")
+        ? globalCss
+        : tokensCss;
 
     if (!source.includes(requiredText)) {
       failures.push(`Design system consumer contract is missing ${requiredText}.`);
@@ -193,8 +203,19 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     "Svelte",
     "Tauri",
     "Flutter",
+    "Divider",
+    "Inline",
+    "Link",
+    "SkipLink",
+    "Stack",
+    "VisuallyHidden",
     "tokens/zdp.tokens.json",
     ".zdp-surface-reset",
+    ".zdp-visually-hidden",
+    ".zdp-stack",
+    ".zdp-inline",
+    ".zdp-divider",
+    "readonly",
     "zdp-design-system/src/..."
   ]) {
     if (!designSystemConsumerContract.includes(requiredText)) {
@@ -208,11 +229,16 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
       layout,
       [
         'body class="zdp-surface-reset"',
-        'href="/design"',
-        'href="/security"',
-        'href="/payment-safety"',
-        'href="/labs"',
-        'href="/roadmap"'
+        'class="zdp-skip-link"',
+        'href="#content"',
+        'main id="content"',
+        'tabindex="-1"',
+        'aria-current={item.href === currentPath ? "page" : undefined}',
+        '{ href: "/design", label: "디자인" }',
+        '{ href: "/security", label: "보안" }',
+        '{ href: "/payment-safety", label: "결제 안전" }',
+        '{ href: "/labs", label: "실험실" }',
+        '{ href: "/roadmap", label: "로드맵" }'
       ]
     ],
     [
@@ -221,7 +247,11 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
       [
         "zdp-button zdp-button--md zdp-button--primary",
         "zdp-button zdp-button--md zdp-button--secondary",
-        "zdp-surface zdp-surface--panel zdp-surface--padding-lg"
+        "zdp-inline zdp-inline--gap-sm zdp-inline--align-center",
+        "section zdp-divider zdp-divider--horizontal zdp-divider--subtle",
+        "zdp-surface zdp-surface--panel zdp-surface--padding-lg",
+        "zdp-badge zdp-badge--primary zdp-badge--sm",
+        "zdp-link"
       ]
     ],
     [
@@ -232,7 +262,16 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
         "zdp-callout__mark",
         "zdp-callout__body",
         "zdp-badge zdp-badge--primary zdp-badge--sm",
-        "zdp-button zdp-button--md zdp-button--secondary"
+        "zdp-button zdp-button--md zdp-button--secondary",
+        "zdp-breadcrumb page-breadcrumb",
+        "zdp-breadcrumb__link",
+        "zdp-breadcrumb__current",
+        "zdp-visually-hidden",
+        "zdp-stack zdp-stack--gap-md",
+        "evidence-block",
+        "evidence-list",
+        "이 페이지가 지키는 선",
+        'aria-current="page"'
       ]
     ]
   ] as const) {
@@ -241,6 +280,93 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
         failures.push(`${path} is missing design system usage ${requiredText}.`);
       }
     }
+  }
+
+  for (const requiredText of [
+    ".zdp-skip-link",
+    ".zdp-skip-link:focus-visible",
+    ".zdp-visually-hidden",
+    ".zdp-stack",
+    ".zdp-stack--gap-md",
+    ".zdp-inline",
+    ".zdp-inline--gap-sm",
+    ".zdp-divider",
+    ".zdp-divider--horizontal",
+    "var(--zdp-color-focus-surface)",
+    "var(--zdp-color-focus-line)",
+    "position: fixed",
+    "pointer-events: none",
+    "pointer-events: auto",
+    "clip: rect(0 0 0 0)",
+    "clip-path: inset(50%)",
+    "white-space: nowrap"
+  ]) {
+    if (!designSystemComponentCss.includes(requiredText)) {
+      failures.push(`Sibling design-system component CSS is missing ${requiredText}.`);
+    }
+  }
+}
+
+async function checkNoLocalStatusBadge(): Promise<void> {
+  const [globalCss, homePage, surfacePage] = await Promise.all([
+    readText("src/styles/global.css"),
+    readText("src/pages/index.astro"),
+    readText("src/pages/[surface].astro")
+  ]);
+
+  if (/(^|\n)\s*\.status\b/.test(globalCss)) {
+    failures.push("src/styles/global.css must not define local .status badge styling.");
+  }
+
+  for (const [path, content] of [
+    ["src/pages/index.astro", homePage],
+    ["src/pages/[surface].astro", surfacePage]
+  ] as const) {
+    if (content.includes('class="status"')) {
+      failures.push(`${path} must use zdp-badge instead of local status badge markup.`);
+    }
+  }
+}
+
+async function checkNoLocalTextLink(): Promise<void> {
+  const [globalCss, homePage] = await Promise.all([
+    readText("src/styles/global.css"),
+    readText("src/pages/index.astro")
+  ]);
+
+  if (/(^|\n)\s*\.text-link\b/.test(globalCss)) {
+    failures.push("src/styles/global.css must not define local .text-link styling.");
+  }
+
+  if (homePage.includes('class="text-link"')) {
+    failures.push("src/pages/index.astro must use zdp-link instead of local text-link markup.");
+  }
+}
+
+async function checkNoLocalSkipLink(): Promise<void> {
+  const [globalCss, layout] = await Promise.all([
+    readText("src/styles/global.css"),
+    readText("src/layouts/BaseLayout.astro")
+  ]);
+
+  if (/(^|\n)\s*\.skip-link\b/.test(globalCss)) {
+    failures.push("src/styles/global.css must not define local .skip-link styling.");
+  }
+
+  if (layout.includes('class="skip-link"')) {
+    failures.push("src/layouts/BaseLayout.astro must use zdp-skip-link instead of local skip-link markup.");
+  }
+}
+
+async function checkNoViewportScaledTypography(): Promise<void> {
+  const globalCss = await readText("src/styles/global.css");
+
+  if (/font-size:\s*clamp\([^;]*vw/i.test(globalCss) || /font-size:[^;]*\d(?:\.\d+)?vw/i.test(globalCss)) {
+    failures.push("src/styles/global.css must use stepped font sizes instead of viewport-scaled font-size values.");
+  }
+
+  if (/line-height:\s*(?:0\.\d+|1);/.test(globalCss)) {
+    failures.push("src/styles/global.css must avoid cramped heading line-height values that can clip text.");
   }
 }
 
@@ -262,6 +388,10 @@ function checkPublicPageContentContract(): void {
 
     if (page.items.length === 0) {
       failures.push(`publicPages.${pageId} must expose at least one public trust card.`);
+    }
+
+    if (page.checks.length === 0) {
+      failures.push(`publicPages.${pageId} must expose at least one public trust evidence check.`);
     }
   }
 }

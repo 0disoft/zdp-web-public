@@ -1,6 +1,6 @@
 {
   "name": "zdp-web-public",
-  "version": "0.4.3",
+  "version": "0.4.12",
   "private": true,
   "type": "module",
   "description": "ZDP public web surface for the candidate 8ailors home site.",

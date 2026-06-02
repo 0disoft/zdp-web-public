@@ -11,6 +11,7 @@ export interface PublicPage {
   readonly heading: string;
   readonly summary: string;
   readonly items: readonly PublicPageItem[];
+  readonly checks: readonly string[];
 }
 
 export const publicPages: readonly PublicPage[] = [
@@ -20,7 +21,8 @@ export const publicPages: readonly PublicPage[] = [
     label: "제품",
     heading: "제품",
     summary: "출시 예정 서비스입니다.",
-    items: []
+    items: [],
+    checks: []
   },
   {
     id: "design",
@@ -44,6 +46,11 @@ export const publicPages: readonly PublicPage[] = [
         body: "그림자와 그라데이션보다 여백, 테두리, 타이포그래피로 화면의 위계를 만듭니다.",
         status: "원칙"
       }
+    ],
+    checks: [
+      "공유 CSS와 컴포넌트는 `zdp-design-system` public export만 사용합니다.",
+      "링크, 버튼, 입력류는 키보드 focus가 보이는 상태로 유지합니다.",
+      "그림자와 그라데이션 대신 여백, 테두리, 글자 위계로 화면을 나눕니다."
     ]
   },
   {
@@ -68,6 +75,11 @@ export const publicPages: readonly PublicPage[] = [
         body: "공개 경로, robots 정책, discovery 파일은 빌드 전 검사로 함께 확인합니다.",
         status: "검사"
       }
+    ],
+    checks: [
+      "공개 사이트에는 비밀값, 내부 대시보드, staging URL을 넣지 않습니다.",
+      "후보 도메인 단계에서는 `noindex,nofollow`와 robots 차단을 유지합니다.",
+      "로그인, 관리자, 사용자별 데이터 처리는 이 저장소 밖에서 먼저 계약을 정합니다."
     ]
   },
   {
@@ -92,6 +104,11 @@ export const publicPages: readonly PublicPage[] = [
         body: "가격, 결제, 구독 안내는 실제 정책과 운영 준비가 끝나기 전까지 공개하지 않습니다.",
         status: "보류"
       }
+    ],
+    checks: [
+      "이 사이트는 가격표, checkout, 환불, 크레딧 차감을 직접 구현하지 않습니다.",
+      "돈의 상태는 공개 페이지 문구가 아니라 별도 원장 계약에서 검증합니다.",
+      "결제 안내는 실제 정책, provider 준비, rollback 기준이 생긴 뒤 공개합니다."
     ]
   },
   {
@@ -116,6 +133,11 @@ export const publicPages: readonly PublicPage[] = [
         body: "운영 증거와 소유권이 생긴 실험만 별도 제품 저장소로 옮깁니다.",
         status: "검토"
       }
+    ],
+    checks: [
+      "제품 후보는 성공 기준, 종료 기준, 비용 상한이 없으면 구현하지 않습니다.",
+      "실험 화면도 디자인 시스템 public contract를 먼저 소비합니다.",
+      "인증, 결제, 개인정보, 권한 판단이 필요해지면 실험실 밖으로 승격 검토합니다."
     ]
   },
   {
@@ -140,6 +162,11 @@ export const publicPages: readonly PublicPage[] = [
         body: "실제 운영 흐름이 생기기 전에는 네이티브 앱, 관리자 콘솔, 결제 화면을 억지로 만들지 않습니다.",
         status: "보류"
       }
+    ],
+    checks: [
+      "지금 하는 일, 다음에 할 일, 아직 안 할 일을 분리해서 공개합니다.",
+      "네이티브 앱과 관리자 콘솔은 실제 운영 흐름이 생기기 전까지 만들지 않습니다.",
+      "로드맵 문구는 검증되지 않은 일정, 매출, 고객 수를 약속하지 않습니다."
     ]
   },
   {
@@ -148,7 +175,8 @@ export const publicPages: readonly PublicPage[] = [
     label: "기록",
     heading: "기록",
     summary: "개발 과정의 기록입니다.",
-    items: []
+    items: [],
+    checks: []
   },
   {
     id: "trust",
@@ -162,6 +190,10 @@ export const publicPages: readonly PublicPage[] = [
         body: "정적 사이트로 운영되며 사용자 데이터를 수집하지 않습니다.",
         status: "수집 없음"
       }
+    ],
+    checks: [
+      "정적 사이트 단계에서는 사용자를 식별하는 데이터를 수집하지 않습니다.",
+      "개인정보 처리 흐름이 필요하면 별도 privacy 계약에서 먼저 소유권을 정합니다."
     ]
   },
   {
@@ -170,6 +202,7 @@ export const publicPages: readonly PublicPage[] = [
     label: "문의",
     heading: "문의",
     summary: "서비스 개방 시 연락 채널을 공개합니다.",
-    items: []
+    items: [],
+    checks: []
   }
 ];
