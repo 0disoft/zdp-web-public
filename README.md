@@ -47,6 +47,6 @@ bun run check:discovery
 bun run build
 ```
 
-`check:discovery`는 후보 도메인 단계의 `webpub.toml`, `robots.txt`, `llms.txt`, 페이지 목록, 검색 제출용 산출물 부재를 함께 확인한다. `sitemap.xml`, `rss.xml`, `atom.xml`, `feed.json`은 지금 빠진 것이 아니라 `domain_status = "live"`가 되기 전까지 의도적으로 만들지 않는 파일이다.
+`check:discovery`는 후보 도메인 단계의 `webpub.toml`, `robots.txt`, `llms.txt`, 페이지 목록, 디자인 시스템 소비 계약, 검색 제출용 산출물 부재를 함께 확인한다. `sitemap.xml`, `rss.xml`, `atom.xml`, `feed.json`은 지금 빠진 것이 아니라 `domain_status = "live"`가 되기 전까지 의도적으로 만들지 않는 파일이다.
 
 `robots.txt`와 페이지 메타 태그는 공개 전까지 검색 노출을 막는다.

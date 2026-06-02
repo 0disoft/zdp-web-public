@@ -32,6 +32,12 @@ interface WebpubCandidateContract {
   readonly robotsDisallow: readonly string[];
 }
 
+interface PackageJson {
+  readonly version: string | null;
+  readonly dependencies: Readonly<Record<string, string>>;
+  readonly scripts: Readonly<Record<string, string>>;
+}
+
 const root = readRootArgument();
 const failures: string[] = [];
 
@@ -128,31 +134,71 @@ async function checkLayoutNoindex(): Promise<void> {
 }
 
 async function checkDesignSystemConsumerContract(): Promise<void> {
-  const [packageJson, globalCss, tokensCss, homePage, surfacePage, layout] = await Promise.all([
-    readText("package.json"),
+  const [
+    packageJson,
+    globalCss,
+    tokensCss,
+    homePage,
+    surfacePage,
+    layout,
+    designSystemPackageJson,
+    designSystemConsumerContract
+  ] = await Promise.all([
+    readPackageJson("package.json"),
     readText("src/styles/global.css"),
     readText("src/styles/tokens.css"),
     readText("src/pages/index.astro"),
     readText("src/pages/[surface].astro"),
-    readText("src/layouts/BaseLayout.astro")
+    readText("src/layouts/BaseLayout.astro"),
+    readPackageJson("../zdp-design-system/package.json"),
+    readText("../zdp-design-system/docs/CONSUMER_CONTRACT.md")
   ]);
 
+  if (packageJson.version !== "0.4.1") {
+    failures.push("package.json version must be 0.4.1 for the design-system consumer smoke contract.");
+  }
+
+  if (packageJson.dependencies["zdp-design-system"] !== "file:../zdp-design-system") {
+    failures.push('package.json dependencies.zdp-design-system must stay "file:../zdp-design-system".');
+  }
+
+  if (designSystemPackageJson.version !== "0.13.0") {
+    failures.push("Sibling zdp-design-system package must be version 0.13.0 for the consumer contract.");
+  }
+
+  if (
+    designSystemPackageJson.scripts["consumer:check"] !==
+    "bun scripts/check-consumer-contract.ts"
+  ) {
+    failures.push("Sibling zdp-design-system package must expose consumer:check.");
+  }
+
   for (const requiredText of [
-    '"zdp-design-system": "file:../zdp-design-system"',
     '@import "zdp-design-system/styles.css";',
     '@import "zdp-design-system/locale-fonts.css";',
     "--font-sans: var(--zdp-font-family-multiscript);",
     "--shadow-soft: none;",
     "--radius-pill: var(--zdp-radius-md);"
   ]) {
-    const source = requiredText.startsWith('"zdp-design-system"')
-      ? packageJson
-      : requiredText.startsWith("@import")
-        ? globalCss
-        : tokensCss;
+    const source = requiredText.startsWith("@import") ? globalCss : tokensCss;
 
     if (!source.includes(requiredText)) {
       failures.push(`Design system consumer contract is missing ${requiredText}.`);
+    }
+  }
+
+  for (const requiredText of [
+    "# Consumer Contract",
+    "Astro",
+    "Svelte",
+    "Tauri",
+    "Flutter",
+    "tokens/zdp.tokens.json",
+    ".zdp-surface-reset",
+    "zdp-design-system/src/..."
+  ]) {
+    if (!designSystemConsumerContract.includes(requiredText)) {
+      failures.push(`Sibling design-system consumer contract is missing ${requiredText}.`);
     }
   }
 
@@ -291,6 +337,20 @@ async function readText(path: string): Promise<string> {
   return await readFile(join(root, path), "utf8");
 }
 
+async function readPackageJson(path: string): Promise<PackageJson> {
+  const parsed: unknown = JSON.parse(await readText(path));
+
+  if (!isRecord(parsed)) {
+    throw new Error(`${path} must be a JSON object.`);
+  }
+
+  return {
+    version: typeof parsed.version === "string" ? parsed.version : null,
+    dependencies: readStringRecord(parsed.dependencies),
+    scripts: readStringRecord(parsed.scripts)
+  };
+}
+
 async function exists(path: string): Promise<boolean> {
   try {
     await access(join(root, path));
@@ -325,4 +385,23 @@ function readRootArgument(): string {
 
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function readStringRecord(value: unknown): Readonly<Record<string, string>> {
+  if (!isRecord(value)) {
+    return {};
+  }
+
+  const output: Record<string, string> = {};
+  for (const [key, entry] of Object.entries(value)) {
+    if (typeof entry === "string") {
+      output[key] = entry;
+    }
+  }
+
+  return output;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
