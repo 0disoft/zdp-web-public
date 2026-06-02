@@ -181,8 +181,8 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     failures.push('package.json dependencies.zdp-design-system must stay "file:../zdp-design-system".');
   }
 
-  if (designSystemPackageJson.version !== "0.23.0") {
-    failures.push("Sibling zdp-design-system package must be version 0.23.0 for the consumer contract.");
+  if (designSystemPackageJson.version !== "0.24.0") {
+    failures.push("Sibling zdp-design-system package must be version 0.24.0 for the form accessibility consumer contract.");
   }
 
   if (
