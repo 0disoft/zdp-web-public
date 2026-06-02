@@ -1,6 +1,6 @@
 {
   "name": "zdp-web-public",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "description": "ZDP public web surface for the candidate 8ailors home site.",
@@ -9,6 +9,9 @@
     "build": "bun run check && astro build",
     "check": "astro check && bun run check:discovery",
     "check:discovery": "bun scripts/check-public-discovery.ts"
+  },
+  "dependencies": {
+    "zdp-design-system": "file:../zdp-design-system"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",

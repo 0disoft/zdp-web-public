@@ -34,7 +34,7 @@ const description = page.summary;
     <section class="detail-section" aria-label={`${page.label} 항목`}>
       <div class="surface-grid">
         {page.items.map((item) => (
-          <article class="surface-item">
+          <article class="surface-item zdp-surface zdp-surface--panel zdp-surface--padding-lg">
             <span class="status">{item.status}</span>
             <h2>{item.title}</h2>
             <p>{item.body}</p>

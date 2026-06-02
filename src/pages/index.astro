@@ -11,8 +11,8 @@ const description = "8ailors — 제품, 기록, 정책, 문의 포털";
     <div class="hero-copy-block">
       <h1 id="home-title">8ailors</h1>
       <div class="actions" aria-label="주요 이동">
-        <a class="button" href="#products">제품</a>
-        <a class="button secondary" href="#trust">정책</a>
+        <a class="zdp-button zdp-button--md zdp-button--primary" href="#products">제품</a>
+        <a class="zdp-button zdp-button--md zdp-button--secondary" href="#trust">정책</a>
       </div>
     </div>
   </section>
@@ -31,7 +31,7 @@ const description = "8ailors — 제품, 기록, 정책, 문의 포털";
         {section.items.length > 0 && (
           <div class="surface-grid">
             {section.items.map((item) => (
-              <article class="surface-item">
+              <article class="surface-item zdp-surface zdp-surface--panel zdp-surface--padding-lg">
                 <span class="status">{item.status}</span>
                 <h3>{item.title}</h3>
                 <p>{item.body}</p>
