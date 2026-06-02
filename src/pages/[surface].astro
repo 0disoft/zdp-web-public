@@ -23,68 +23,93 @@ const description = page.summary;
 ---
 
 <BaseLayout title={title} description={description} currentPath={page.path}>
-  <section class="page-hero" aria-labelledby="page-title">
-    <nav class="zdp-breadcrumb page-breadcrumb" aria-label="현재 위치">
-      <ol class="zdp-breadcrumb__list">
-        <li class="zdp-breadcrumb__item">
-          <a class="zdp-breadcrumb__link" href="/">8ailors</a>
-        </li>
-        <li class="zdp-breadcrumb__item">
-          <span class="zdp-breadcrumb__separator" aria-hidden="true">/</span>
-          <span class="zdp-breadcrumb__current" aria-current="page">{page.label}</span>
-        </li>
-      </ol>
-    </nav>
-    <p class="eyebrow">{page.label}</p>
-    <h1 id="page-title">{page.heading}</h1>
-    <p>{page.summary}</p>
+  <section class="page-hero zdp-section zdp-section--spacing-xl" aria-labelledby="page-title">
+    <div class="page-hero__inner zdp-container zdp-container--lg zdp-container--padding-md">
+      <nav class="zdp-breadcrumb page-breadcrumb" aria-label="현재 위치">
+        <ol class="zdp-breadcrumb__list">
+          <li class="zdp-breadcrumb__item">
+            <a class="zdp-breadcrumb__link" href="/">8ailors</a>
+          </li>
+          <li class="zdp-breadcrumb__item">
+            <span class="zdp-breadcrumb__separator" aria-hidden="true">/</span>
+            <span class="zdp-breadcrumb__current" aria-current="page">{page.label}</span>
+          </li>
+        </ol>
+      </nav>
+      <header class="zdp-page-header zdp-page-header--align-start" aria-labelledby="page-title">
+        <div class="zdp-page-header__body">
+          <span class="eyebrow">{page.label}</span>
+          <div class="zdp-page-header__title">
+            <h1 id="page-title">{page.heading}</h1>
+          </div>
+          <div class="zdp-page-header__summary">
+            <p>{page.summary}</p>
+          </div>
+        </div>
+      </header>
+    </div>
   </section>
 
   {page.items.length > 0 && (
-    <section class="detail-section" aria-label={`${page.label} 항목`}>
-      <div class="surface-grid">
-        {page.items.map((item) => (
-          <article class="surface-item zdp-surface zdp-surface--panel zdp-surface--padding-lg">
-            <span class="zdp-badge zdp-badge--primary zdp-badge--sm">{item.status}</span>
-            <h2>{item.title}</h2>
-            <p>{item.body}</p>
-          </article>
-        ))}
+    <section
+      class="detail-section zdp-section zdp-section--spacing-lg zdp-divider zdp-divider--horizontal zdp-divider--subtle"
+      aria-label={`${page.label} 항목`}
+    >
+      <div class="detail-section__inner zdp-container zdp-container--lg zdp-container--padding-md">
+        <div class="surface-grid">
+          {page.items.map((item) => (
+            <article class="surface-item zdp-surface zdp-surface--panel zdp-surface--padding-lg">
+              <span class="zdp-badge zdp-badge--primary zdp-badge--sm">{item.status}</span>
+              <h2>{item.title}</h2>
+              <p>{item.body}</p>
+            </article>
+          ))}
+        </div>
       </div>
     </section>
   )}
 
   {page.checks.length > 0 && (
-    <section class="detail-section" aria-labelledby={`${page.id}-checks-title`}>
-      <div class="zdp-callout zdp-callout--info evidence-block" role="note">
-        <span class="zdp-callout__mark" aria-hidden="true">i</span>
-        <div class="zdp-callout__body zdp-stack zdp-stack--gap-md">
-          <span class="zdp-badge zdp-badge--primary zdp-badge--sm">검증 기준</span>
-          <h2 id={`${page.id}-checks-title`}>이 페이지가 지키는 선</h2>
-          <ul class="evidence-list">
-            {page.checks.map((check) => (
-              <li>{check}</li>
-            ))}
-          </ul>
-          <a class="zdp-button zdp-button--md zdp-button--secondary" href="/">
-            <span class="zdp-visually-hidden">{page.label} 페이지에서 </span>홈으로 돌아가기
-          </a>
+    <section
+      class="detail-section zdp-section zdp-section--spacing-lg zdp-divider zdp-divider--horizontal zdp-divider--subtle"
+      aria-labelledby={`${page.id}-checks-title`}
+    >
+      <div class="detail-section__inner zdp-container zdp-container--lg zdp-container--padding-md">
+        <div class="zdp-callout zdp-callout--info evidence-block" role="note">
+          <span class="zdp-callout__mark" aria-hidden="true">i</span>
+          <div class="zdp-callout__body zdp-stack zdp-stack--gap-md">
+            <span class="zdp-badge zdp-badge--primary zdp-badge--sm">검증 기준</span>
+            <h2 id={`${page.id}-checks-title`}>이 페이지가 지키는 선</h2>
+            <ul class="evidence-list">
+              {page.checks.map((check) => (
+                <li>{check}</li>
+              ))}
+            </ul>
+            <a class="zdp-button zdp-button--md zdp-button--secondary" href="/">
+              <span class="zdp-visually-hidden">{page.label} 페이지에서 </span>홈으로 돌아가기
+            </a>
+          </div>
         </div>
       </div>
     </section>
   )}
 
   {page.items.length === 0 && (
-    <section class="detail-section" aria-label={`${page.label} 준비 상태`}>
-      <div class="zdp-callout zdp-callout--info surface-placeholder" role="note">
-        <span class="zdp-callout__mark" aria-hidden="true">i</span>
-        <div class="zdp-callout__body zdp-stack zdp-stack--gap-md">
-          <span class="zdp-badge zdp-badge--primary zdp-badge--sm">준비 중</span>
-          <h2>공개 전 기준을 정리하고 있습니다.</h2>
-          <p>{page.summary}</p>
-          <a class="zdp-button zdp-button--md zdp-button--secondary" href="/">
-            <span class="zdp-visually-hidden">{page.label} 페이지에서 </span>홈으로 돌아가기
-          </a>
+    <section
+      class="detail-section zdp-section zdp-section--spacing-lg zdp-divider zdp-divider--horizontal zdp-divider--subtle"
+      aria-label={`${page.label} 준비 상태`}
+    >
+      <div class="detail-section__inner zdp-container zdp-container--lg zdp-container--padding-md">
+        <div class="zdp-callout zdp-callout--info surface-placeholder" role="note">
+          <span class="zdp-callout__mark" aria-hidden="true">i</span>
+          <div class="zdp-callout__body zdp-stack zdp-stack--gap-md">
+            <span class="zdp-badge zdp-badge--primary zdp-badge--sm">준비 중</span>
+            <h2>공개 전 기준을 정리하고 있습니다.</h2>
+            <p>{page.summary}</p>
+            <a class="zdp-button zdp-button--md zdp-button--secondary" href="/">
+              <span class="zdp-visually-hidden">{page.label} 페이지에서 </span>홈으로 돌아가기
+            </a>
+          </div>
         </div>
       </div>
     </section>

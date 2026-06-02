@@ -173,8 +173,8 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     readText("../zdp-design-system/src/styles/components.css")
   ]);
 
-  if (packageJson.version !== "0.4.15") {
-    failures.push("package.json version must be 0.4.15 for the design-system layout primitive contract.");
+  if (packageJson.version !== "0.4.16") {
+    failures.push("package.json version must be 0.4.16 for the design-system layout primitive adoption contract.");
   }
 
   if (packageJson.dependencies["zdp-design-system"] !== "file:../zdp-design-system") {
@@ -224,6 +224,10 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     "VisuallyHidden",
     "tokens/zdp.tokens.json",
     ".zdp-surface-reset",
+    ".zdp-page",
+    ".zdp-container",
+    ".zdp-section",
+    ".zdp-page-header",
     ".zdp-visually-hidden",
     ".zdp-stack",
     ".zdp-inline",
@@ -242,6 +246,9 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
       layout,
       [
         'body class="zdp-surface-reset"',
+        'class="shell zdp-page zdp-page--canvas"',
+        'site-header zdp-container zdp-container--lg zdp-container--padding-md',
+        'site-footer zdp-container zdp-container--lg zdp-container--padding-md',
         'class="zdp-skip-link"',
         'href="#content"',
         'main id="content"',
@@ -261,8 +268,11 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
       [
         "zdp-button zdp-button--md zdp-button--primary",
         "zdp-button zdp-button--md zdp-button--secondary",
+        "hero zdp-section zdp-section--spacing-xl",
+        "hero-copy-block zdp-container zdp-container--lg zdp-container--padding-md",
+        "section zdp-section zdp-section--spacing-lg zdp-divider zdp-divider--horizontal zdp-divider--subtle",
+        "section-inner zdp-container zdp-container--lg zdp-container--padding-md",
         "zdp-inline zdp-inline--gap-sm zdp-inline--align-center",
-        "section zdp-divider zdp-divider--horizontal zdp-divider--subtle",
         "zdp-surface zdp-surface--panel zdp-surface--padding-lg",
         "zdp-badge zdp-badge--primary zdp-badge--sm",
         "zdp-link"
@@ -273,6 +283,14 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
       surfacePage,
       [
         "zdp-callout zdp-callout--info",
+        "page-hero zdp-section zdp-section--spacing-xl",
+        "page-hero__inner zdp-container zdp-container--lg zdp-container--padding-md",
+        "zdp-page-header zdp-page-header--align-start",
+        "zdp-page-header__body",
+        "zdp-page-header__title",
+        "zdp-page-header__summary",
+        "detail-section zdp-section zdp-section--spacing-lg zdp-divider zdp-divider--horizontal zdp-divider--subtle",
+        "detail-section__inner zdp-container zdp-container--lg zdp-container--padding-md",
         "zdp-callout__mark",
         "zdp-callout__body",
         "zdp-badge zdp-badge--primary zdp-badge--sm",
@@ -300,6 +318,19 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     ".zdp-skip-link",
     ".zdp-skip-link:focus-visible",
     ".zdp-visually-hidden",
+    ".zdp-page",
+    ".zdp-page--canvas",
+    ".zdp-container",
+    ".zdp-container--lg",
+    ".zdp-container--padding-md",
+    ".zdp-section",
+    ".zdp-section--spacing-lg",
+    ".zdp-section--spacing-xl",
+    ".zdp-page-header",
+    ".zdp-page-header__body",
+    ".zdp-page-header__title",
+    ".zdp-page-header__summary",
+    ".zdp-page-header__actions",
     ".zdp-stack",
     ".zdp-stack--gap-md",
     ".zdp-inline",

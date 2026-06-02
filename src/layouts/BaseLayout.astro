@@ -32,8 +32,8 @@ const navItems = [
   </head>
   <body class="zdp-surface-reset">
     <a class="zdp-skip-link" href="#content">본문으로 건너뛰기</a>
-    <div class="shell">
-      <header class="site-header" aria-label="사이트 상단">
+    <div class="shell zdp-page zdp-page--canvas">
+      <header class="site-header zdp-container zdp-container--lg zdp-container--padding-md" aria-label="사이트 상단">
         <a class="brand" href="/" aria-label="8ailors 홈">
           <span class="brand-mark" aria-hidden="true">8</span>
           <span>8ailors</span>
@@ -57,7 +57,7 @@ const navItems = [
       <main id="content" tabindex="-1">
         <slot />
       </main>
-      <footer class="site-footer">
+      <footer class="site-footer zdp-container zdp-container--lg zdp-container--padding-md">
         <p>© 8ailors — 공개 준비 중</p>
       </footer>
     </div>
