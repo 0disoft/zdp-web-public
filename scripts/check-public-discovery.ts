@@ -173,16 +173,16 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     readText("../zdp-design-system/src/styles/components.css")
   ]);
 
-  if (packageJson.version !== "0.4.17") {
-    failures.push("package.json version must be 0.4.17 for the design-system data surface adoption contract.");
+  if (packageJson.version !== "0.4.18") {
+    failures.push("package.json version must be 0.4.18 for the design-system icon surface adoption contract.");
   }
 
   if (packageJson.dependencies["zdp-design-system"] !== "file:../zdp-design-system") {
     failures.push('package.json dependencies.zdp-design-system must stay "file:../zdp-design-system".');
   }
 
-  if (designSystemPackageJson.version !== "0.26.0") {
-    failures.push("Sibling zdp-design-system package must be version 0.26.0 for the layout composition consumer contract.");
+  if (designSystemPackageJson.version !== "0.27.0") {
+    failures.push("Sibling zdp-design-system package must be version 0.27.0 for the icon alignment consumer contract.");
   }
 
   if (
@@ -219,6 +219,7 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     "Divider",
     "EmptyState",
     "Grid",
+    "Icon",
     "Inline",
     "KeyValue",
     "Link",
@@ -238,7 +239,9 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     ".zdp-inline",
     ".zdp-divider",
     ".zdp-grid",
+    ".zdp-icon",
     ".zdp-toolbar",
+    "control.glyphMd",
     "readonly",
     "zdp-design-system/src/..."
   ]) {
@@ -365,6 +368,9 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     ".zdp-grid",
     ".zdp-grid--columns-three",
     ".zdp-grid--gap-md",
+    ".zdp-icon",
+    ".zdp-icon--sm",
+    ".zdp-icon--md",
     ".zdp-key-value",
     ".zdp-table-wrap",
     ".zdp-table",
