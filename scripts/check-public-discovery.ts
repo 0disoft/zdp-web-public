@@ -160,6 +160,7 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     layout,
     designSystemPackageJson,
     designSystemConsumerContract,
+    designSystemTokenCss,
     designSystemComponentCss
   ] = await Promise.all([
     readPackageJson("package.json"),
@@ -170,19 +171,20 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     readText("src/layouts/BaseLayout.astro"),
     readPackageJson("../zdp-design-system/package.json"),
     readText("../zdp-design-system/docs/CONSUMER_CONTRACT.md"),
+    readText("../zdp-design-system/src/styles/tokens.css"),
     readText("../zdp-design-system/src/styles/components.css")
   ]);
 
-  if (packageJson.version !== "0.4.18") {
-    failures.push("package.json version must be 0.4.18 for the design-system icon surface adoption contract.");
+  if (packageJson.version !== "0.4.19") {
+    failures.push("package.json version must be 0.4.19 for the design-system 0.28.0 adoption contract.");
   }
 
   if (packageJson.dependencies["zdp-design-system"] !== "file:../zdp-design-system") {
     failures.push('package.json dependencies.zdp-design-system must stay "file:../zdp-design-system".');
   }
 
-  if (designSystemPackageJson.version !== "0.27.0") {
-    failures.push("Sibling zdp-design-system package must be version 0.27.0 for the icon alignment consumer contract.");
+  if (designSystemPackageJson.version !== "0.28.0") {
+    failures.push("Sibling zdp-design-system package must be version 0.28.0 for the confirm action and control polish consumer contract.");
   }
 
   if (
@@ -216,6 +218,7 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     "Svelte",
     "Tauri",
     "Flutter",
+    "ConfirmAction",
     "Divider",
     "EmptyState",
     "Grid",
@@ -241,7 +244,12 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     ".zdp-grid",
     ".zdp-icon",
     ".zdp-toolbar",
+    "control.choiceSize",
+    "control.switchWidth",
+    "control.scrollbarSize",
+    "color.scrollbar.track",
     "control.glyphMd",
+    "onconfirm",
     "readonly",
     "zdp-design-system/src/..."
   ]) {
@@ -371,6 +379,9 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     ".zdp-icon",
     ".zdp-icon--sm",
     ".zdp-icon--md",
+    ".zdp-confirm-action",
+    ".zdp-confirm-action__fill",
+    ".zdp-confirm-action--danger",
     ".zdp-key-value",
     ".zdp-table-wrap",
     ".zdp-table",
@@ -389,6 +400,16 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
   ]) {
     if (!designSystemComponentCss.includes(requiredText)) {
       failures.push(`Sibling design-system component CSS is missing ${requiredText}.`);
+    }
+  }
+
+  for (const requiredText of [
+    "scrollbar-width: thin",
+    "::-webkit-scrollbar-thumb",
+    "var(--zdp-control-scrollbar-size)"
+  ]) {
+    if (!designSystemTokenCss.includes(requiredText)) {
+      failures.push(`Sibling design-system token CSS is missing ${requiredText}.`);
     }
   }
 }
