@@ -41,23 +41,23 @@ export const publicPages: readonly PublicPage[] = [
     id: "design",
     path: "/design",
     label: "디자인",
-    heading: "디자인",
-    summary: "8ailors 화면과 제품 표면에 적용할 디자인 기준입니다.",
+    heading: "화면 기준",
+    summary: "8ailors 화면과 제품 표면을 하나의 기준으로 맞춥니다.",
     items: [
       {
-        title: "공통 토큰",
+        title: "Foundation",
         body: "색상, 글꼴, 간격, 포커스 상태를 제품마다 새로 만들지 않고 하나의 기준에서 가져옵니다.",
-        status: "기준화"
+        status: "기준"
       },
       {
-        title: "접근성 우선",
-        body: "키보드 포커스, 대비, 글꼴 크기, 모바일 폭을 초기 화면부터 함께 확인합니다.",
-        status: "기본값"
+        title: "Components",
+        body: "버튼, 링크, 표, 빈 상태, 확인 액션은 같은 크기와 상태 규칙으로 움직입니다.",
+        status: "공유"
       },
       {
-        title: "절제된 표면",
-        body: "그림자와 그라데이션보다 여백, 테두리, 타이포그래피로 화면의 위계를 만듭니다.",
-        status: "원칙"
+        title: "Patterns",
+        body: "공유, 검색, 확인, 빈 상태처럼 반복되는 흐름을 문서 표면에서 먼저 맞춥니다.",
+        status: "흐름"
       }
     ],
     facts: [
@@ -84,6 +84,11 @@ export const publicPages: readonly PublicPage[] = [
         item: "Focus",
         status: "유지",
         note: "링크, 버튼, 입력류는 키보드 focus가 보이는 상태로 유지합니다."
+      },
+      {
+        item: "Quick navigation",
+        status: "유지",
+        note: "긴 문서에는 Tab과 단축키로 바로 이동할 수 있는 찾기 표면을 둡니다."
       },
       {
         item: "Flat UI",

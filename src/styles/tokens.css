@@ -18,6 +18,8 @@
   --color-accent-border: var(--zdp-color-line-focus);
   --color-accent-wash: var(--zdp-color-accent-primary-soft);
   --font-sans: var(--zdp-font-family-multiscript);
+  --font-title: var(--zdp-font-family-latin);
+  --font-logo: "Rubik Distressed", var(--font-title);
   --space-1: var(--zdp-space-1);
   --space-2: var(--zdp-space-2);
   --space-3: var(--zdp-space-3);

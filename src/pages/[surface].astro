@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { publicPages, type PublicPage } from "../content/public-pages";
+import PublicShareDock from "../components/PublicShareDock.astro";
 
 export function getStaticPaths() {
   return publicPages.map((page) => ({
@@ -17,45 +18,260 @@ interface Props {
   page: PublicPage;
 }
 
-const { page } = Astro.props;
-const title = `${page.label} - 8ailors`;
-const description = page.summary;
+const { page } = Astro.props as Props;
+const isDesignPage = page.id === "design";
+const heroHeading = isDesignPage ? "화면 기준" : page.heading;
+const heroSummary = isDesignPage
+  ? "색상, 글꼴, 간격, 접근성 상태를 같은 기준에서 찾고 씁니다."
+  : page.summary;
+const title = `${heroHeading} - 8ailors`;
+const description = heroSummary;
+const designSections = [
+  {
+    id: "design-start",
+    label: "Overview",
+    title: "기준 사용하기",
+    body: "8ailors의 공개 화면과 제품 화면은 같은 색상, 글꼴, 간격, 포커스 기준에서 시작합니다. 새 화면을 만들 때 장식부터 얹지 않고, 읽히는 구조와 검증 가능한 상태를 먼저 둡니다."
+  },
+  {
+    id: "design-foundation",
+    label: "Foundation",
+    title: "기준은 하나로",
+    body: "색상은 OKLCH 토큰에서 오고, 글꼴은 Pretendard-first 스택을 기본으로 씁니다. 상태색은 의미를 알려주는 경계로만 쓰고 화면 전체의 분위기를 빼앗지 않습니다."
+  },
+  {
+    id: "design-components",
+    label: "Components",
+    title: "반복되는 것은 공유한다",
+    body: "버튼, 링크, 표, 빈 상태, 확인 액션은 같은 크기와 포커스 규칙을 씁니다. 제품마다 새로 꾸미는 대신 필요한 문구와 흐름만 제품이 소유합니다."
+  },
+  {
+    id: "design-patterns",
+    label: "Patterns",
+    title: "흐름은 작게 검증한다",
+    body: "공유, 검색, 확인, 빈 상태처럼 반복되는 흐름은 먼저 문서 표면에서 작게 맞춥니다. 이후 제품이 붙어도 라벨, 포커스, 이동 방식이 갑자기 바뀌지 않아야 합니다."
+  },
+  {
+    id: "design-accessibility",
+    label: "Accessibility",
+    title: "키보드로 먼저 찾는다",
+    body: "링크, 버튼, 입력류는 Tab으로 찾을 수 있고 focus가 선명해야 합니다. `/` 같은 빠른 이동 힌트는 장식이 아니라 읽는 속도를 줄이는 작은 도구로 둡니다."
+  }
+] as const;
+const designCards = [
+  {
+    href: "#design-foundation",
+    label: "Foundation",
+    title: "색상과 글꼴",
+    body: "차분한 parchment 표면과 낮은 채도의 상태색을 하나의 토큰에서 가져옵니다."
+  },
+  {
+    href: "#design-components",
+    label: "Components",
+    title: "공유 컴포넌트",
+    body: "버튼, 링크, 배지, 표, 확인 액션이 같은 크기와 상태 규칙을 씁니다."
+  },
+  {
+    href: "#design-patterns",
+    label: "Patterns",
+    title: "반복 흐름",
+    body: "공유, 검색, 확인, 빈 상태처럼 자주 쓰는 흐름을 같은 방식으로 검증합니다."
+  },
+  {
+    href: "#design-accessibility",
+    label: "Accessibility",
+    title: "접근성 상태",
+    body: "Tab 이동, focus 표시, 입력 라벨, 모바일 폭을 화면 초안부터 확인합니다."
+  },
+  {
+    href: "#design-tokens",
+    label: "Resources",
+    title: "기준 토큰",
+    body: "저장소, 적용 표면, 기본 방향을 확인하고 소비처별로 같은 이름을 씁니다."
+  },
+  {
+    href: "#design-checks",
+    label: "Checklist",
+    title: "검증 기준",
+    body: "포커스, 대비, 모바일 폭, public export 계약을 출시 전에 함께 확인합니다."
+  }
+] as const;
+const designSearchOptions = [
+  ...designSections.map((section) => ({
+    label: section.title,
+    href: `#${section.id}`
+  })),
+  {
+    label: "기준 토큰",
+    href: "#design-tokens"
+  },
+  {
+    label: "운영 기준",
+    href: "#design-checks"
+  }
+] as const;
 ---
 
 <BaseLayout title={title} description={description} currentPath={page.path}>
-  <section class="page-hero zdp-section zdp-section--spacing-xl" aria-labelledby="page-title">
+  <section class={`page-hero zdp-section zdp-section--spacing-xl${isDesignPage ? " page-hero--docs" : ""}`} aria-labelledby="page-title">
     <div class="page-hero__inner zdp-container zdp-container--lg zdp-container--padding-md">
-      <nav class="zdp-breadcrumb page-breadcrumb" aria-label="현재 위치">
-        <ol class="zdp-breadcrumb__list">
-          <li class="zdp-breadcrumb__item">
-            <a class="zdp-breadcrumb__link" href="/">8ailors</a>
-          </li>
-          <li class="zdp-breadcrumb__item">
-            <span class="zdp-breadcrumb__separator" aria-hidden="true">/</span>
-            <span class="zdp-breadcrumb__current" aria-current="page">{page.label}</span>
-          </li>
-        </ol>
-      </nav>
+      {!isDesignPage && (
+        <nav class="zdp-breadcrumb page-breadcrumb" aria-label="현재 위치">
+          <ol class="zdp-breadcrumb__list">
+            <li class="zdp-breadcrumb__item">
+              <a class="zdp-breadcrumb__link" href="/">8ailors</a>
+            </li>
+            <li class="zdp-breadcrumb__item">
+              <span class="zdp-breadcrumb__separator" aria-hidden="true">/</span>
+              <span class="zdp-breadcrumb__current" aria-current="page">{page.label}</span>
+            </li>
+          </ol>
+        </nav>
+      )}
       <header class="zdp-page-header zdp-page-header--align-start" aria-labelledby="page-title">
         <div class="zdp-page-header__body">
-          <span class="eyebrow">{page.label}</span>
+          {!isDesignPage && <span class="eyebrow">{page.label}</span>}
           <div class="zdp-page-header__title">
-            <h1 id="page-title">{page.heading}</h1>
+            <h1 id="page-title">{heroHeading}</h1>
           </div>
           <div class="zdp-page-header__summary">
-            <p>{page.summary}</p>
+            <p>{heroSummary}</p>
           </div>
         </div>
         <div class="zdp-page-header__actions">
           <a class="zdp-button zdp-button--md zdp-button--secondary" href="/">
-            <span class="zdp-visually-hidden">{page.label} 페이지에서 </span>홈으로 돌아가기
+            {!isDesignPage && <span class="zdp-visually-hidden">{page.label} 페이지에서 </span>}홈으로 돌아가기
           </a>
         </div>
       </header>
     </div>
   </section>
 
-  {page.items.length > 0 && (
+  {!isDesignPage && (
+    <PublicShareDock pageId={page.id} title={heroHeading} text={heroSummary} path={page.path} placement="side" />
+  )}
+
+  {isDesignPage && (
+    <section
+      class="design-doc zdp-section zdp-section--spacing-lg zdp-divider zdp-divider--horizontal zdp-divider--subtle"
+      aria-labelledby="design-start-title"
+    >
+      <div class="design-doc__layout zdp-container zdp-container--lg zdp-container--padding-md">
+        <aside class="design-doc__rail" aria-label="디자인 문서">
+          <p class="section-label">Docs</p>
+          <form class="design-doc__finder" data-design-finder role="search" aria-label="디자인 기준 찾기">
+            <label class="zdp-visually-hidden" for="design-section-search">디자인 기준 찾기</label>
+            <div class="zdp-command-field">
+              <input
+                id="design-section-search"
+                class="zdp-command-field__input"
+                type="search"
+                list="design-section-list"
+                placeholder="기준 찾기"
+                autocomplete="off"
+                aria-keyshortcuts="/"
+                data-design-search
+              />
+              <span class="zdp-shortcut-hint" aria-label="검색 단축키 슬래시">
+                <kbd class="zdp-kbd zdp-kbd--md">/</kbd>
+              </span>
+            </div>
+            <datalist id="design-section-list">
+              {designSearchOptions.map((option) => (
+                <option value={option.label} data-href={option.href}></option>
+              ))}
+            </datalist>
+          </form>
+          <nav class="design-doc__nav" aria-label="디자인 섹션">
+            {designSections.map((section) => (
+              <a class="zdp-link zdp-link--muted" href={`#${section.id}`}>
+                {section.label}
+              </a>
+            ))}
+            <a class="zdp-link zdp-link--muted" href="#design-checks">Checklist</a>
+          </nav>
+        </aside>
+
+        <article class="design-doc__article">
+          <section id="design-start" class="design-doc__section" aria-labelledby="design-start-title">
+            <h2 id="design-start-title">기준 사용하기</h2>
+            <p>{designSections[0].body}</p>
+            <div class="design-doc__platforms zdp-inline zdp-inline--gap-sm zdp-inline--align-center" aria-label="적용 표면">
+              <span class="zdp-badge zdp-badge--neutral zdp-badge--sm">Astro</span>
+              <span class="zdp-badge zdp-badge--neutral zdp-badge--sm">Svelte</span>
+              <span class="zdp-badge zdp-badge--neutral zdp-badge--sm">Tauri</span>
+              <span class="zdp-badge zdp-badge--neutral zdp-badge--sm">Flutter tokens</span>
+            </div>
+          </section>
+
+          <div class="design-link-grid">
+            {designCards.map((card) => (
+              <a class="design-link-card zdp-surface zdp-surface--panel zdp-surface--padding-lg" href={card.href}>
+                <span>{card.label}</span>
+                <strong>{card.title}</strong>
+                <p>{card.body}</p>
+              </a>
+            ))}
+          </div>
+
+          {designSections.slice(1).map((section) => (
+            <section id={section.id} class="design-doc__section" aria-labelledby={`${section.id}-title`}>
+              <p class="section-label">{section.label}</p>
+              <h2 id={`${section.id}-title`}>{section.title}</h2>
+              <p>{section.body}</p>
+            </section>
+          ))}
+
+          {page.facts.length > 0 && (
+            <section id="design-tokens" class="design-doc__section" aria-labelledby="design-tokens-title">
+              <p class="section-label">Tokens</p>
+              <h2 id="design-tokens-title">기준 토큰</h2>
+              <dl class="zdp-key-value zdp-key-value--columns-two" aria-labelledby="design-tokens-title">
+                {page.facts.map((fact) => (
+                  <>
+                    <dt>{fact.term}</dt>
+                    <dd>{fact.description}</dd>
+                  </>
+                ))}
+              </dl>
+            </section>
+          )}
+
+          {page.checks.length > 0 && (
+            <section id="design-checks" class="design-doc__section" aria-labelledby="design-checks-title">
+              <p class="section-label">Checklist</p>
+              <h2 id="design-checks-title">운영 기준</h2>
+              <div class="zdp-table-wrap">
+                <table class="zdp-table zdp-table--density-compact" aria-labelledby="design-checks-title">
+                  <caption class="zdp-table__caption zdp-table__caption--hidden">디자인 운영 기준</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">항목</th>
+                      <th scope="col">상태</th>
+                      <th scope="col">기준</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {page.checks.map((check) => (
+                      <tr>
+                        <th scope="row">{check.item}</th>
+                        <td>{check.status}</td>
+                        <td>{check.note}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          )}
+        </article>
+
+        <PublicShareDock pageId={page.id} title={heroHeading} text={heroSummary} path={page.path} placement="rail" />
+      </div>
+    </section>
+  )}
+
+  {!isDesignPage && page.items.length > 0 && (
     <section
       class="detail-section zdp-section zdp-section--spacing-lg zdp-divider zdp-divider--horizontal zdp-divider--subtle"
       aria-label={`${page.label} 항목`}
@@ -74,7 +290,7 @@ const description = page.summary;
     </section>
   )}
 
-  {page.facts.length > 0 && (
+  {!isDesignPage && page.facts.length > 0 && (
     <section
       class="detail-section zdp-section zdp-section--spacing-lg zdp-divider zdp-divider--horizontal zdp-divider--subtle"
       aria-labelledby={`${page.id}-facts-title`}
@@ -96,7 +312,7 @@ const description = page.summary;
     </section>
   )}
 
-  {page.checks.length > 0 && (
+  {!isDesignPage && page.checks.length > 0 && (
     <section
       class="detail-section zdp-section zdp-section--spacing-lg zdp-divider zdp-divider--horizontal zdp-divider--subtle"
       aria-labelledby={`${page.id}-checks-title`}
@@ -134,7 +350,7 @@ const description = page.summary;
     </section>
   )}
 
-  {page.items.length === 0 && (
+  {!isDesignPage && page.items.length === 0 && (
     <section
       class="detail-section zdp-section zdp-section--spacing-lg zdp-divider zdp-divider--horizontal zdp-divider--subtle"
       aria-label={`${page.label} 준비 상태`}
@@ -155,4 +371,142 @@ const description = page.summary;
       </div>
     </section>
   )}
+
+  <script>
+    type SharePayload = {
+      title: string;
+      text: string;
+      url: string;
+    };
+
+    const sharePanels = document.querySelectorAll("[data-share-panel]");
+
+    function buildShareHref(platform: string | null, payload: SharePayload): string {
+      const encodedUrl = encodeURIComponent(payload.url);
+      const encodedTitle = encodeURIComponent(payload.title);
+
+      switch (platform) {
+        case "telegram":
+          return `https://t.me/share/url?url=${encodedUrl}&text=${encodedTitle}`;
+        case "line":
+          return `https://social-plugins.line.me/lineit/share?url=${encodedUrl}&text=${encodedTitle}`;
+        case "whatsapp":
+          return `https://wa.me/?text=${encodeURIComponent([payload.title, payload.url].filter(Boolean).join(" "))}`;
+        case "x":
+          return `https://x.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`;
+        case "reddit":
+          return `https://www.reddit.com/submit?url=${encodedUrl}&title=${encodedTitle}`;
+        default:
+          return payload.url;
+      }
+    }
+
+    async function copyShareText(text: string): Promise<boolean> {
+      if (!navigator.clipboard?.writeText) {
+        return false;
+      }
+
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    for (const panel of sharePanels) {
+      const pageUrl = new URL(window.location.href);
+      pageUrl.hash = "";
+      const payload = {
+        title: panel.getAttribute("data-share-title") || document.title,
+        text: panel.getAttribute("data-share-text") || "",
+        url: pageUrl.toString()
+      };
+      const feedback = panel.querySelector("[data-share-feedback]");
+      const copyButton = panel.querySelector('[data-share-action="copy"]');
+      const deviceButton = panel.querySelector('[data-share-action="device"]');
+
+      for (const link of panel.querySelectorAll("[data-share-platform]")) {
+        const platform = link.getAttribute("data-share-platform");
+        link.setAttribute("href", buildShareHref(platform, payload));
+      }
+
+      copyButton?.addEventListener("click", async () => {
+        const copied = await copyShareText(payload.url);
+        const copiedText = copyButton.getAttribute("data-share-copied-label") || "복사됨";
+        if (feedback) {
+          feedback.textContent = copied ? copiedText : "복사 권한 필요";
+        }
+        window.setTimeout(() => {
+          if (feedback) {
+            feedback.textContent = "";
+          }
+        }, 1500);
+      });
+
+      deviceButton?.addEventListener("click", async () => {
+        if (typeof navigator.share === "function") {
+          try {
+            await navigator.share(payload);
+            return;
+          } catch (error) {
+            if (error && typeof error === "object" && "name" in error && error.name === "AbortError") {
+              return;
+            }
+          }
+        }
+
+        const copied = await copyShareText(payload.url);
+        if (feedback) {
+          feedback.textContent = copied ? "링크 복사됨" : "공유를 사용할 수 없습니다.";
+        }
+      });
+    }
+
+    const designFinder = document.querySelector<HTMLFormElement>("[data-design-finder]");
+    const designSearch = document.querySelector<HTMLInputElement>("[data-design-search]");
+    const designTargets = new Map(
+      Array.from(document.querySelectorAll<HTMLOptionElement>("#design-section-list option")).map((option) => [
+        option.value,
+        option.getAttribute("data-href") || ""
+      ])
+    );
+
+    function moveToDesignTarget(value: string): void {
+      const trimmedValue = value.trim();
+      const target = designTargets.get(trimmedValue);
+
+      if (!target) {
+        return;
+      }
+
+      window.location.hash = target;
+    }
+
+    designFinder?.addEventListener("submit", (event) => {
+      event.preventDefault();
+      if (designSearch) {
+        moveToDesignTarget(designSearch.value);
+      }
+    });
+
+    designSearch?.addEventListener("change", () => {
+      moveToDesignTarget(designSearch.value);
+    });
+
+    document.addEventListener("keydown", (event) => {
+      const activeElement = document.activeElement;
+      const isTyping =
+        activeElement instanceof HTMLInputElement ||
+        activeElement instanceof HTMLTextAreaElement ||
+        activeElement instanceof HTMLSelectElement ||
+        activeElement?.getAttribute("contenteditable") === "true";
+
+      if (event.key === "/" && !event.metaKey && !event.ctrlKey && !event.altKey && !isTyping && designSearch) {
+        event.preventDefault();
+        designSearch.focus();
+        designSearch.select();
+      }
+    });
+  </script>
 </BaseLayout>

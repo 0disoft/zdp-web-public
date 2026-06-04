@@ -1,6 +1,6 @@
 {
   "name": "zdp-web-public",
-  "version": "0.4.19",
+  "version": "0.4.31",
   "private": true,
   "type": "module",
   "description": "ZDP public web surface for the candidate 8ailors home site.",
@@ -11,6 +11,7 @@
     "check:discovery": "bun scripts/check-public-discovery.ts"
   },
   "dependencies": {
+    "@fontsource/rubik-distressed": "^5.2.7",
     "zdp-design-system": "file:../zdp-design-system"
   },
   "devDependencies": {

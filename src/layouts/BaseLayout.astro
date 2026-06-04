@@ -35,7 +35,15 @@ const navItems = [
     <div class="shell zdp-page zdp-page--canvas">
       <header class="site-header zdp-container zdp-container--lg zdp-container--padding-md" aria-label="사이트 상단">
         <a class="brand" href="/" aria-label="8ailors 홈">
-          <span class="brand-mark" aria-hidden="true">8</span>
+          <span class="brand-mark" aria-hidden="true">
+            <svg class="brand-mark__ship" viewBox="0 0 48 48" focusable="false">
+              <path class="brand-mark__sail brand-mark__sail--aft" d="M23 8v20H12c1.5-7.8 5-14.1 11-20Z" />
+              <path class="brand-mark__sail brand-mark__sail--fore" d="M26 6v22h13C36.9 18.2 32.8 11.5 26 6Z" />
+              <path class="brand-mark__mast" d="M24 7v24" />
+              <path class="brand-mark__hull" d="M8 31h32l-4.6 7H13.8L8 31Z" />
+              <path class="brand-mark__wave" d="M12 41c3 1.6 6 1.6 9 0s6-1.6 9 0 5.5 1.5 8 0" />
+            </svg>
+          </span>
           <span>8ailors</span>
         </a>
         <nav aria-label="주요 링크">

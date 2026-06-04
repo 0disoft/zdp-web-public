@@ -157,6 +157,7 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     tokensCss,
     homePage,
     surfacePage,
+    publicShareDock,
     layout,
     designSystemPackageJson,
     designSystemConsumerContract,
@@ -168,6 +169,7 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     readText("src/styles/tokens.css"),
     readText("src/pages/index.astro"),
     readText("src/pages/[surface].astro"),
+    readText("src/components/PublicShareDock.astro"),
     readText("src/layouts/BaseLayout.astro"),
     readPackageJson("../zdp-design-system/package.json"),
     readText("../zdp-design-system/docs/CONSUMER_CONTRACT.md"),
@@ -175,16 +177,20 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     readText("../zdp-design-system/src/styles/components.css")
   ]);
 
-  if (packageJson.version !== "0.4.19") {
-    failures.push("package.json version must be 0.4.19 for the design-system 0.28.0 adoption contract.");
+  if (packageJson.version !== "0.4.31") {
+    failures.push("package.json version must be 0.4.31 for the design page command navigation contract.");
   }
 
   if (packageJson.dependencies["zdp-design-system"] !== "file:../zdp-design-system") {
     failures.push('package.json dependencies.zdp-design-system must stay "file:../zdp-design-system".');
   }
 
-  if (designSystemPackageJson.version !== "0.28.0") {
-    failures.push("Sibling zdp-design-system package must be version 0.28.0 for the confirm action and control polish consumer contract.");
+  if (packageJson.dependencies["@fontsource/rubik-distressed"] !== "^5.2.7") {
+    failures.push('package.json dependencies.@fontsource/rubik-distressed must stay "^5.2.7".');
+  }
+
+  if (designSystemPackageJson.version !== "0.31.0") {
+    failures.push("Sibling zdp-design-system package must be version 0.31.0 for the shared shortcut hint contract.");
   }
 
   if (
@@ -197,7 +203,10 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
   for (const requiredText of [
     '@import "zdp-design-system/styles.css";',
     '@import "zdp-design-system/locale-fonts.css";',
+    '@import "@fontsource/rubik-distressed";',
     "--font-sans: var(--zdp-font-family-multiscript);",
+    "--font-title: var(--zdp-font-family-latin);",
+    '--font-logo: "Rubik Distressed", var(--font-title);',
     "--shadow-soft: none;",
     "--radius-pill: var(--zdp-radius-md);"
   ]) {
@@ -213,6 +222,26 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
   }
 
   for (const requiredText of [
+    "font-family: var(--font-logo);",
+    "font-weight: var(--zdp-font-weight-regular);"
+  ]) {
+    if (!globalCss.includes(requiredText)) {
+      failures.push(`Brand wordmark style is missing ${requiredText}.`);
+    }
+  }
+
+  if (globalCss.includes(".page-hero--docs .page-hero__inner,\n.design-doc__layout")) {
+    failures.push("Design docs must not widen the hero and document layout away from the header container rail.");
+  }
+
+  if (
+    /\.page-hero--docs[\s\S]{0,220}max-inline-size:\s*var\(--zdp-breakpoint-wide\)/.test(globalCss) ||
+    /\.design-doc__layout[\s\S]{0,220}max-inline-size:\s*var\(--zdp-breakpoint-wide\)/.test(globalCss)
+  ) {
+    failures.push("Design docs must not use breakpoint-wide for the hero or document container.");
+  }
+
+  for (const requiredText of [
     "# Consumer Contract",
     "Astro",
     "Svelte",
@@ -224,8 +253,11 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     "Grid",
     "Icon",
     "Inline",
+    "Kbd",
     "KeyValue",
     "Link",
+    "ShareDock",
+    "ShortcutHint",
     "SkipLink",
     "Stack",
     "Table",
@@ -243,12 +275,21 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     ".zdp-divider",
     ".zdp-grid",
     ".zdp-icon",
-    ".zdp-toolbar",
-    "control.choiceSize",
+    ".zdp-share-dock",
+        ".zdp-toolbar",
+        ".zdp-command-field",
+        ".zdp-command-field__input",
+        ".zdp-kbd",
+        ".zdp-shortcut-hint",
+        "ariaKeyShortcuts",
+        "실제 keydown",
+        "control.choiceSize",
     "control.switchWidth",
     "control.scrollbarSize",
     "color.scrollbar.track",
     "control.glyphMd",
+    "zdpShareIcons",
+    "zdp-design-system/share",
     "onconfirm",
     "readonly",
     "zdp-design-system/src/..."
@@ -273,6 +314,9 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
         'tabindex="-1"',
         'class="zdp-link zdp-link--muted"',
         'aria-current={item.href === currentPath ? "page" : undefined}',
+        "brand-mark__ship",
+        "brand-mark__sail",
+        "brand-mark__hull",
         '{ href: "/design", label: "디자인" }',
         '{ href: "/security", label: "보안" }',
         '{ href: "/payment-safety", label: "결제 안전" }',
@@ -305,7 +349,7 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     ],
     [
       "src/pages/[surface].astro",
-      surfacePage,
+      surfacePage + publicShareDock,
       [
         "zdp-callout zdp-callout--info",
         "page-hero zdp-section zdp-section--spacing-xl",
@@ -325,14 +369,63 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
         "zdp-breadcrumb page-breadcrumb",
         "zdp-breadcrumb__link",
         "zdp-breadcrumb__current",
+        "design-doc zdp-section zdp-section--spacing-lg zdp-divider zdp-divider--horizontal zdp-divider--subtle",
+        "design-doc__layout zdp-container zdp-container--lg zdp-container--padding-md",
+        "design-doc__rail",
+        "design-doc__finder",
+        "design-doc__article",
+        "design-link-grid",
+        "design-link-card zdp-surface zdp-surface--panel zdp-surface--padding-lg",
+        "기준 사용하기",
+        "기준 찾기",
+        "기준 토큰",
+        "운영 기준",
+        "data-design-finder",
+        "data-design-search",
+        "design-section-list",
+        "moveToDesignTarget",
+        'event.key === "/"',
         "zdp-visually-hidden",
         "zdp-stack zdp-stack--gap-md",
         "zdp-key-value zdp-key-value--columns-two",
         "zdp-table-wrap",
         "zdp-table zdp-table--density-compact",
         "zdp-table__caption zdp-table__caption--hidden",
+        "aria-keyshortcuts=\"/\"",
+        "zdp-shortcut-hint",
+        "검색 단축키 슬래시",
         'scope="col"',
         'scope="row"',
+        'import PublicShareDock from "../components/PublicShareDock.astro";',
+        'import { zdpShareIcons, type ZdpShareIconName } from "zdp-design-system/share";',
+        'placement="side"',
+        'placement="rail"',
+        "zdp-share-dock zdp-share-dock--${placement}",
+        "zdp-share-dock__list",
+        "zdp-share-action",
+        "zdp-share-action__tooltip",
+        'icon: "telegram"',
+        'icon: "line"',
+        'icon: "whatsapp"',
+        'icon: "x"',
+        'icon: "reddit"',
+        "zdpShareIcons[action.icon]",
+        "zdpShareIcons[platform.icon]",
+        "zdp-share-icon zdp-share-icon--${platform.icon}",
+        "data-share-panel",
+        "data-share-action={action.id}",
+        'data-share-platform={platform.id}',
+        "data-share-label",
+        "링크 복사",
+        "기기 공유",
+        "텔레그램",
+        "라인",
+        "왓츠앱",
+        "레딧",
+        "buildShareHref",
+        "navigator.share",
+        "navigator.clipboard.writeText",
+        "복사 권한 필요",
         "zdp-empty-state surface-placeholder",
         "zdp-empty-state__body",
         "zdp-empty-state__actions",
@@ -379,6 +472,14 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     ".zdp-icon",
     ".zdp-icon--sm",
     ".zdp-icon--md",
+    ".zdp-share-dock",
+    ".zdp-share-dock--side",
+    ".zdp-share-dock--rail",
+    ".zdp-share-dock--bottom",
+    ".zdp-share-dock--inline",
+    ".zdp-share-dock__list",
+    ".zdp-share-action",
+    ".zdp-share-action__tooltip",
     ".zdp-confirm-action",
     ".zdp-confirm-action__fill",
     ".zdp-confirm-action--danger",
@@ -389,6 +490,12 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     ".zdp-toolbar",
     ".zdp-toolbar__main",
     ".zdp-toolbar__actions",
+    ".zdp-kbd",
+    ".zdp-kbd--md",
+    ".zdp-shortcut-hint",
+    ".zdp-shortcut-hint__separator",
+    ".zdp-command-field",
+    ".zdp-command-field__input",
     "var(--zdp-color-focus-surface)",
     "var(--zdp-color-focus-line)",
     "position: fixed",
@@ -404,9 +511,37 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
   }
 
   for (const requiredText of [
+    ".design-link-card:hover:not(:focus-visible)",
+    "background: var(--color-ink)",
+    ".design-link-card:hover:not(:focus-visible) span"
+  ]) {
+    if (!globalCss.includes(requiredText)) {
+      failures.push(`src/styles/global.css is missing design card hover contract ${requiredText}.`);
+    }
+  }
+
+  for (const forbiddenText of [".share-dock", ".share-action", ".share-icon"]) {
+    if (globalCss.includes(forbiddenText)) {
+      failures.push(`src/styles/global.css must not keep local share dock styling ${forbiddenText}.`);
+    }
+  }
+
+  for (const forbiddenText of ["design-doc__toc", "On this page"]) {
+    if (surfacePage.includes(forbiddenText)) {
+      failures.push(`src/pages/[surface].astro must not keep duplicate page TOC text ${forbiddenText}.`);
+    }
+
+    if (globalCss.includes(forbiddenText)) {
+      failures.push(`src/styles/global.css must not keep duplicate page TOC styling ${forbiddenText}.`);
+    }
+  }
+
+  for (const requiredText of [
     "scrollbar-width: thin",
     "::-webkit-scrollbar-thumb",
-    "var(--zdp-control-scrollbar-size)"
+    "var(--zdp-control-scrollbar-size)",
+    "--zdp-type-page-title-size: 2.75rem",
+    "--zdp-type-page-title-compact-size: 2rem"
   ]) {
     if (!designSystemTokenCss.includes(requiredText)) {
       failures.push(`Sibling design-system token CSS is missing ${requiredText}.`);
@@ -489,6 +624,26 @@ async function checkNoViewportScaledTypography(): Promise<void> {
 
   if (/line-height:\s*(?:0\.\d+|1);/.test(globalCss)) {
     failures.push("src/styles/global.css must avoid cramped heading line-height values that can clip text.");
+  }
+
+  for (const forbiddenText of [
+    ".page-hero h1 {\n  margin: 0;\n  max-width: 13ch",
+    "font-size: 5rem",
+    ".page-hero h1 {\n    font-size: 3.5rem"
+  ]) {
+    if (globalCss.includes(forbiddenText)) {
+      failures.push(`src/styles/global.css must not use oversized generic page title styling: ${forbiddenText}.`);
+    }
+  }
+
+  for (const requiredText of [
+    "font-size: var(--zdp-type-page-title-size);",
+    "line-height: var(--zdp-type-page-title-line-height);",
+    "font-size: var(--zdp-type-page-title-compact-size);"
+  ]) {
+    if (!globalCss.includes(requiredText)) {
+      failures.push(`src/styles/global.css must use moderated design-system page title token: ${requiredText}.`);
+    }
   }
 }
 

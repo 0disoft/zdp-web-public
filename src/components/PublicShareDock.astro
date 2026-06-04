@@ -1,0 +1,148 @@
+---
+import { zdpShareIcons, type ZdpShareIconName } from "zdp-design-system/share";
+
+interface Props {
+  pageId: string;
+  title: string;
+  text: string;
+  path: string;
+  placement?: "side" | "rail";
+}
+
+const { pageId, title, text, path, placement = "side" } = Astro.props;
+const shareActions = [
+  { id: "copy", label: "링크 복사", copiedLabel: "복사됨", icon: "copy" },
+  { id: "device", label: "기기 공유", icon: "device" }
+] as const satisfies readonly {
+  id: string;
+  label: string;
+  copiedLabel?: string;
+  icon: ZdpShareIconName;
+}[];
+const sharePlatforms = [
+  { id: "telegram", label: "텔레그램", icon: "telegram" },
+  { id: "line", label: "라인", icon: "line" },
+  { id: "whatsapp", label: "왓츠앱", icon: "whatsapp" },
+  { id: "x", label: "X", icon: "x" },
+  { id: "reddit", label: "레딧", icon: "reddit" }
+] as const satisfies readonly {
+  id: string;
+  label: string;
+  icon: ZdpShareIconName;
+}[];
+---
+
+<aside
+  class={`zdp-share-dock zdp-share-dock--${placement}`}
+  data-share-panel
+  data-share-title={title}
+  data-share-text={text}
+  aria-labelledby={`${pageId}-share-title`}
+>
+  <h2 id={`${pageId}-share-title`} class="zdp-visually-hidden">공유</h2>
+  <div class="zdp-share-dock__list" aria-label={`${title} 공유`}>
+    {shareActions.map((action) => {
+      const icon = zdpShareIcons[action.icon];
+
+      return (
+        <button
+          class="zdp-share-action"
+          type="button"
+          data-share-action={action.id}
+          data-share-label={action.label}
+          data-share-copied-label={"copiedLabel" in action ? action.copiedLabel : undefined}
+          aria-label={action.label}
+        >
+          <span class="zdp-share-action__mark" aria-hidden="true">
+            <svg class={`zdp-share-icon zdp-share-icon--${action.icon}`} viewBox={icon.viewBox} focusable="false">
+              {icon.lines?.map((line) => (
+                <line
+                  x1={line.x1}
+                  y1={line.y1}
+                  x2={line.x2}
+                  y2={line.y2}
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-width={line.strokeWidth ?? "2"}
+                />
+              ))}
+              {icon.paths?.map((path) => (
+                <path
+                  d={path.d}
+                  fill={path.fill === false ? "none" : "currentColor"}
+                  stroke={path.stroke ? "currentColor" : undefined}
+                  stroke-linecap={path.strokeLinecap}
+                  stroke-linejoin={path.strokeLinejoin}
+                  stroke-width={path.strokeWidth}
+                />
+              ))}
+              {icon.circles?.map((circle) => (
+                <circle
+                  cx={circle.cx}
+                  cy={circle.cy}
+                  r={circle.r}
+                  fill={circle.fill === false || circle.stroke ? "none" : "currentColor"}
+                  stroke={circle.stroke ? "currentColor" : undefined}
+                  stroke-width={circle.strokeWidth}
+                />
+              ))}
+            </svg>
+          </span>
+          <span class="zdp-share-action__tooltip" aria-hidden="true">{action.label}</span>
+        </button>
+      );
+    })}
+    {sharePlatforms.map((platform) => {
+      const icon = zdpShareIcons[platform.icon];
+
+      return (
+        <a
+          class="zdp-share-action"
+          href={path}
+          target="_blank"
+          rel="noopener noreferrer"
+          data-share-platform={platform.id}
+          aria-label={`${platform.label}으로 공유`}
+        >
+          <span class="zdp-share-action__mark" aria-hidden="true">
+            <svg class={`zdp-share-icon zdp-share-icon--${platform.icon}`} viewBox={icon.viewBox} focusable="false">
+              {icon.lines?.map((line) => (
+                <line
+                  x1={line.x1}
+                  y1={line.y1}
+                  x2={line.x2}
+                  y2={line.y2}
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-width={line.strokeWidth ?? "2"}
+                />
+              ))}
+              {icon.paths?.map((path) => (
+                <path
+                  d={path.d}
+                  fill={path.fill === false ? "none" : "currentColor"}
+                  stroke={path.stroke ? "currentColor" : undefined}
+                  stroke-linecap={path.strokeLinecap}
+                  stroke-linejoin={path.strokeLinejoin}
+                  stroke-width={path.strokeWidth}
+                />
+              ))}
+              {icon.circles?.map((circle) => (
+                <circle
+                  cx={circle.cx}
+                  cy={circle.cy}
+                  r={circle.r}
+                  fill={circle.fill === false || circle.stroke ? "none" : "currentColor"}
+                  stroke={circle.stroke ? "currentColor" : undefined}
+                  stroke-width={circle.strokeWidth}
+                />
+              ))}
+            </svg>
+          </span>
+          <span class="zdp-share-action__tooltip" aria-hidden="true">{platform.label}</span>
+        </a>
+      );
+    })}
+  </div>
+  <span class="zdp-visually-hidden" data-share-feedback aria-live="polite"></span>
+</aside>
