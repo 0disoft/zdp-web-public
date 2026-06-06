@@ -6,6 +6,13 @@ import { localizedHomeText } from "../lib/localized-astro";
 
 const title = "8ailors";
 const description = "8ailors — 제품, 기록, 정책, 문의 포털";
+const homeSections = publicPages.filter(
+  (section) =>
+    section.summary !== undefined ||
+    section.items.length > 0 ||
+    section.facts.length > 0 ||
+    section.checks.length > 0
+);
 const devLocalizationPatcherScript = import.meta.env.DEV
   ? '<script type="module" src="/src/scripts/localization-dev-patcher.ts"></script>'
   : "";
@@ -30,7 +37,7 @@ const devLocalizationPatcherScript = import.meta.env.DEV
     </div>
   </section>
 
-  {publicPages.map((section) => (
+  {homeSections.map((section) => (
     <section
       id={section.id}
       class="section zdp-section zdp-section--spacing-lg zdp-divider zdp-divider--horizontal zdp-divider--subtle"
@@ -42,7 +49,7 @@ const devLocalizationPatcherScript = import.meta.env.DEV
           <h2 id={`${section.id}-title`} class="section-heading">
             {section.heading}
           </h2>
-          <p><GlossaryText text={section.summary} /></p>
+          {section.summary && <p><GlossaryText text={section.summary} /></p>}
           <div class="zdp-toolbar zdp-toolbar--gap-md zdp-toolbar--align-center">
             <div class="zdp-toolbar__main">
               <a class="zdp-link" href={section.path}>{section.label} 보기</a>
@@ -65,7 +72,7 @@ const devLocalizationPatcherScript = import.meta.env.DEV
             ))}
           </div>
         )}
-        {section.items.length === 0 && (
+        {section.items.length === 0 && section.summary && (
           <section class="zdp-empty-state zdp-empty-state--raised" aria-labelledby={`${section.id}-empty-title`}>
             <div class="zdp-empty-state__body">
               <h3 id={`${section.id}-empty-title`}>공개 전 기준을 정리하고 있습니다.</h3>

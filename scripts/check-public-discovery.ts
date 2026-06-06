@@ -182,9 +182,9 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     readText("../zdp-design-system/src/styles/components.css")
   ]);
 
-  if (packageJson.version !== "0.4.55") {
+  if (packageJson.version !== "0.4.67") {
     failures.push(
-      "package.json version must be 0.4.55 for the shortcut policy design-system contract."
+      "package.json version must be 0.4.67 for the glossary trigger inline padding contract."
     );
   }
 
@@ -229,8 +229,8 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     failures.push("zdp-web-public must use zdp-design-system/brand-fonts.css instead of owning @fontsource/playwrite-au-vic-guides.");
   }
 
-  if (designSystemPackageJson.version !== "0.41.12") {
-    failures.push("Sibling zdp-design-system package must be version 0.41.12 for the shortcut policy contract.");
+  if (designSystemPackageJson.version !== "0.41.15") {
+    failures.push("Sibling zdp-design-system package must be version 0.41.15 for the Storybook accessibility contract.");
   }
 
   if (
@@ -266,7 +266,7 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
   for (const requiredText of [
     "font-family: var(--font-logo);",
     ".zdp-surface-reset .brand .brand-name",
-    "font-weight: var(--zdp-font-weight-medium);",
+    "font-weight: var(--zdp-font-weight-semibold);",
     "font-weight: var(--zdp-font-weight-regular);"
   ]) {
     if (!globalCss.includes(requiredText)) {
@@ -551,6 +551,8 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     ".zdp-command-field__input",
     ".zdp-brand-wordmark",
     ".zdp-brand-lockup",
+    "font-size: calc(var(--zdp-type-page-title-size) - 0.8rem)",
+    "font-size: calc(var(--zdp-type-page-title-compact-size) - 0.5rem)",
     ".zdp-theme-toggle",
     ".zdp-theme-toggle__icon",
     "var(--zdp-color-focus-surface)",
@@ -570,6 +572,13 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
   for (const requiredText of [
     ".showcase-group",
     ".swatch-card:hover",
+    "--color-swatch-info-surface",
+    "--color-swatch-info-ink",
+    "--color-swatch-info-muted",
+    "--color-swatch-info-line",
+    "background: var(--color-swatch-info-surface)",
+    "color: var(--color-swatch-info-ink)",
+    "color: var(--color-swatch-info-muted)",
     ".typography-specimen",
     ".components-preview",
     ".preview-row",
@@ -584,6 +593,10 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     if (globalCss.includes(forbiddenText)) {
       failures.push(`src/styles/global.css must not keep local share dock styling ${forbiddenText}.`);
     }
+  }
+
+  if (surfacePage.includes('class="swatch-info" style="color:')) {
+    failures.push("src/pages/[surface].astro must not override swatch-info text color inline.");
   }
 
   for (const forbiddenText of ["design-doc__toc", "On this page"]) {
@@ -682,7 +695,13 @@ async function checkNoLocalTextLink(): Promise<void> {
 
   for (const requiredText of [
     ".zdp-surface-reset .brand:focus-visible",
+    ".site-theme-toggle.zdp-theme-toggle[data-zdp-theme-state=\"dark\"]",
+    ".site-theme-toggle.zdp-theme-toggle:hover:not(:disabled)",
+    ".site-theme-toggle.zdp-theme-toggle:focus-visible",
     ".zdp-surface-reset .nav-list .zdp-link--muted:not(:focus-visible)",
+    ".zdp-surface-reset .nav-list .zdp-link--muted:not(:focus-visible)::after",
+    ".zdp-surface-reset .nav-list .zdp-link--muted:hover:not(:focus-visible)::after",
+    ".zdp-surface-reset .nav-list .zdp-link--muted[aria-current=\"page\"]:not(:focus-visible)::after",
     ".zdp-surface-reset .nav-list .zdp-link--muted[aria-current=\"page\"]:not(:focus-visible)"
   ]) {
     if (!globalCss.includes(requiredText)) {
@@ -929,7 +948,8 @@ async function checkGlossarySheetContract(): Promise<void> {
       surfacePage,
       [
         'import GlossaryText from "../components/GlossaryText.astro";',
-        "<GlossaryText text={heroSummary} />",
+        "heroSummary &&",
+        "<GlossaryText text={overviewText} />",
         "<GlossaryText text={section.body} />",
         "<GlossaryText text={fact.description} />",
         "<GlossaryText text={check.note} />"
@@ -940,7 +960,8 @@ async function checkGlossarySheetContract(): Promise<void> {
       homePage,
       [
         'import GlossaryText from "../components/GlossaryText.astro";',
-        "<GlossaryText text={section.summary} />",
+        "const homeSections = publicPages.filter",
+        "section.summary &&",
         "<GlossaryText text={item.body} />"
       ]
     ]
@@ -971,6 +992,25 @@ async function checkGlossarySheetContract(): Promise<void> {
     ) {
       failures.push(`Glossary contract must stay click-sheet based, not hover-tooltip based: ${forbiddenText}.`);
     }
+  }
+
+  if (
+    /\.glossary-trigger(?:\s|\{)[\s\S]{0,260}color:\s*var\(--color-ink\);/.test(globalCss) ||
+    /\.glossary-trigger:hover(?:\s|\{)[\s\S]{0,160}color:\s*var\(--color-accent-strong\);/.test(globalCss)
+  ) {
+    failures.push("Glossary trigger text must inherit the surrounding sentence color in light and dark themes.");
+  }
+
+  if (
+    !globalCss.includes(
+      ".glossary-trigger:hover {\n  background: var(--color-accent-wash);\n  color: inherit;"
+    )
+  ) {
+    failures.push("Glossary trigger hover must keep color: inherit.");
+  }
+
+  if (!/\.glossary-trigger\s*\{[\s\S]{0,180}padding:\s*0 0\.2rem;/.test(globalCss)) {
+    failures.push("Glossary trigger must reserve readable inline padding.");
   }
 
   for (const forbiddenText of [
@@ -1032,8 +1072,18 @@ function checkPublicPageRouteContract(): void {
       failures.push(`publicPages.${page.id} must expose a non-empty label and heading.`);
     }
 
-    if (page.summary.trim().length === 0) {
-      failures.push(`publicPages.${page.id} must expose a non-empty public summary.`);
+    if (page.summary !== undefined && page.summary.trim().length === 0) {
+      failures.push(`publicPages.${page.id} summary must be omitted instead of left empty.`);
+    }
+
+    for (const forbiddenSummary of [
+      "정리할 자리입니다",
+      "모아둘 자리입니다",
+      "준비 중입니다"
+    ]) {
+      if (page.summary?.includes(forbiddenSummary)) {
+        failures.push(`publicPages.${page.id} summary must not expose scaffold copy: ${forbiddenSummary}.`);
+      }
     }
   }
 }

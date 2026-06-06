@@ -20,7 +20,7 @@ export interface PublicPage {
   readonly path: `/${string}`;
   readonly label: string;
   readonly heading: string;
-  readonly summary: string;
+  readonly summary?: string;
   readonly items: readonly PublicPageItem[];
   readonly facts: readonly PublicPageFact[];
   readonly checks: readonly PublicPageCheck[];
@@ -42,7 +42,7 @@ export const publicPages: readonly PublicPage[] = [
     path: "/design",
     label: "디자인",
     heading: "디자인 표준",
-    summary: "모든 서비스가 같은 시각 기준과 컴포넌트를 씁니다.",
+    summary: "화려함 대신 본질에 집중합니다. 8ailors의 모든 서비스는 일관된 디자인으로 어디서든 익숙하고, 누구나 쉽게 사용할 수 있도록 설계되었습니다.",
     items: [
       {
         title: "Foundation",
@@ -156,7 +156,7 @@ export const publicPages: readonly PublicPage[] = [
       },
       {
         title: "최소 권한",
-        body: "서비스와 사용자에게 실제 필요한 범위 이상의 권한을 부여하지 않습니다. AI는 사용자 데이터의 소유자가 아니라 허가된 범위 안에서만 접근하는 소비자입니다.",
+        body: "서비스와 사용자에게 실제 필요한 범위 이상의 권한을 부여하지 않습니다. 자동 처리 시스템은 사용자 데이터의 소유자가 아니라 허가된 범위 안에서만 접근하는 소비자입니다.",
         status: "원칙"
       }
     ],
@@ -170,7 +170,7 @@ export const publicPages: readonly PublicPage[] = [
         description: "append-only 구조. 수정·삭제 불가."
       },
       {
-        term: "AI 데이터 접근",
+        term: "자동 처리 시스템 데이터 접근",
         description: "Privacy Access Broker를 거쳐 동의·목적 확인 후 최소 데이터만 전달."
       },
       {
@@ -179,7 +179,7 @@ export const publicPages: readonly PublicPage[] = [
       },
       {
         term: "계정 삭제",
-        description: "DB, 검색 색인, AI 메모리, 외부 provider 토큰 전체에 삭제 전파."
+        description: "DB, 검색 색인, 시스템 캐시, 외부 provider 토큰 전체에 삭제 전파."
       },
       {
         term: "보안 체크리스트",
@@ -190,7 +190,7 @@ export const publicPages: readonly PublicPage[] = [
       {
         item: "제품-플랫폼 경계",
         status: "유지",
-        note: "결제, 원장, 권한, AI 개인정보 접근 로직은 제품 저장소에 직접 넣지 않습니다."
+        note: "결제, 원장, 권한, 자동화 개인정보 접근 로직은 제품 저장소에 직접 넣지 않습니다."
       },
       {
         item: "비밀값 격리",
@@ -203,9 +203,9 @@ export const publicPages: readonly PublicPage[] = [
         note: "권한 변경·결제·개인정보 접근·관리자 작업은 삭제할 수 없는 감사 로그에 남깁니다."
       },
       {
-        item: "AI 접근 경계",
+        item: "자동 처리 시스템 접근 경계",
         status: "유지",
-        note: "LLM은 메일·메시지·결제 DB를 직접 읽지 않습니다. 동의 확인 후 필요한 조각만 전달받습니다."
+        note: "외부 처리 엔진은 메일·메시지·결제 DB를 직접 읽지 않습니다. 동의 확인 후 필요한 조각만 전달받습니다."
       },
       {
         item: "삭제 전파",
@@ -220,7 +220,7 @@ export const publicPages: readonly PublicPage[] = [
     path: "/labs",
     label: "실험실",
     heading: "실험실",
-    summary: "검증 중인 제품과 기술 실험을 모아둘 자리입니다.",
+    summary: "검증 중인 제품과 기술 실험입니다.",
     items: [],
     facts: [],
     checks: []
@@ -230,7 +230,6 @@ export const publicPages: readonly PublicPage[] = [
     path: "/roadmap",
     label: "로드맵",
     heading: "로드맵",
-    summary: "지금 하는 일, 다음에 할 일, 아직 하지 않을 일을 정리할 자리입니다.",
     items: [],
     facts: [],
     checks: []

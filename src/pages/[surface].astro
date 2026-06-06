@@ -26,7 +26,7 @@ const heroSummary = isDesignPage
   ? "모든 서비스가 같은 시각 기준과 컴포넌트를 씁니다."
   : page.summary;
 const title = `${heroHeading} - 8ailors`;
-const description = heroSummary;
+const description = heroSummary ?? `${heroHeading} - 8ailors`;
 const designSections = [
   {
     id: "design-start",
@@ -59,6 +59,13 @@ const designSections = [
     body: "키보드로 모든 요소를 탐색할 수 있어야 하고, 포커스 아웃라인은 항상 보여야 합니다. 스크린 리더용 랜드마크도 빠뜨리지 않습니다."
   }
 ] as const;
+const overviewText = isDesignPage ? designSections[0].body : page.summary;
+const hasPageDetailContent =
+  isDesignPage ||
+  overviewText !== undefined ||
+  page.items.length > 0 ||
+  page.facts.length > 0 ||
+  page.checks.length > 0;
 ---
 
 <BaseLayout title={title} description={description} currentPath={page.path}>
@@ -80,9 +87,11 @@ const designSections = [
           <div class="zdp-page-header__title">
             <h1 id="page-title">{heroHeading}</h1>
           </div>
-          <div class="zdp-page-header__summary">
-            <p><GlossaryText text={heroSummary} /></p>
-          </div>
+          {heroSummary && (
+            <div class="zdp-page-header__summary">
+              <p><GlossaryText text={heroSummary} /></p>
+            </div>
+          )}
         </div>
         <div class="zdp-page-header__actions">
           <a class="zdp-button zdp-button--md zdp-button--secondary" href="/">
@@ -93,10 +102,11 @@ const designSections = [
     </div>
   </section>
 
-  <section
-    class="design-doc zdp-section zdp-section--spacing-lg zdp-divider zdp-divider--horizontal zdp-divider--subtle"
-    aria-labelledby="design-start-title"
-  >
+  {hasPageDetailContent && (
+    <section
+      class="design-doc zdp-section zdp-section--spacing-lg zdp-divider zdp-divider--horizontal zdp-divider--subtle"
+      aria-labelledby="design-start-title"
+    >
     <div class="design-doc__layout zdp-container zdp-container--lg zdp-container--padding-md">
       <aside class="design-doc__rail" aria-label={`${page.label} 문서 네비게이션`}>
         <p class="section-label">Docs Nav</p>
@@ -114,7 +124,7 @@ const designSections = [
       <article class="design-doc__article">
         <section id="design-start" class="design-doc__section" aria-labelledby="design-start-title">
           <h2 id="design-start-title">기본 방향</h2>
-          <p><GlossaryText text={isDesignPage ? designSections[0].body : page.summary} /></p>
+          {overviewText && <p><GlossaryText text={overviewText} /></p>}
           {isDesignPage && (
             <div class="design-doc__platforms zdp-inline zdp-inline--gap-xs" aria-label="적용 대상">
               <span class="zdp-badge zdp-badge--neutral zdp-badge--sm">Astro</span>
@@ -201,31 +211,31 @@ const designSections = [
               <h3 class="showcase-group__title">Color Palette — Dark</h3>
               <div class="swatch-grid" data-zdp-theme="dark" style="padding: var(--zdp-space-4); border-radius: var(--zdp-radius-md); background: oklch(23% 0.035 70);">
                 <div class="swatch-card" style="background: oklch(23% 0.035 70); border: 1px solid oklch(43% 0.055 76);">
-                  <div class="swatch-info" style="color: oklch(91% 0.045 82);">
+                  <div class="swatch-info">
                     <span class="swatch-name">Surface Canvas</span>
                     <code class="swatch-token">--zdp-color-surface-canvas</code>
                   </div>
                 </div>
                 <div class="swatch-card" style="background: oklch(27% 0.04 70); border: 1px solid oklch(43% 0.055 76);">
-                  <div class="swatch-info" style="color: oklch(91% 0.045 82);">
+                  <div class="swatch-info">
                     <span class="swatch-name">Surface Panel</span>
                     <code class="swatch-token">--zdp-color-surface-panel</code>
                   </div>
                 </div>
                 <div class="swatch-card" style="background: oklch(34% 0.05 70); border: 1px solid oklch(43% 0.055 76);">
-                  <div class="swatch-info" style="color: oklch(91% 0.045 82);">
+                  <div class="swatch-info">
                     <span class="swatch-name">Surface Raised</span>
                     <code class="swatch-token">--zdp-color-surface-raised</code>
                   </div>
                 </div>
                 <div class="swatch-card" style="background: oklch(91% 0.045 82); border: 1px solid oklch(43% 0.055 76);">
-                  <div class="swatch-info" style="color: oklch(27% 0.04 70);">
+                  <div class="swatch-info">
                     <span class="swatch-name">Ink Normal</span>
                     <code class="swatch-token">--zdp-color-ink-normal</code>
                   </div>
                 </div>
                 <div class="swatch-card" style="background: oklch(84% 0.1 86); border: 1px solid oklch(43% 0.055 76);">
-                  <div class="swatch-info" style="color: oklch(20% 0.035 70);">
+                  <div class="swatch-info">
                     <span class="swatch-name">Focus Surface</span>
                     <code class="swatch-token">--zdp-color-focus-surface</code>
                   </div>
@@ -257,7 +267,7 @@ const designSections = [
                 <div class="specimen-row">
                   <span class="specimen-label">Brand Logo</span>
                   <div class="specimen-content">
-                    <span style="margin: 0; font-family: var(--font-logo); font-size: 1.5rem; font-weight: 400;">8ailors</span>
+                    <span style="margin: 0; font-family: var(--font-logo); font-size: 1.5rem; font-weight: var(--zdp-font-weight-semibold);">8ailors</span>
                   </div>
                 </div>
                 <div class="specimen-row">
@@ -468,9 +478,10 @@ const designSections = [
         </section>
       </article>
 
-      <PublicShareDock pageId={page.id} title={heroHeading} text={heroSummary} path={page.path} placement="rail" />
+      <PublicShareDock pageId={page.id} title={heroHeading} text={heroSummary ?? heroHeading} path={page.path} placement="rail" />
     </div>
-  </section>
+    </section>
+  )}
 
   <script>
     type SharePayload = {

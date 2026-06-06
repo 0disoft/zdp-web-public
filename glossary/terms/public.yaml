@@ -363,21 +363,21 @@ terms:
     aliases:
       ko:
         - Privacy Access Broker
-        - AI 데이터 접근
+        - 자동 처리 시스템 데이터 접근
     match_phrases:
       ko:
         - phrase: Privacy Access Broker
           auto_match: true
           priority: 100
-        - phrase: AI 데이터 접근
+        - phrase: 자동 처리 시스템 데이터 접근
           auto_match: true
           priority: 80
     locales:
       ko:
         label: Privacy Access Broker
         slug: privacy-access-broker
-        short: AI나 내부 도구가 사용자 데이터를 읽기 전에 목적과 범위를 확인하는 중간 경계입니다.
-        long: AI가 데이터베이스를 직접 뒤지는 구조를 피하고, 동의와 목적에 맞는 최소 조각만 넘겨주는 역할을 합니다.
+        short: 자동 처리 시스템이나 내부 도구가 사용자 데이터를 읽기 전에 목적과 범위를 확인하는 중간 경계입니다.
+        long: 자동 처리 시스템이 데이터베이스를 직접 뒤지는 구조를 피하고, 동의와 목적에 맞는 최소 조각만 넘겨주는 역할을 합니다.
         example:
         translation_status: reviewed
     related_terms:
