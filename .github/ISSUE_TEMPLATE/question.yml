@@ -1,0 +1,22 @@
+name: 질문
+description: 공개 웹 동작이나 콘텐츠 경계가 헷갈릴 때 남겨줘.
+title: "[Question]: "
+labels: ["question", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: "내부 아키텍처 문서, staging URL, 비밀값, 고객 데이터는 붙이지 마."
+  - type: textarea
+    id: question
+    attributes:
+      label: 궁금한 점
+      placeholder: 어떤 페이지, discovery 파일, 후보 도메인, glossary 표면이 궁금한지 적어줘.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: 맥락
+      placeholder: 관련 경로, 문서, 화면 크기가 있으면 적어줘.
+    validations:
+      required: false

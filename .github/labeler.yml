@@ -1,0 +1,45 @@
+documentation:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "**/*.md"
+          - "docs/**"
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".github/workflows/**"
+
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "package.json"
+          - "bun.lock"
+          - "renovate.json"
+
+frontend:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "src/**"
+          - "public/**"
+          - "astro.config.*"
+
+discovery:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "public/robots.txt"
+          - "public/llms.txt"
+          - "webpub.toml"
+          - "scripts/check-public-discovery.ts"
+
+glossary:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "glossary/**"
+          - "src/content/glossary-manifest.json"
+          - "scripts/*glossary*.ts"
+
+styles:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "src/styles/**"
+          - "**/*.css"

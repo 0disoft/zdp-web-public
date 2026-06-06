@@ -1,0 +1,39 @@
+name: 버그 제보
+description: 공개 웹 표면의 재현 가능한 문제를 남겨줘.
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: "비밀값, 내부 URL, 실제 계정 정보, 결제 payload, 고객 원문 데이터는 적지 마."
+  - type: textarea
+    id: summary
+    attributes:
+      label: 무슨 문제가 생겼어?
+      placeholder: 어떤 페이지, discovery 파일, glossary 표면, 스타일이 깨졌는지 적어줘.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 재현 방법
+      placeholder: |
+        1. 어떤 경로로 이동했는지
+        2. 어떤 viewport나 브라우저인지
+        3. 실제 결과가 무엇인지
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 기대한 동작
+      placeholder: 사용자에게 보여야 하는 자연스러운 결과를 적어줘.
+    validations:
+      required: true
+  - type: textarea
+    id: risk
+    attributes:
+      label: 위험 표면
+      placeholder: SEO, 공개 discovery, 비밀값 노출, 후보 도메인, 개인정보, 광고/용어 설명 표면 영향이 있으면 적어줘.
+    validations:
+      required: false

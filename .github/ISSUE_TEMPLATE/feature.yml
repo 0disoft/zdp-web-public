@@ -1,0 +1,29 @@
+name: 기능 제안
+description: 공개 웹 콘텐츠나 사용자 흐름 개선 제안을 남겨줘.
+title: "[Feature]: "
+labels: ["feature", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: "로그인, 결제, 원장, 권한 판단, 개인정보 접근, AI 사용자 데이터 접근은 이 저장소 범위가 아니야."
+  - type: textarea
+    id: problem
+    attributes:
+      label: 어떤 문제가 있어?
+      placeholder: 방문자에게 어떤 정보나 흐름이 부족한지 적어줘.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 원하는 해결 방식
+      placeholder: 페이지, 콘텐츠, discovery, glossary, 스타일 중 어느 표면인지 적어줘.
+    validations:
+      required: true
+  - type: textarea
+    id: boundaries
+    attributes:
+      label: 경계 확인
+      placeholder: 내부 문서, 후보 도메인, 검증되지 않은 수치, 외부 정책 최신성 영향이 있는지 적어줘.
+    validations:
+      required: false
