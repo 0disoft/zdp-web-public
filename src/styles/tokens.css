@@ -7,6 +7,7 @@
   --color-code: var(--zdp-color-surface-raised);
   --color-ink: var(--zdp-color-ink-strong);
   --color-muted: var(--zdp-color-ink-muted);
+  --color-nav-active: #1f160e;
   --color-line: var(--zdp-color-line-subtle);
   --color-accent: var(--zdp-color-accent-primary-soft);
   --color-accent-strong: var(--zdp-color-accent-primary);
@@ -43,6 +44,8 @@
 
 [data-zdp-theme="dark"] {
   color-scheme: dark;
+
+  --color-nav-active: var(--zdp-color-ink-strong);
 }
 
 @supports (color: oklch(50% 0.1 240)) {
@@ -53,5 +56,10 @@
     --color-swatch-info-ink: oklch(27% 0.04 70);
     --color-swatch-info-muted: oklch(36% 0.05 70);
     --color-swatch-info-line: oklch(82% 0.045 82);
+    --color-nav-active: oklch(20% 0.035 70);
+  }
+
+  [data-zdp-theme="dark"] {
+    --color-nav-active: var(--zdp-color-ink-strong);
   }
 }

@@ -182,7 +182,7 @@ dependencies:
   internal_apis: []
   fallback_paths:
     - keep hardcoded static Astro copy if localization hot patching fails during dogfooding
-    - keep src/content/glossary-manifest.json aligned with glossary/terms YAML if devex validation is unavailable
+    - keep src/content/glossary-manifest.json aligned with glossary terms and locale YAML if devex validation is unavailable
 
 providers: []
 
@@ -276,7 +276,7 @@ notes:
   - Public discovery files must not contain internal URLs, staging URLs, private customer data, or non-public architecture documents.
   - Public feeds must be generated as static build artifacts once real public content exists; runtime feed generation is not the default.
   - Glossary explanations use stable term_id values, click-triggered right sheet and bottom sheet surfaces, and data-zdp-ad-exclude sheet roots. Hover-only glossary UI is not allowed because it fails touch and focus constraints.
-  - Glossary term sources live under glossary/terms YAML; bun run glossary:generate derives src/content/glossary-manifest.json through the zdp-platform-devex glossary manifest builder.
+  - Glossary term contracts live under glossary/terms YAML and locale copy lives under glossary/locales/<locale> YAML; bun run glossary:generate derives src/content/glossary-manifest.json through the zdp-platform-devex glossary manifest builder.
   - bun run check must fail on stale glossary-manifest.json instead of regenerating it before the freshness check.
   - bun run check:localization runs zdp-platform-localization catalog check and strict production compile; fallback messages are not allowed in the public site localization manifest.
   - Glossary term sheets do not include ad slots; AdSense, Ezoic, or another provider may only be considered through a separate detail-page experiment contract.

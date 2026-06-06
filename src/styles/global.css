@@ -226,24 +226,26 @@ code {
   margin: 0;
   padding: 0;
   color: var(--color-muted);
-  font-size: 0.95rem;
+  font-size: var(--zdp-font-size-md);
   list-style: none;
 }
 
-.zdp-surface-reset .nav-list .zdp-link--muted:not(:focus-visible) {
-  color: var(--color-muted);
+.zdp-surface-reset .site-header .nav-list a.zdp-link.zdp-link--muted {
   font-weight: var(--zdp-font-weight-regular);
+}
+
+.zdp-surface-reset .site-header .nav-list a.zdp-link.zdp-link--muted:not(:focus-visible) {
+  color: var(--color-muted);
   padding-block-end: 0.22em;
   position: relative;
 }
 
-.zdp-surface-reset .nav-list .zdp-link--muted:hover:not(:focus-visible) {
-  color: var(--color-ink);
+.zdp-surface-reset .site-header .nav-list a.zdp-link.zdp-link--muted:hover:not(:focus-visible) {
+  color: var(--color-nav-active);
 }
 
-.zdp-surface-reset .nav-list .zdp-link--muted[aria-current="page"]:not(:focus-visible) {
-  color: var(--color-ink);
-  font-weight: var(--zdp-font-weight-medium);
+.zdp-surface-reset .site-header .nav-list a.zdp-link.zdp-link--muted[aria-current="page"]:not(:focus-visible) {
+  color: var(--color-nav-active);
 }
 
 .zdp-surface-reset .nav-list .zdp-link--muted:not(:focus-visible)::after {
@@ -729,7 +731,7 @@ code {
 }
 
 .glossary-sheet__summary,
-.glossary-sheet__detail {
+.glossary-sheet__detail p {
   margin: 0;
   line-height: 1.7;
 }
@@ -740,6 +742,8 @@ code {
 }
 
 .glossary-sheet__detail {
+  display: grid;
+  gap: var(--space-3);
   color: var(--color-muted);
 }
 

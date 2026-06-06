@@ -182,9 +182,9 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     readText("../zdp-design-system/src/styles/components.css")
   ]);
 
-  if (packageJson.version !== "0.4.68") {
+  if (packageJson.version !== "0.4.69") {
     failures.push(
-      "package.json version must be 0.4.68 for the shared glossary source contract."
+      "package.json version must be 0.4.69 for the split shared glossary source contract."
     );
   }
 
@@ -438,7 +438,10 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
         "typography-specimen zdp-surface zdp-surface--panel zdp-surface--padding-md",
         "components-preview zdp-surface zdp-surface--panel zdp-surface--padding-lg",
         "preview-row zdp-inline",
-        "기본 방향",
+        "적용 범위",
+        "hasOverviewSection",
+        "hasFactsSection",
+        "hasChecksSection",
         "컴포넌트 & 토큰 카탈로그",
         "Color Palette",
         "Typography",
@@ -483,7 +486,6 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
         "navigator.share",
         "navigator.clipboard.writeText",
         "복사 권한 필요",
-        "zdp-empty-state surface-placeholder",
         "핵심 정보",
         'aria-current="page"'
       ]
@@ -493,6 +495,16 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
       if (!content.includes(requiredText)) {
         failures.push(`${path} is missing design system usage ${requiredText}.`);
       }
+    }
+  }
+
+  for (const forbiddenText of [
+    "기본 방향",
+    "overviewText",
+    "zdp-empty-state surface-placeholder"
+  ]) {
+    if (surfacePage.includes(forbiddenText)) {
+      failures.push(`src/pages/[surface].astro must not reintroduce duplicated docs overview content ${forbiddenText}.`);
     }
   }
 
@@ -767,8 +779,13 @@ async function checkGlossarySheetContract(): Promise<void> {
     glossaryText,
     glossarySheet,
     glossaryScript,
-    localGlossaryYaml,
-    commonGlossaryYaml,
+    localGlossaryTermsYaml,
+    localGlossaryLocaleYaml,
+    commonDesignTermsYaml,
+    commonSecurityTermsYaml,
+    commonOperationsTermsYaml,
+    commonDesignLocaleYaml,
+    commonSecurityLocaleYaml,
     glossaryManifest,
     glossaryBuild,
     glossaryGenerate,
@@ -784,7 +801,12 @@ async function checkGlossarySheetContract(): Promise<void> {
       readText("src/components/GlossarySheet.astro"),
       readText("src/scripts/glossary-sheet.ts"),
       readText("glossary/terms/public.yaml"),
-      readText("../../contracts/zdp-libs-ts/glossary/terms/public.yaml"),
+      readText("glossary/locales/ko/public.yaml"),
+      readText("../../contracts/zdp-libs-ts/glossary/terms/design.yaml"),
+      readText("../../contracts/zdp-libs-ts/glossary/terms/security.yaml"),
+      readText("../../contracts/zdp-libs-ts/glossary/terms/operations.yaml"),
+      readText("../../contracts/zdp-libs-ts/glossary/locales/ko/design.yaml"),
+      readText("../../contracts/zdp-libs-ts/glossary/locales/ko/security.yaml"),
       readText("src/content/glossary-manifest.json"),
       readText("scripts/glossary-build.ts"),
       readText("scripts/generate-glossary.ts"),
@@ -852,6 +874,9 @@ async function checkGlossarySheetContract(): Promise<void> {
         "data-glossary-term",
             "openSheet",
             "closeSheet",
+            "renderDetailParagraphs",
+            "replaceChildren",
+            "document.createElement(\"p\")",
             "Escape",
             "trapFocus",
             "dataset.zdpTermId",
@@ -877,31 +902,80 @@ async function checkGlossarySheetContract(): Promise<void> {
     ],
     [
       "glossary/terms/public.yaml",
-      localGlossaryYaml,
+      localGlossaryTermsYaml,
       [
         "terms:",
         "terms: []"
       ]
     ],
     [
-      "../../contracts/zdp-libs-ts/glossary/terms/public.yaml",
-      commonGlossaryYaml,
+      "glossary/locales/ko/public.yaml",
+      localGlossaryLocaleYaml,
       [
-        "terms:",
+        "locale: ko",
+        "terms: []"
+      ]
+    ],
+    [
+      "../../contracts/zdp-libs-ts/glossary/terms/design.yaml",
+      commonDesignTermsYaml,
+      [
         "id: design.oklch",
-        "id: security.privacy-access-broker",
-        "id: security.owasp-asvs",
-        "id: operations.rate-limit",
-        "translation_status: reviewed",
+        "id: design.semantic-token",
         "trigger: click",
         "surface: term-sheet",
-            "desktop_placement: right-sheet",
-            "mobile_placement: bottom-sheet",
-            "hover_card: forbidden",
-            "term_sheet: forbidden",
-            "detail_page: future-experiment-only"
-          ]
-        ],
+        "desktop_placement: right-sheet",
+        "mobile_placement: bottom-sheet",
+        "hover_card: forbidden",
+        "term_sheet: forbidden"
+      ]
+    ],
+    [
+      "../../contracts/zdp-libs-ts/glossary/terms/security.yaml",
+      commonSecurityTermsYaml,
+      [
+        "id: security.privacy-access-broker",
+        "id: security.owasp-asvs",
+        "trigger: click",
+        "surface: term-sheet",
+        "desktop_placement: right-sheet",
+        "mobile_placement: bottom-sheet",
+        "hover_card: forbidden",
+        "term_sheet: forbidden"
+      ]
+    ],
+    [
+      "../../contracts/zdp-libs-ts/glossary/terms/operations.yaml",
+      commonOperationsTermsYaml,
+      [
+        "id: operations.rate-limit",
+        "owner: platform-operations",
+        "term_sheet: forbidden"
+      ]
+    ],
+    [
+      "../../contracts/zdp-libs-ts/glossary/locales/ko/design.yaml",
+      commonDesignLocaleYaml,
+      [
+        "locale: ko",
+        "id: design.oklch",
+        "translation_status: reviewed",
+        "aliases:",
+        "match_phrases:"
+      ]
+    ],
+    [
+      "../../contracts/zdp-libs-ts/glossary/locales/ko/security.yaml",
+      commonSecurityLocaleYaml,
+      [
+        "locale: ko",
+        "id: security.privacy-access-broker",
+        "id: security.owasp-asvs",
+        "translation_status: reviewed",
+        "aliases:",
+        "match_phrases:"
+      ]
+    ],
     [
       "src/content/glossary-manifest.json",
       glossaryManifest,
@@ -920,8 +994,10 @@ async function checkGlossarySheetContract(): Promise<void> {
       [
         "buildRuntimeGlossaryManifest",
         "buildGlossaryManifest",
-        "COMMON_GLOSSARY_ROOT",
+        "COMMON_GLOSSARY_TERMS_ROOT",
+        "COMMON_GLOSSARY_LOCALES_ROOT",
         "../../contracts/zdp-libs-ts/glossary/terms",
+        "../../contracts/zdp-libs-ts/glossary/locales",
         "WEB_PUBLIC_GLOSSARY_SOURCE_PATHS",
             "GLOSSARY_RUNTIME_MANIFEST_PATH",
             "src/content/glossary-manifest.json",
@@ -958,7 +1034,7 @@ async function checkGlossarySheetContract(): Promise<void> {
       [
         'import GlossaryText from "../components/GlossaryText.astro";',
         "heroSummary &&",
-        "<GlossaryText text={overviewText} />",
+        "<GlossaryText text={heroSummary} />",
         "<GlossaryText text={section.body} />",
         "<GlossaryText text={fact.description} />",
         "<GlossaryText text={check.note} />"

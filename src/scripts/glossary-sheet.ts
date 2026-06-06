@@ -90,7 +90,7 @@ function initializeGlossarySheet(root: Element): void {
       summary.textContent = term.summary;
     }
     if (detail) {
-      detail.textContent = term.detail;
+      renderDetailParagraphs(detail, term.detail);
     }
     if (source) {
       source.href = term.sourcePath;
@@ -159,6 +159,22 @@ function initializeGlossarySheet(root: Element): void {
       trapFocus(event, sheetElement);
     }
   });
+}
+
+function renderDetailParagraphs(container: HTMLElement, detail: string): void {
+  container.replaceChildren();
+
+  const paragraphs = detail
+    .trim()
+    .split(/\n\s*\n/g)
+    .map((paragraph) => paragraph.replace(/\s+/g, " ").trim())
+    .filter((paragraph) => paragraph.length > 0);
+
+  for (const paragraph of paragraphs) {
+    const paragraphElement = document.createElement("p");
+    paragraphElement.textContent = paragraph;
+    container.append(paragraphElement);
+  }
 }
 
 function readManifest(content: string): readonly GlossaryManifestEntry[] {

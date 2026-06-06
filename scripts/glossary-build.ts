@@ -1,13 +1,16 @@
 import { readdir, readFile } from "node:fs/promises";
+import type { Dirent } from "node:fs";
 import { join, relative, resolve } from "node:path";
 import {
   buildGlossaryManifest,
   type GlossaryManifestEntry as DevexGlossaryManifestEntry
 } from "../../../platform/zdp-platform-devex/src/glossary-devex";
 
-export const GLOSSARY_ROOT = "glossary/terms";
-export const COMMON_GLOSSARY_ROOT = "../../contracts/zdp-libs-ts/glossary/terms";
+export const GLOSSARY_TERMS_ROOT = "glossary/terms";
 export const GLOSSARY_LOCALE = "ko";
+export const GLOSSARY_LOCALES_ROOT = `glossary/locales/${GLOSSARY_LOCALE}`;
+export const COMMON_GLOSSARY_TERMS_ROOT = "../../contracts/zdp-libs-ts/glossary/terms";
+export const COMMON_GLOSSARY_LOCALES_ROOT = `../../contracts/zdp-libs-ts/glossary/locales/${GLOSSARY_LOCALE}`;
 export const GLOSSARY_PRODUCT = "zdp-web-public";
 export const GLOSSARY_SITE = "web-public-home";
 export const GLOSSARY_RUNTIME_MANIFEST_PATH = "src/content/glossary-manifest.json";
@@ -62,7 +65,7 @@ export async function buildRuntimeGlossaryManifest(root = resolve(".")): Promise
   const diagnostics: string[] = [];
 
   if (sourceFiles.length === 0) {
-    diagnostics.push(`${GLOSSARY_ROOT} must contain at least one YAML glossary source.`);
+    diagnostics.push(`${GLOSSARY_TERMS_ROOT} must contain at least one YAML glossary source.`);
   }
 
   const result = buildGlossaryManifest({
@@ -154,13 +157,30 @@ export function serializeRuntimeManifest(
 
 async function readGlossarySourceFiles(root: string): Promise<readonly string[]> {
   const files: string[] = [];
-  await collectYamlFiles(join(root, COMMON_GLOSSARY_ROOT), files);
-  await collectYamlFiles(join(root, GLOSSARY_ROOT), files);
+  await collectYamlFiles(join(root, COMMON_GLOSSARY_TERMS_ROOT), files);
+  await collectYamlFiles(join(root, COMMON_GLOSSARY_LOCALES_ROOT), files);
+  await collectYamlFiles(join(root, GLOSSARY_TERMS_ROOT), files);
+  await collectYamlFiles(join(root, GLOSSARY_LOCALES_ROOT), files);
   return files.sort((left, right) => left.localeCompare(right));
 }
 
 async function collectYamlFiles(directory: string, files: string[]): Promise<void> {
-  for (const entry of await readdir(directory, { withFileTypes: true })) {
+  let entries: Dirent<string>[];
+  try {
+    entries = await readdir(directory, { withFileTypes: true });
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      "code" in error &&
+      (error as NodeJS.ErrnoException).code === "ENOENT"
+    ) {
+      return;
+    }
+
+    throw error;
+  }
+
+  for (const entry of entries) {
     const entryPath = join(directory, entry.name);
     if (entry.isDirectory()) {
       await collectYamlFiles(entryPath, files);

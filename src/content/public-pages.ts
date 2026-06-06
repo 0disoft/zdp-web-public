@@ -42,98 +42,103 @@ export const publicPages: readonly PublicPage[] = [
     path: "/design",
     label: "디자인",
     heading: "디자인 표준",
-    summary: "화려함 대신 본질에 집중합니다. 8ailors의 모든 서비스는 일관된 디자인으로 어디서든 익숙하고, 누구나 쉽게 사용할 수 있도록 설계되었습니다.",
+    summary: "일관된 토큰과 컴포넌트로 익숙한 화면을 만듭니다.",
     items: [
       {
         title: "Foundation",
-        body: "색상은 OKLCH 토큰으로, 서체는 Pretendard Variable로 시작합니다. 다크 모드는 semantic 토큰별 dark 값을 따로 정의하고, filter: invert()로 만들지 않습니다.",
+        body: "색상은 OKLCH 토큰으로, 서체는 Pretendard Variable로 시작합니다. lang 속성을 붙이면 ko·en·zh·ja·hi별 서체 스택이 자동 교체됩니다.",
         status: "토대"
       },
       {
         title: "Components",
-        body: "인터랙티브 컴포넌트는 크기와 포커스 규칙을 공통으로 씁니다. Astro에서는 CSS 클래스를, Svelte·Tauri에서는 컴포넌트를 직접 가져옵니다.",
+        body: "버튼부터 Dialog·Menu·Toast·Skeleton까지 60개 Svelte 컴포넌트를 제공합니다. Astro 표면에서는 같은 이름의 CSS 클래스(zdp-*)를 씁니다.",
         status: "요소"
       },
       {
         title: "Patterns",
-        body: "공유, 검색, 브레드크럼 같은 반복 UI는 패턴으로 정의해 둡니다. 어느 페이지에서든 같은 방식으로 동작합니다.",
+        body: "공유(ShareDock), 검색, 브레드크럼, 용어 시트(TermSheet)는 패턴으로 정의해 둡니다. 어느 표면에서든 같은 방식으로 동작합니다.",
         status: "패턴"
+      },
+      {
+        title: "Interaction",
+        body: "위험한 작업은 ConfirmAction으로 슬라이드·홀드 확인합니다. 키보드 단축키는 intent 기반으로 등록하고, IME·텍스트 입력 중에는 자동으로 무시합니다.",
+        status: "인터랙션"
       }
     ],
     facts: [
       {
         term: "기준 패키지",
-        description: "zdp-design-system"
+        description: "zdp-design-system (v0.41+)"
       },
       {
         term: "적용 대상",
-        description: "공개 사이트(Astro), 앱(Svelte/SvelteKit), Tauri WebView, Flutter native"
+        description: "Astro 공개 사이트, Svelte 앱, Tauri WebView, Flutter native"
       },
       {
         term: "토큰 계층",
-        description: "raw token → semantic token → component token. 제품 코드는 raw 색상을 직접 쓰지 않습니다."
+        description: "raw → semantic → component. 제품 코드는 raw 색상을 직접 쓰지 않습니다."
       },
       {
-        term: "색상 원본",
-        description: "OKLCH 우선. HEX는 브라우저 fallback 또는 레거시 호환용."
+        term: "색상",
+        description: "OKLCH 우선, HEX는 @supports 분기 fallback."
       },
       {
         term: "다크 모드",
-        description: "semantic 토큰별 [data-zdp-theme=\"dark\"] 값을 따로 정의. 전역 invert 금지."
+        description: "[data-zdp-theme=\"dark\"]로 semantic 토큰을 덮어씁니다. 전역 invert 금지."
       },
       {
         term: "서체",
-        description: "UI: Pretendard Variable / 브랜드 로고: Playwrite AU VIC Guides / 표현용: Tangerine, Google Sans 등 6종 opt-in"
+        description: "UI: Pretendard Variable / 브랜드: Playwrite AU VIC Guides / 표현용: 6종 opt-in"
       },
       {
         term: "Motion",
-        description: "--zdp-motion-fast: 120ms / --zdp-motion-normal: 180ms. prefers-reduced-motion 환경에서는 1ms로 낮춤."
+        description: "fast 120ms · normal 180ms. prefers-reduced-motion 환경에서는 1ms."
       },
       {
         term: "Flutter / Native",
-        description: "tokens/zdp.tokens.json의 토큰 이름을 theme adapter 입력으로 사용."
+        description: "tokens/zdp.tokens.json 토큰 이름을 theme adapter 입력으로 사용합니다."
       }
     ],
     checks: [
       {
         item: "Public export",
         status: "유지",
-        note: "zdp-design-system의 공개 API만 씁니다. src/ 내부 경로 직접 참조 금지."
+        note: "zdp-design-system 공개 API만 씁니다. 내부 경로 직접 참조 금지."
       },
       {
         item: "Focus",
         status: "유지",
-        note: "모든 인터랙티브 요소에 키보드 포커스 링이 보입니다. focus 색을 브랜드 장식색으로 재사용하지 않습니다."
-      },
-      {
-        item: "Quick navigation",
-        status: "유지",
-        note: "본문 바로 건너뛰기 링크(SkipLink)와 키보드 단축키를 제공합니다."
+        note: "모든 인터랙티브 요소에 키보드 포커스 링이 보여야 합니다."
       },
       {
         item: "Flat UI",
         status: "유지",
-        note: "box-shadow와 그라디언트는 쓰지 않습니다. 여백과 1px 테두리로 레이아웃에 깊이를 둡니다."
-      },
-      {
-        item: "Expressive fonts opt-in",
-        status: "유지",
-        note: "표현용 폰트(expressive-fonts.css)는 명시적으로 import한 표면에서만 씁니다. 기본 UI 폰트를 바꾸지 않습니다."
-      },
-      {
-        item: "User select",
-        status: "유지",
-        note: "앱 root, 카드, 테이블, toast body에 user-select: none을 적용하지 않습니다. 화면에 노출된 값은 복사할 수 있어야 합니다."
+        note: "box-shadow·그라디언트 금지. --zdp-shadow-*는 의도적으로 none입니다."
       },
       {
         item: "Dark mode",
         status: "유지",
-        note: "다크 모드는 [data-zdp-theme=\"dark\"]로 semantic 토큰을 덮어씁니다. 직접 color: #fff 같은 하드코딩 금지."
+        note: "다크 모드는 [data-zdp-theme=\"dark\"] semantic 토큰 오버라이드만 씁니다."
       },
       {
         item: "Token fork 금지",
         status: "유지",
-        note: "token name을 제품별 별칭으로 복사해 fork하지 않습니다."
+        note: "토큰 이름을 제품별 별칭으로 복사해 fork하지 않습니다."
+      },
+      {
+        item: "ConfirmAction 패턴",
+        status: "유지",
+        note: "되돌리기 어려운 작업에는 반드시 ConfirmAction을 씁니다."
+      },
+      {
+        item: "i18n 서체",
+        status: "유지",
+        note: ".zdp-surface-reset + lang 속성 조합으로 서체 스택을 자동 교체합니다."
+      },
+      {
+        item: "Term sheet 광고 제외",
+        status: "유지",
+        note: "TermSheet에는 data-zdp-ad-exclude가 붙어 있어 광고 삽입을 막습니다."
       }
     ]
   },
@@ -146,71 +151,67 @@ export const publicPages: readonly PublicPage[] = [
     items: [
       {
         title: "경계 분리",
-        body: "인증, 결제, 원장, 개인정보 접근은 각자 독립된 서비스 경계 안에서만 처리합니다. 제품 코드에는 제품 고유 로직만 있어야 합니다.",
+        body: "인증·결제·원장·개인정보 접근은 독립된 서비스 경계 안에서만 처리합니다. 제품 코드에는 제품 로직만 있어야 합니다.",
         status: "원칙"
       },
       {
         title: "감사 로그",
-        body: "권한 변경, 결제 상태 변경, 개인정보 접근, 관리자 작업은 모두 불변 감사 로그에 기록됩니다. 행 수정과 삭제는 허용하지 않습니다.",
+        body: "권한 변경·결제·개인정보 접근·관리자 작업은 모두 불변 감사 로그에 기록됩니다. 행 수정과 삭제는 허용하지 않습니다.",
         status: "운영"
       },
       {
         title: "최소 권한",
-        body: "서비스와 사용자에게 실제 필요한 범위 이상의 권한을 부여하지 않습니다. 자동 처리 시스템은 사용자 데이터의 소유자가 아니라 허가된 범위 안에서만 접근하는 소비자입니다.",
+        body: "서비스와 사용자에게 필요한 범위 이상의 권한을 부여하지 않습니다. 자동 처리 시스템은 동의 확인 후 허가된 범위만 접근합니다.",
         status: "원칙"
       }
     ],
     facts: [
       {
         term: "비밀값 저장",
-        description: "일반 DB와 물리적으로 분리된 vault에 보관. 암호화 필수."
+        description: "일반 DB와 분리된 vault에 보관. 암호화 필수."
       },
       {
         term: "감사 로그",
-        description: "append-only 구조. 수정·삭제 불가."
+        description: "append-only. 수정·삭제 불가."
       },
       {
-        term: "자동 처리 시스템 데이터 접근",
-        description: "Privacy Access Broker를 거쳐 동의·목적 확인 후 최소 데이터만 전달."
+        term: "자동화 시스템 접근",
+        description: "Privacy Access Broker 경유, 동의·목적 확인 후 최소 데이터만 전달."
       },
       {
         term: "관리자 열람",
-        description: "마스킹 우선. 원문 열람은 사유·대상·만료 시간 입력 후 감사 로그에 기록."
+        description: "마스킹 우선. 원문 열람 시 사유·만료 시간 입력 후 감사 로그 기록."
       },
       {
         term: "계정 삭제",
-        description: "DB, 검색 색인, 시스템 캐시, 외부 provider 토큰 전체에 삭제 전파."
-      },
-      {
-        term: "보안 체크리스트",
-        description: "OWASP ASVS 기반. 인증 필요 여부, 권한 검사, rate limit, 감사 로그 필요 여부를 매 PR에서 확인."
+        description: "DB·검색 색인·캐시·외부 provider 토큰 전체에 삭제 전파."
       }
     ],
     checks: [
       {
         item: "제품-플랫폼 경계",
         status: "유지",
-        note: "결제, 원장, 권한, 자동화 개인정보 접근 로직은 제품 저장소에 직접 넣지 않습니다."
+        note: "결제·원장·권한·개인정보 접근 로직은 제품 저장소에 직접 넣지 않습니다."
       },
       {
         item: "비밀값 격리",
         status: "유지",
-        note: "API 키, OAuth 토큰, webhook secret은 별도 vault에만 저장합니다. 일반 DB와 분리합니다."
+        note: "API 키·OAuth 토큰·webhook secret은 별도 vault에만 저장합니다."
       },
       {
         item: "불변 감사 로그",
         status: "유지",
-        note: "권한 변경·결제·개인정보 접근·관리자 작업은 삭제할 수 없는 감사 로그에 남깁니다."
+        note: "권한 변경·결제·개인정보 접근·관리자 작업은 삭제 불가 로그에 남깁니다."
       },
       {
-        item: "자동 처리 시스템 접근 경계",
+        item: "자동화 시스템 접근 경계",
         status: "유지",
-        note: "외부 처리 엔진은 메일·메시지·결제 DB를 직접 읽지 않습니다. 동의 확인 후 필요한 조각만 전달받습니다."
+        note: "외부 처리 엔진은 동의 확인 후 필요한 조각만 전달받습니다."
       },
       {
         item: "삭제 전파",
         status: "유지",
-        note: "계정 삭제 시 모든 저장소에 삭제 이벤트를 전파합니다. 동기 처리 대신 job으로 처리합니다."
+        note: "계정 삭제 시 모든 저장소에 삭제 이벤트를 전파합니다."
       }
     ]
   },

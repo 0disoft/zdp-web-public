@@ -21,36 +21,39 @@ interface Props {
 
 const { page } = Astro.props as Props;
 const isDesignPage = page.id === "design";
-const heroHeading = isDesignPage ? "디자인 표준" : page.heading;
-const heroSummary = isDesignPage
-  ? "모든 서비스가 같은 시각 기준과 컴포넌트를 씁니다."
-  : page.summary;
+const heroHeading = page.heading;
+const heroSummary = page.summary;
 const title = `${heroHeading} - 8ailors`;
 const description = heroSummary ?? `${heroHeading} - 8ailors`;
-const designSections = [
-  {
-    id: "design-start",
-    label: "Overview",
-    title: "기본 방향",
-    body: "8ailors 서비스는 모두 같은 토큰과 컴포넌트를 씁니다. 장식은 최소화하고, 레이아웃 구조와 접근성을 먼저 챙깁니다."
-  },
+const designOverviewSection = {
+  id: "design-start",
+  label: "Overview",
+  title: "적용 범위"
+} as const;
+const designContentSections = [
   {
     id: "design-foundation",
     label: "Foundation",
     title: "색상과 글꼴",
-    body: "색상은 OKLCH 기반 토큰으로 관리하고, 본문 서체는 Pretendard Variable을 씁니다. 상태 색상은 경계 표시에만 쓰고 장식 목적으로는 쓰지 않습니다."
+    body: "색상은 OKLCH 토큰으로 관리하고, 서체는 Pretendard Variable을 씁니다. .zdp-surface-reset과 lang 속성을 함께 쓰면 ko·en·zh·ja·hi별 서체 스택이 자동 교체됩니다."
   },
   {
     id: "design-components",
     label: "Components",
     title: "컴포넌트",
-    body: "버튼, 링크, 입력 필드는 크기와 포커스 규칙을 공통으로 씁니다. 화면마다 따로 정의하지 않고 zdp-design-system 패키지에서 가져옵니다."
+    body: "버튼부터 Dialog·Menu·Toast·Skeleton까지 60개 Svelte 컴포넌트를 제공합니다. Astro 표면에서는 동일한 CSS 클래스(zdp-*)를 씁니다."
   },
   {
     id: "design-patterns",
     label: "Patterns",
     title: "반복 흐름",
-    body: "공유, 검색, 브레드크럼 같은 반복 UI는 패턴으로 정의해 둡니다. 어느 페이지에서든 같은 방식으로 동작합니다."
+    body: "공유(ShareDock), 검색, 브레드크럼, 용어 시트(TermSheet)는 패턴으로 정의해 둡니다. TermSheet는 데스크톱에서 오른쪽 sheet, 모바일에서 하단 sheet로 열립니다."
+  },
+  {
+    id: "design-interaction",
+    label: "Interaction",
+    title: "인터랙션",
+    body: "위험한 작업은 ConfirmAction으로 슬라이드·홀드 확인합니다. 키보드 단축키는 intent 기반(/, ?, G→H, G→S)으로 정의하고, IME·텍스트 입력 중에는 자동으로 무시합니다."
   },
   {
     id: "design-accessibility",
@@ -59,13 +62,18 @@ const designSections = [
     body: "키보드로 모든 요소를 탐색할 수 있어야 하고, 포커스 아웃라인은 항상 보여야 합니다. 스크린 리더용 랜드마크도 빠뜨리지 않습니다."
   }
 ] as const;
-const overviewText = isDesignPage ? designSections[0].body : page.summary;
+const hasOverviewSection = isDesignPage;
+const hasFactsSection = isDesignPage || page.facts.length > 0;
+const hasChecksSection = isDesignPage || page.checks.length > 0;
 const hasPageDetailContent =
-  isDesignPage ||
-  overviewText !== undefined ||
-  page.items.length > 0 ||
-  page.facts.length > 0 ||
-  page.checks.length > 0;
+  hasOverviewSection ||
+  hasFactsSection ||
+  hasChecksSection;
+const detailSectionLabelId = hasOverviewSection
+  ? "design-start-title"
+  : hasFactsSection
+    ? "design-tokens-title"
+    : "design-checks-title";
 ---
 
 <BaseLayout title={title} description={description} currentPath={page.path}>
@@ -105,35 +113,34 @@ const hasPageDetailContent =
   {hasPageDetailContent && (
     <section
       class="design-doc zdp-section zdp-section--spacing-lg zdp-divider zdp-divider--horizontal zdp-divider--subtle"
-      aria-labelledby="design-start-title"
+      aria-labelledby={detailSectionLabelId}
     >
     <div class="design-doc__layout zdp-container zdp-container--lg zdp-container--padding-md">
       <aside class="design-doc__rail" aria-label={`${page.label} 문서 네비게이션`}>
         <p class="section-label">Docs Nav</p>
         <nav class="design-doc__nav" aria-label={`${page.label} 섹션`}>
-          <a class="zdp-link zdp-link--muted" href="#design-start">Overview</a>
+          {hasOverviewSection && <a class="zdp-link zdp-link--muted" href="#design-start">Overview</a>}
           {isDesignPage && <a class="zdp-link zdp-link--muted" href="#design-showcase">Showcase</a>}
-          {isDesignPage && designSections.slice(1).map((section) => (
+          {isDesignPage && designContentSections.map((section) => (
             <a class="zdp-link zdp-link--muted" href={`#${section.id}`}>{section.label}</a>
           ))}
-          <a class="zdp-link zdp-link--muted" href="#design-tokens">{isDesignPage ? "Tokens" : "Facts"}</a>
-          <a class="zdp-link zdp-link--muted" href="#design-checks">Checklist</a>
+          {hasFactsSection && <a class="zdp-link zdp-link--muted" href="#design-tokens">{isDesignPage ? "Tokens" : "Facts"}</a>}
+          {hasChecksSection && <a class="zdp-link zdp-link--muted" href="#design-checks">Checklist</a>}
         </nav>
       </aside>
 
       <article class="design-doc__article">
-        <section id="design-start" class="design-doc__section" aria-labelledby="design-start-title">
-          <h2 id="design-start-title">기본 방향</h2>
-          {overviewText && <p><GlossaryText text={overviewText} /></p>}
-          {isDesignPage && (
+        {hasOverviewSection && (
+          <section id="design-start" class="design-doc__section" aria-labelledby="design-start-title">
+            <h2 id="design-start-title">{designOverviewSection.title}</h2>
             <div class="design-doc__platforms zdp-inline zdp-inline--gap-xs" aria-label="적용 대상">
               <span class="zdp-badge zdp-badge--neutral zdp-badge--sm">Astro</span>
               <span class="zdp-badge zdp-badge--neutral zdp-badge--sm">Svelte</span>
               <span class="zdp-badge zdp-badge--neutral zdp-badge--sm">Tauri</span>
               <span class="zdp-badge zdp-badge--neutral zdp-badge--sm">Flutter tokens</span>
             </div>
-          )}
-        </section>
+          </section>
+        )}
 
         {isDesignPage && (
           <section id="design-showcase" class="design-doc__section" aria-labelledby="design-showcase-title">
@@ -387,7 +394,7 @@ const hasPageDetailContent =
           </section>
         )}
 
-        {isDesignPage && designSections.slice(1).map((section) => (
+        {isDesignPage && designContentSections.map((section) => (
           <section id={section.id} class="design-doc__section" aria-labelledby={`${section.id}-title`}>
             <p class="section-label">{section.label}</p>
             <h2 id={`${section.id}-title`}>{section.title}</h2>
@@ -395,10 +402,10 @@ const hasPageDetailContent =
           </section>
         ))}
 
-        <section id="design-tokens" class="design-doc__section" aria-labelledby="design-tokens-title">
-          <p class="section-label">{isDesignPage ? "Tokens" : "Facts"}</p>
-          <h2 id="design-tokens-title">{isDesignPage ? "기준 토큰" : "핵심 정보"}</h2>
-          {isDesignPage ? (
+        {hasFactsSection && (
+          <section id="design-tokens" class="design-doc__section" aria-labelledby="design-tokens-title">
+            <p class="section-label">{isDesignPage ? "Tokens" : "Facts"}</p>
+            <h2 id="design-tokens-title">{isDesignPage ? "기준 토큰" : "핵심 정보"}</h2>
             <dl class="zdp-key-value zdp-key-value--columns-two" aria-labelledby="design-tokens-title">
               {page.facts.map((fact) => (
                 <>
@@ -407,29 +414,16 @@ const hasPageDetailContent =
                 </>
               ))}
             </dl>
-          ) : page.facts.length > 0 ? (
-            <dl class="zdp-key-value zdp-key-value--columns-two" aria-labelledby="design-tokens-title">
-              {page.facts.map((fact) => (
-                <>
-                  <dt>{fact.term}</dt>
-                  <dd><GlossaryText text={fact.description} /></dd>
-                </>
-              ))}
-            </dl>
-          ) : (
-            <div class="zdp-empty-state surface-placeholder" style="padding: var(--space-4) 0; border: none; background: transparent; text-align: left; align-items: flex-start;">
-              <p style="margin: 0; color: var(--color-ink-muted);">등록된 핵심 정보가 없습니다. 준비 중입니다.</p>
-            </div>
-          )}
-        </section>
+          </section>
+        )}
 
-        <section id="design-checks" class="design-doc__section" aria-labelledby="design-checks-title">
-          <p class="section-label">Checklist</p>
-          <h2 id="design-checks-title">검증 체크리스트</h2>
-          {isDesignPage ? (
+        {hasChecksSection && (
+          <section id="design-checks" class="design-doc__section" aria-labelledby="design-checks-title">
+            <p class="section-label">Checklist</p>
+            <h2 id="design-checks-title">검증 체크리스트</h2>
             <div class="zdp-table-wrap">
               <table class="zdp-table zdp-table--density-compact" aria-labelledby="design-checks-title">
-                <caption class="zdp-table__caption zdp-table__caption--hidden">디자인 검증 체크리스트</caption>
+                <caption class="zdp-table__caption zdp-table__caption--hidden">{isDesignPage ? "디자인 검증 체크리스트" : "검증 체크리스트"}</caption>
                 <thead>
                   <tr>
                     <th scope="col">항목</th>
@@ -448,34 +442,8 @@ const hasPageDetailContent =
                 </tbody>
               </table>
             </div>
-          ) : page.checks.length > 0 ? (
-            <div class="zdp-table-wrap">
-              <table class="zdp-table zdp-table--density-compact" aria-labelledby="design-checks-title">
-                <caption class="zdp-table__caption zdp-table__caption--hidden">검증 체크리스트</caption>
-                <thead>
-                  <tr>
-                    <th scope="col">항목</th>
-                    <th scope="col">상태</th>
-                    <th scope="col">기준</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {page.checks.map((check) => (
-                    <tr>
-                      <th scope="row">{check.item}</th>
-                      <td>{check.status}</td>
-                      <td><GlossaryText text={check.note} /></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div class="zdp-empty-state surface-placeholder" style="padding: var(--space-4) 0; border: none; background: transparent; text-align: left; align-items: flex-start;">
-              <p style="margin: 0; color: var(--color-ink-muted);">등록된 검증 기준이 없습니다. 준비 중입니다.</p>
-            </div>
-          )}
-        </section>
+          </section>
+        )}
       </article>
 
       <PublicShareDock pageId={page.id} title={heroHeading} text={heroSummary ?? heroHeading} path={page.path} placement="rail" />
