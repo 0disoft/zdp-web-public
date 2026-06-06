@@ -1,11 +1,12 @@
 {
   "name": "zdp-web-public",
-  "version": "0.4.67",
+  "version": "0.4.68",
   "private": true,
   "type": "module",
   "description": "ZDP public web surface for the candidate 8ailors home site.",
   "scripts": {
     "dev": "bun run glossary:generate && astro dev",
+    "preview": "bun run build && astro preview",
     "build": "bun run check && astro build",
     "check": "bun run check:glossary && astro check && bun run check:localization && bun run check:discovery",
     "check:discovery": "bun scripts/check-public-discovery.ts",

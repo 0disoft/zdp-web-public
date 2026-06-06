@@ -182,9 +182,9 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     readText("../zdp-design-system/src/styles/components.css")
   ]);
 
-  if (packageJson.version !== "0.4.67") {
+  if (packageJson.version !== "0.4.68") {
     failures.push(
-      "package.json version must be 0.4.67 for the glossary trigger inline padding contract."
+      "package.json version must be 0.4.68 for the shared glossary source contract."
     );
   }
 
@@ -767,7 +767,8 @@ async function checkGlossarySheetContract(): Promise<void> {
     glossaryText,
     glossarySheet,
     glossaryScript,
-    glossaryYaml,
+    localGlossaryYaml,
+    commonGlossaryYaml,
     glossaryManifest,
     glossaryBuild,
     glossaryGenerate,
@@ -783,6 +784,7 @@ async function checkGlossarySheetContract(): Promise<void> {
       readText("src/components/GlossarySheet.astro"),
       readText("src/scripts/glossary-sheet.ts"),
       readText("glossary/terms/public.yaml"),
+      readText("../../contracts/zdp-libs-ts/glossary/terms/public.yaml"),
       readText("src/content/glossary-manifest.json"),
       readText("scripts/glossary-build.ts"),
       readText("scripts/generate-glossary.ts"),
@@ -875,17 +877,21 @@ async function checkGlossarySheetContract(): Promise<void> {
     ],
     [
       "glossary/terms/public.yaml",
-      glossaryYaml,
+      localGlossaryYaml,
+      [
+        "terms:",
+        "terms: []"
+      ]
+    ],
+    [
+      "../../contracts/zdp-libs-ts/glossary/terms/public.yaml",
+      commonGlossaryYaml,
       [
         "terms:",
         "id: design.oklch",
         "id: security.privacy-access-broker",
         "id: security.owasp-asvs",
         "id: operations.rate-limit",
-        "products:",
-        "- zdp-web-public",
-        "sites:",
-        "- web-public-home",
         "translation_status: reviewed",
         "trigger: click",
         "surface: term-sheet",
@@ -914,6 +920,9 @@ async function checkGlossarySheetContract(): Promise<void> {
       [
         "buildRuntimeGlossaryManifest",
         "buildGlossaryManifest",
+        "COMMON_GLOSSARY_ROOT",
+        "../../contracts/zdp-libs-ts/glossary/terms",
+        "WEB_PUBLIC_GLOSSARY_SOURCE_PATHS",
             "GLOSSARY_RUNTIME_MANIFEST_PATH",
             "src/content/glossary-manifest.json",
             "toRuntimeGlossaryEntry",

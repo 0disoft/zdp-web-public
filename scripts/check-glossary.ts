@@ -26,7 +26,7 @@ try {
 const expectedRuntimeManifest = serializeRuntimeManifest(result.runtimeManifest);
 if (currentRuntimeManifest !== "" && currentRuntimeManifest !== expectedRuntimeManifest) {
   failures.push(
-    `${GLOSSARY_RUNTIME_MANIFEST_PATH} is stale. Run bun run glossary:generate after editing glossary/terms YAML.`
+    `${GLOSSARY_RUNTIME_MANIFEST_PATH} is stale. Run bun run glossary:generate after editing common or local glossary YAML.`
   );
 }
 

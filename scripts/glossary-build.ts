@@ -6,11 +6,26 @@ import {
 } from "../../../platform/zdp-platform-devex/src/glossary-devex";
 
 export const GLOSSARY_ROOT = "glossary/terms";
+export const COMMON_GLOSSARY_ROOT = "../../contracts/zdp-libs-ts/glossary/terms";
 export const GLOSSARY_LOCALE = "ko";
 export const GLOSSARY_PRODUCT = "zdp-web-public";
 export const GLOSSARY_SITE = "web-public-home";
 export const GLOSSARY_RUNTIME_MANIFEST_PATH = "src/content/glossary-manifest.json";
 export const STABLE_GENERATED_AT = "2026-06-05T00:00:00.000Z";
+
+const WEB_PUBLIC_GLOSSARY_SOURCE_PATHS: Readonly<Record<string, string>> = {
+  "design.oklch": "/design#design-foundation",
+  "design.semantic-token": "/design#design-tokens",
+  "platform.astro": "/design#design-start",
+  "platform.svelte": "/design#design-start",
+  "platform.tauri": "/design#design-start",
+  "platform.flutter-token": "/design#design-tokens",
+  "security.vault": "/security#design-tokens",
+  "security.audit-log": "/security#design-checks",
+  "security.privacy-access-broker": "/security#design-tokens",
+  "security.owasp-asvs": "/security#design-tokens",
+  "operations.rate-limit": "/security#design-tokens"
+};
 
 export interface RuntimeGlossaryAdPolicy {
   readonly eligible: boolean;
@@ -123,7 +138,7 @@ export function toRuntimeGlossaryEntry(term: DevexGlossaryManifestEntry): Runtim
     category: readCategory(term.id),
     aliases: term.aliases,
     matchPhrases: term.matchPhrases,
-    sourcePath: term.canonicalPath ?? "/",
+    sourcePath: WEB_PUBLIC_GLOSSARY_SOURCE_PATHS[term.id] ?? term.canonicalPath ?? "/",
     adPolicy:
       term.adPolicy.detailPage === "future-experiment-only"
         ? createReservedDetailAdPolicy(`glossary-detail-${term.id.replaceAll(".", "-")}`)
@@ -139,6 +154,7 @@ export function serializeRuntimeManifest(
 
 async function readGlossarySourceFiles(root: string): Promise<readonly string[]> {
   const files: string[] = [];
+  await collectYamlFiles(join(root, COMMON_GLOSSARY_ROOT), files);
   await collectYamlFiles(join(root, GLOSSARY_ROOT), files);
   return files.sort((left, right) => left.localeCompare(right));
 }
