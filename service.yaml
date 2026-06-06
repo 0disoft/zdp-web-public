@@ -174,12 +174,15 @@ observability:
     redacted_attributes: []
 
 dependencies:
-  services: []
+  services:
+    - platform-localization
   datastores: []
   queues: []
   workers: []
   internal_apis: []
-  fallback_paths: []
+  fallback_paths:
+    - keep hardcoded static Astro copy if localization hot patching fails during dogfooding
+    - keep src/content/glossary-manifest.json aligned with glossary/terms YAML if devex validation is unavailable
 
 providers: []
 
@@ -256,6 +259,7 @@ human_review_required: []
 exit:
   success_criteria:
     - first public home-site information architecture is reviewable without backend dependencies
+    - bun run check:localization passes with catalog diagnostics 0 and production fallback count 0
   kill_criteria:
     - 8ailors.xyz becomes unavailable or is replaced before public launch
     - the public home site starts requiring login, payment, or user data before core boundaries exist
@@ -271,3 +275,8 @@ notes:
   - Cross-cutting product standards are owned by zdp-architecture/docs/45-cross-cutting-product-standards.md.
   - Public discovery files must not contain internal URLs, staging URLs, private customer data, or non-public architecture documents.
   - Public feeds must be generated as static build artifacts once real public content exists; runtime feed generation is not the default.
+  - Glossary explanations use stable term_id values, click-triggered right sheet and bottom sheet surfaces, and data-zdp-ad-exclude sheet roots. Hover-only glossary UI is not allowed because it fails touch and focus constraints.
+  - Glossary term sources live under glossary/terms YAML; bun run glossary:generate derives src/content/glossary-manifest.json through the zdp-platform-devex glossary manifest builder.
+  - bun run check must fail on stale glossary-manifest.json instead of regenerating it before the freshness check.
+  - bun run check:localization runs zdp-platform-localization catalog check and strict production compile; fallback messages are not allowed in the public site localization manifest.
+  - Glossary term sheets do not include ad slots; AdSense, Ezoic, or another provider may only be considered through a separate detail-page experiment contract.

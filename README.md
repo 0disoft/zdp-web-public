@@ -1,6 +1,6 @@
 # zdp-web-public
 
-ZDP 공개 웹 표면 저장소다. 초기 목적은 `8ailors.xyz` 본체 사이트 후보와 공개 제품 목록, 문서, 정책, 문의 경로를 Astro 기반 정적 사이트로 운영하는 것이다.
+ZDP 공개 웹 서비스 저장소다. 초기 목적은 `8ailors.xyz` 본체 사이트 후보와 공개 제품 목록, 문서, 정책, 문의 경로를 Astro 기반 정적 사이트로 운영하는 것이다.
 
 ## 현재 범위
 
@@ -10,7 +10,8 @@ ZDP 공개 웹 표면 저장소다. 초기 목적은 `8ailors.xyz` 본체 사이
 - `/products`, `/design`, `/security`, `/payment-safety`, `/labs`, `/roadmap`, `/notes`, `/trust`, `/contact` 정적 페이지
 - 디자인 시스템 Breadcrumb, Badge, EmptyState, Grid, Icon, Inline, KeyValue, Link, SkipLink, Stack, Table, Toolbar, VisuallyHidden, 현재 페이지 표시를 적용한 정적 페이지 탐색
 - 디자인, 보안, 결제 안전, 실험실, 로드맵 페이지의 공개 검증 기준 블록
-- 디자인, 보안, 결제 안전, 실험실, 로드맵 페이지의 핵심 정보 표면
+- 디자인, 보안, 결제 안전, 실험실, 로드맵 페이지의 핵심 정보 화면
+- 전문용어를 클릭하면 열리는 right sheet / bottom sheet 기반 용어 설명
 - 키보드 사용자를 위한 디자인 시스템 본문 건너뛰기 링크
 - 후보 도메인 상태를 설명하는 공개 전 안내 블록
 - ZDP 공개 제품과 실험 목록
@@ -46,11 +47,22 @@ ZDP 공개 웹 표면 저장소다. 초기 목적은 `8ailors.xyz` 본체 사이
 아키텍처 검증은 `zdp-architecture-linter`에서 이 저장소를 대상으로 실행한다.
 
 ```bash
+bun run glossary:generate
 bun run check
+bun run check:localization
+bun run check:glossary
 bun run check:discovery
 bun run build
 ```
 
-`check:discovery`는 후보 도메인 단계의 `webpub.toml`, `robots.txt`, `llms.txt`, 페이지 목록, 디자인 시스템 소비 계약, 검색 제출용 산출물 부재를 함께 확인한다. 홈과 상세 페이지가 `zdp-design-system`의 grid, toolbar, key-value, table, empty-state public utility를 실제로 소비하고, sibling design system이 ConfirmAction, icon glyph, choice control, themed scrollbar 계약도 제공하는지 함께 본다. `sitemap.xml`, `rss.xml`, `atom.xml`, `feed.json`은 지금 빠진 것이 아니라 `domain_status = "live"`가 되기 전까지 의도적으로 만들지 않는 파일이다.
+`check:localization`은 `messages/` 아래의 `zdp-platform-localization` schema/content 분리를 검사하고, 임시 디렉터리에서 strict production compile을 실행해 fallback message가 0개인지 확인한다. 홈의 작은 Astro dogfooding 표면이라도 문구 JSON이 schema params를 깨거나 잘못된 message syntax를 갖거나 production manifest에 fallback이 생기면 `bun run check`가 먼저 실패해야 한다.
+
+`glossary:generate`는 `glossary/terms/*.yaml`을 `zdp-platform-devex`의 glossary manifest 빌더로 읽고 `src/content/glossary-manifest.json`을 만든다. Astro 런타임은 이 JSON만 소비하며, `src/content/glossary.ts`에는 용어 본문을 중복해서 넣지 않는다.
+
+`check:glossary`는 YAML에서 다시 만든 런타임 manifest와 현재 `src/content/glossary-manifest.json`이 같은지 비교한다. `bun run check`는 stale manifest를 고치지 않고 실패해야 하므로, 용어 YAML을 수정한 뒤에는 먼저 `bun run glossary:generate`로 generated JSON을 갱신한다. 용어 설명 원천은 사이트 코드 안 임시 배열이 아니라 ZDP 플랫폼 glossary 계약을 따르는 YAML이어야 한다.
+
+`check:discovery`는 후보 도메인 단계의 `webpub.toml`, `robots.txt`, `llms.txt`, 페이지 목록, 디자인 시스템 소비 계약, 검색 제출용 산출물 부재를 함께 확인한다. 홈과 상세 페이지가 `zdp-design-system`의 grid, toolbar, key-value, table, empty-state public utility를 실제로 소비하고, sibling design system이 ConfirmAction, icon glyph, choice control, themed scrollbar, brand font, expressive font 계약도 제공하는지 함께 본다. 브랜드 워드마크 폰트는 앱이 직접 Fontsource 패키지를 소유하지 않고 `zdp-design-system/brand-fonts.css`와 `--zdp-font-family-brand`를 통해 소비하며, `lang="ko"` 표면에서도 실제 워드마크 텍스트에 `.zdp-brand-wordmark`를 붙이고 `medium` weight를 유지한다. 표현용 폰트는 public 사이트가 실제 캠페인 섹션에서 필요해질 때 `zdp-design-system/expressive-fonts.css`를 별도 import해서 쓴다. `sitemap.xml`, `rss.xml`, `atom.xml`, `feed.json`은 지금 빠진 것이 아니라 `domain_status = "live"`가 되기 전까지 의도적으로 만들지 않는 파일이다.
+
+용어 설명은 hover tooltip이 아니라 click sheet 패턴으로 유지한다. 데스크톱에서는 오른쪽 sheet, 모바일에서는 bottom sheet로 열리고, sheet root는 stable `term_id`와 `data-zdp-ad-exclude`를 남긴다. Sheet 안에는 광고 slot을 넣지 않고, 광고 실험은 별도 용어 detail page 계약에서만 다룬다. 새 용어를 추가할 때는 `glossary/terms/public.yaml`에 먼저 추가하고 `bun run glossary:generate`로 런타임 manifest를 갱신한다.
 
 `robots.txt`와 페이지 메타 태그는 공개 전까지 검색 노출을 막는다.

@@ -10,7 +10,6 @@ This site is a static public preview. Treat `8ailors.xyz` as a candidate domain 
 - `/products`: Public product and experiment list
 - `/design`: Public design-system principles
 - `/security`: Public security and trust principles
-- `/payment-safety`: Public payment and ledger-safety principles
 - `/labs`: Public labs and experiment boundary
 - `/roadmap`: Public roadmap boundary
 - `/notes`: Public notes and changelog placeholder

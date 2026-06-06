@@ -42,13 +42,6 @@ status = "draft"
 indexing = "blocked"
 
 [[pages]]
-url = "/payment-safety"
-title = "결제 안전"
-section = "payment-safety"
-status = "draft"
-indexing = "blocked"
-
-[[pages]]
 url = "/labs"
 title = "실험실"
 section = "labs"

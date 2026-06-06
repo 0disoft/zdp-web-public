@@ -1,0 +1,17 @@
+{
+  "scope": "home",
+  "keys": {
+    "hero.title": {
+      "description": "Home hero brand title.",
+      "owner": "web-public"
+    },
+    "hero.cta.products": {
+      "description": "Home hero products link label.",
+      "owner": "web-public"
+    },
+    "hero.cta.trust": {
+      "description": "Home hero trust and policy link label.",
+      "owner": "web-public"
+    }
+  }
+}

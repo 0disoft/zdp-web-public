@@ -1,17 +1,24 @@
 {
   "name": "zdp-web-public",
-  "version": "0.4.31",
+  "version": "0.4.55",
   "private": true,
   "type": "module",
   "description": "ZDP public web surface for the candidate 8ailors home site.",
   "scripts": {
-    "dev": "astro dev",
+    "dev": "bun run glossary:generate && astro dev",
     "build": "bun run check && astro build",
-    "check": "astro check && bun run check:discovery",
-    "check:discovery": "bun scripts/check-public-discovery.ts"
+    "check": "bun run check:glossary && astro check && bun run check:localization && bun run check:discovery",
+    "check:discovery": "bun scripts/check-public-discovery.ts",
+    "check:glossary": "bun scripts/check-glossary.ts",
+    "check:localization": "bun scripts/check-localization.ts",
+    "glossary:generate": "bun scripts/generate-glossary.ts"
   },
   "dependencies": {
-    "@fontsource/rubik-distressed": "^5.2.7",
+    "@zdp/localization-astro": "file:../../platform/zdp-platform-localization/packages/astro",
+    "@zdp/localization-compiler": "file:../../platform/zdp-platform-localization/packages/compiler",
+    "@zdp/localization-core": "file:../../platform/zdp-platform-localization/packages/core",
+    "@zdp/localization-runtime": "file:../../platform/zdp-platform-localization/packages/runtime",
+    "@zdp/localization-vite": "file:../../platform/zdp-platform-localization/packages/vite",
     "zdp-design-system": "file:../zdp-design-system"
   },
   "devDependencies": {

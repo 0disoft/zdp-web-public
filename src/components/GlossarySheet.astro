@@ -1,0 +1,48 @@
+---
+import { getGlossaryManifest } from "../content/glossary";
+
+const glossaryManifestJson = JSON.stringify(getGlossaryManifest("ko")).replace(/</g, "\\u003c");
+---
+
+<div class="glossary-sheet-root" data-glossary-root data-glossary-locale="ko">
+  <button
+    class="glossary-sheet__backdrop"
+    type="button"
+    data-glossary-close
+    aria-label="용어 설명 닫기"
+    hidden
+  ></button>
+  <aside
+    id="glossary-sheet"
+    class="glossary-sheet"
+    role="dialog"
+    aria-modal="true"
+    aria-hidden="true"
+    aria-labelledby="glossary-sheet-title"
+    tabindex="-1"
+    data-glossary-sheet
+    data-zdp-ad-exclude="true"
+    data-zdp-term-placement="right-sheet"
+    data-zdp-term-surface="sheet"
+  >
+    <div class="glossary-sheet__header">
+      <div class="glossary-sheet__title-group">
+        <p class="section-label" data-glossary-category>Glossary</p>
+        <h2 id="glossary-sheet-title" data-glossary-title>용어</h2>
+      </div>
+      <button class="zdp-button zdp-button--md zdp-button--secondary" type="button" data-glossary-close>
+        닫기
+      </button>
+    </div>
+    <div class="glossary-sheet__body">
+      <p class="glossary-sheet__summary" data-glossary-summary></p>
+      <p class="glossary-sheet__detail" data-glossary-detail></p>
+      <a class="zdp-link glossary-sheet__source" href="/" data-glossary-source>관련 화면으로 이동</a>
+    </div>
+  </aside>
+  <script is:inline type="application/json" data-glossary-manifest set:html={glossaryManifestJson} />
+</div>
+
+<script>
+  import "../scripts/glossary-sheet";
+</script>

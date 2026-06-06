@@ -1,18 +1,31 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { publicPages } from "../content/public-pages";
+import GlossaryText from "../components/GlossaryText.astro";
+import { localizedHomeText } from "../lib/localized-astro";
 
 const title = "8ailors";
 const description = "8ailors — 제품, 기록, 정책, 문의 포털";
+const devLocalizationPatcherScript = import.meta.env.DEV
+  ? '<script type="module" src="/src/scripts/localization-dev-patcher.ts"></script>'
+  : "";
 ---
 
 <BaseLayout title={title} description={description} currentPath="/">
   <section class="hero zdp-section zdp-section--spacing-xl" aria-labelledby="home-title">
     <div class="hero-copy-block zdp-container zdp-container--lg zdp-container--padding-md">
-      <h1 id="home-title">8ailors</h1>
+      <h1 id="home-title" set:html={localizedHomeText("hero.title", undefined, import.meta.env.DEV)} />
       <div class="actions zdp-inline zdp-inline--gap-sm zdp-inline--align-center" aria-label="주요 이동">
-        <a class="zdp-button zdp-button--md zdp-button--primary" href="#products">제품</a>
-        <a class="zdp-button zdp-button--md zdp-button--secondary" href="#trust">정책</a>
+        <a
+          class="zdp-button zdp-button--md zdp-button--primary"
+          href="#products"
+          set:html={localizedHomeText("hero.cta.products", undefined, import.meta.env.DEV)}
+        />
+        <a
+          class="zdp-button zdp-button--md zdp-button--secondary"
+          href="#trust"
+          set:html={localizedHomeText("hero.cta.trust", undefined, import.meta.env.DEV)}
+        />
       </div>
     </div>
   </section>
@@ -29,7 +42,7 @@ const description = "8ailors — 제품, 기록, 정책, 문의 포털";
           <h2 id={`${section.id}-title`} class="section-heading">
             {section.heading}
           </h2>
-          <p>{section.summary}</p>
+          <p><GlossaryText text={section.summary} /></p>
           <div class="zdp-toolbar zdp-toolbar--gap-md zdp-toolbar--align-center">
             <div class="zdp-toolbar__main">
               <a class="zdp-link" href={section.path}>{section.label} 보기</a>
@@ -47,7 +60,7 @@ const description = "8ailors — 제품, 기록, 정책, 문의 포털";
               <article class="surface-item zdp-surface zdp-surface--panel zdp-surface--padding-lg">
                 <span class="zdp-badge zdp-badge--primary zdp-badge--sm">{item.status}</span>
                 <h3>{item.title}</h3>
-                <p>{item.body}</p>
+                <p><GlossaryText text={item.body} /></p>
               </article>
             ))}
           </div>
@@ -56,7 +69,7 @@ const description = "8ailors — 제품, 기록, 정책, 문의 포털";
           <section class="zdp-empty-state zdp-empty-state--raised" aria-labelledby={`${section.id}-empty-title`}>
             <div class="zdp-empty-state__body">
               <h3 id={`${section.id}-empty-title`}>공개 전 기준을 정리하고 있습니다.</h3>
-              <p>{section.summary}</p>
+              <p><GlossaryText text={section.summary} /></p>
             </div>
             <div class="zdp-empty-state__actions">
               <a class="zdp-button zdp-button--md zdp-button--secondary" href={section.path}>{section.label} 보기</a>
@@ -66,4 +79,5 @@ const description = "8ailors — 제품, 기록, 정책, 문의 포털";
       </div>
     </section>
   ))}
+  <Fragment set:html={devLocalizationPatcherScript} />
 </BaseLayout>

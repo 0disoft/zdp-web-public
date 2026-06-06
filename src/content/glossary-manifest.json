@@ -1,0 +1,310 @@
+[
+  {
+    "id": "security.audit-log",
+    "label": "감사 로그",
+    "summary": "누가 언제 중요한 작업을 했는지 지울 수 없게 남기는 기록입니다.",
+    "detail": "권한 변경, 결제 상태 변경, 개인정보 접근처럼 나중에 설명해야 하는 사건을 남깁니다. append-only는 기존 기록을 고치지 않고 새 기록만 더한다는 뜻입니다.",
+    "category": "security",
+    "aliases": [
+      "감사 로그",
+      "append-only"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "append-only",
+        "autoMatch": true,
+        "priority": 85
+      },
+      {
+        "phrase": "감사 로그",
+        "autoMatch": true,
+        "priority": 80
+      }
+    ],
+    "sourcePath": "/security#design-checks",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-security-audit-log",
+      "note": "별도 용어 상세 페이지에서만 실험할 수 있는 예약 슬롯입니다."
+    }
+  },
+  {
+    "id": "platform.astro",
+    "label": "Astro",
+    "summary": "정적 페이지와 콘텐츠 중심 사이트를 빠르게 만드는 프론트엔드 프레임워크입니다.",
+    "detail": "ZDP 공개 사이트에서는 로그인이나 앱 상태를 들고 있지 않은 문서, 정책, 제품 소개 화면을 Astro 쪽에 둡니다.",
+    "category": "platform",
+    "aliases": [
+      "Astro"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "Astro",
+        "autoMatch": true,
+        "priority": 80
+      }
+    ],
+    "sourcePath": "/design#design-start",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-platform-astro",
+      "note": "별도 용어 상세 페이지에서만 실험할 수 있는 예약 슬롯입니다."
+    }
+  },
+  {
+    "id": "platform.flutter-token",
+    "label": "Flutter Tokens",
+    "summary": "웹 디자인 토큰을 네이티브 앱 테마로 옮기기 위한 입력값입니다.",
+    "detail": "토큰 이름을 유지하면 웹, 데스크톱, 모바일이 같은 의미의 색과 간격을 쓸 수 있습니다. 플랫폼별 구현만 다르고 의미 계약은 유지합니다.",
+    "category": "platform",
+    "aliases": [
+      "Flutter tokens",
+      "Flutter / Native",
+      "Flutter"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "Flutter / Native",
+        "autoMatch": true,
+        "priority": 90
+      },
+      {
+        "phrase": "Flutter Tokens",
+        "autoMatch": true,
+        "priority": 85
+      },
+      {
+        "phrase": "Flutter",
+        "autoMatch": true,
+        "priority": 80
+      }
+    ],
+    "sourcePath": "/design#design-tokens",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-platform-flutter-token",
+      "note": "별도 용어 상세 페이지에서만 실험할 수 있는 예약 슬롯입니다."
+    }
+  },
+  {
+    "id": "design.oklch",
+    "label": "OKLCH",
+    "summary": "사람이 느끼는 밝기와 색 차이에 더 가깝게 색을 다루는 색상 방식입니다.",
+    "detail": "HEX보다 밝기와 채도를 예측하기 쉬워서 라이트 모드와 다크 모드 색을 맞출 때 덜 흔들립니다. ZDP 화면에서는 원시 색상값보다 토큰을 통해 소비합니다.",
+    "category": "design",
+    "aliases": [
+      "OKLCH"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "OKLCH",
+        "autoMatch": true,
+        "priority": 100
+      }
+    ],
+    "sourcePath": "/design#design-foundation",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-design-oklch",
+      "note": "별도 용어 상세 페이지에서만 실험할 수 있는 예약 슬롯입니다."
+    }
+  },
+  {
+    "id": "security.owasp-asvs",
+    "label": "OWASP ASVS",
+    "summary": "웹 애플리케이션 보안을 점검할 때 쓰는 공개 검증 기준입니다.",
+    "detail": "인증, 권한, 입력 검증, 로그 같은 항목을 빠뜨리지 않게 도와줍니다. ZDP에서는 제품마다 제멋대로 보안 체크를 만들지 않기 위한 기준점으로 둡니다.",
+    "category": "security",
+    "aliases": [
+      "OWASP ASVS"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "OWASP ASVS",
+        "autoMatch": true,
+        "priority": 100
+      }
+    ],
+    "sourcePath": "/security#design-tokens",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-security-owasp-asvs",
+      "note": "별도 용어 상세 페이지에서만 실험할 수 있는 예약 슬롯입니다."
+    }
+  },
+  {
+    "id": "security.privacy-access-broker",
+    "label": "Privacy Access Broker",
+    "summary": "AI나 내부 도구가 사용자 데이터를 읽기 전에 목적과 범위를 확인하는 중간 경계입니다.",
+    "detail": "AI가 데이터베이스를 직접 뒤지는 구조를 피하고, 동의와 목적에 맞는 최소 조각만 넘겨주는 역할을 합니다.",
+    "category": "security",
+    "aliases": [
+      "Privacy Access Broker",
+      "AI 데이터 접근"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "Privacy Access Broker",
+        "autoMatch": true,
+        "priority": 100
+      },
+      {
+        "phrase": "AI 데이터 접근",
+        "autoMatch": true,
+        "priority": 80
+      }
+    ],
+    "sourcePath": "/security#design-tokens",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-security-privacy-access-broker",
+      "note": "별도 용어 상세 페이지에서만 실험할 수 있는 예약 슬롯입니다."
+    }
+  },
+  {
+    "id": "operations.rate-limit",
+    "label": "Rate Limit",
+    "summary": "너무 많은 요청이 한 번에 몰리지 않게 속도를 제한하는 장치입니다.",
+    "detail": "로그인 시도, 검색, API 호출 같은 곳에 둡니다. 사용자를 막으려는 기능이 아니라 서비스가 터지지 않게 숨을 고르게 하는 안전장치입니다.",
+    "category": "operations",
+    "aliases": [
+      "rate limit",
+      "Rate limit"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "Rate Limit",
+        "autoMatch": true,
+        "priority": 90
+      },
+      {
+        "phrase": "rate limit",
+        "autoMatch": true,
+        "priority": 80
+      }
+    ],
+    "sourcePath": "/security#design-tokens",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-operations-rate-limit",
+      "note": "별도 용어 상세 페이지에서만 실험할 수 있는 예약 슬롯입니다."
+    }
+  },
+  {
+    "id": "design.semantic-token",
+    "label": "Semantic Token",
+    "summary": "색 이름 대신 역할 이름으로 쓰는 디자인 값입니다.",
+    "detail": "예를 들어 초록색을 직접 쓰는 대신 success, surface, focus 같은 역할 이름을 씁니다. 그래서 테마가 바뀌어도 제품 코드는 같은 이름을 유지할 수 있습니다.",
+    "category": "design",
+    "aliases": [
+      "semantic 토큰",
+      "semantic token",
+      "semantic tokens"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "Semantic Token",
+        "autoMatch": true,
+        "priority": 90
+      },
+      {
+        "phrase": "semantic 토큰",
+        "autoMatch": true,
+        "priority": 80
+      }
+    ],
+    "sourcePath": "/design#design-tokens",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-design-semantic-token",
+      "note": "별도 용어 상세 페이지에서만 실험할 수 있는 예약 슬롯입니다."
+    }
+  },
+  {
+    "id": "platform.svelte",
+    "label": "Svelte",
+    "summary": "상태가 있는 앱 화면을 작게 만들기 좋은 UI 컴파일러입니다.",
+    "detail": "ZDP에서는 콘솔, 관리자, 계정 설정처럼 사용자가 조작하는 화면에 주로 씁니다. 공개 정적 페이지 전체를 무리하게 Svelte로 바꾸지는 않습니다.",
+    "category": "platform",
+    "aliases": [
+      "Svelte",
+      "SvelteKit"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "SvelteKit",
+        "autoMatch": true,
+        "priority": 85
+      },
+      {
+        "phrase": "Svelte",
+        "autoMatch": true,
+        "priority": 80
+      }
+    ],
+    "sourcePath": "/design#design-start",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-platform-svelte",
+      "note": "별도 용어 상세 페이지에서만 실험할 수 있는 예약 슬롯입니다."
+    }
+  },
+  {
+    "id": "platform.tauri",
+    "label": "Tauri",
+    "summary": "웹 UI를 데스크톱 앱 껍데기 안에서 실행하게 해주는 프레임워크입니다.",
+    "detail": "같은 디자인 토큰을 웹과 데스크톱에서 공유하되, 파일 시스템이나 OS 권한 같은 민감한 부분은 데스크톱 경계에서 따로 다룹니다.",
+    "category": "platform",
+    "aliases": [
+      "Tauri",
+      "Tauri WebView"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "Tauri WebView",
+        "autoMatch": true,
+        "priority": 85
+      },
+      {
+        "phrase": "Tauri",
+        "autoMatch": true,
+        "priority": 80
+      }
+    ],
+    "sourcePath": "/design#design-start",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-platform-tauri",
+      "note": "별도 용어 상세 페이지에서만 실험할 수 있는 예약 슬롯입니다."
+    }
+  },
+  {
+    "id": "security.vault",
+    "label": "Vault",
+    "summary": "API 키나 토큰 같은 비밀값을 일반 데이터와 분리해 보관하는 저장소입니다.",
+    "detail": "제품 DB에 비밀값을 섞으면 권한 실수 하나로 피해가 커집니다. ZDP에서는 비밀값 저장과 일반 콘텐츠 저장을 다른 경계로 나눕니다.",
+    "category": "security",
+    "aliases": [
+      "vault",
+      "비밀값 저장"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "비밀값 저장",
+        "autoMatch": true,
+        "priority": 80
+      },
+      {
+        "phrase": "vault",
+        "autoMatch": true,
+        "priority": 70
+      }
+    ],
+    "sourcePath": "/security#design-tokens",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-security-vault",
+      "note": "별도 용어 상세 페이지에서만 실험할 수 있는 예약 슬롯입니다."
+    }
+  }
+]

@@ -51,6 +51,7 @@ await checkNoLocalStatusBadge();
 await checkNoLocalTextLink();
 await checkNoLocalSkipLink();
 await checkNoViewportScaledTypography();
+await checkGlossarySheetContract();
 checkPublicPageContentContract();
 checkPublicPageRouteContract();
 
@@ -159,9 +160,11 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     surfacePage,
     publicShareDock,
     layout,
+    astroConfig,
     designSystemPackageJson,
     designSystemConsumerContract,
     designSystemTokenCss,
+    designSystemExpressiveFontCss,
     designSystemComponentCss
   ] = await Promise.all([
     readPackageJson("package.json"),
@@ -171,26 +174,63 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     readText("src/pages/[surface].astro"),
     readText("src/components/PublicShareDock.astro"),
     readText("src/layouts/BaseLayout.astro"),
+    readText("astro.config.mjs"),
     readPackageJson("../zdp-design-system/package.json"),
     readText("../zdp-design-system/docs/CONSUMER_CONTRACT.md"),
     readText("../zdp-design-system/src/styles/tokens.css"),
+    readText("../zdp-design-system/src/styles/expressive-fonts.css"),
     readText("../zdp-design-system/src/styles/components.css")
   ]);
 
-  if (packageJson.version !== "0.4.31") {
-    failures.push("package.json version must be 0.4.31 for the design page command navigation contract.");
+  if (packageJson.version !== "0.4.55") {
+    failures.push(
+      "package.json version must be 0.4.55 for the shortcut policy design-system contract."
+    );
+  }
+
+  if (!packageJson.scripts.check.startsWith("bun run check:glossary &&")) {
+    failures.push("package.json scripts.check must validate glossary freshness before Astro checks.");
+  }
+
+  if (packageJson.scripts.check.includes("bun run glossary:generate")) {
+    failures.push("package.json scripts.check must not generate glossary files before stale-manifest checks.");
+  }
+
+  if (!packageJson.scripts.check.includes("bun run check:glossary")) {
+    failures.push("package.json scripts.check must include bun run check:glossary.");
+  }
+
+  for (const requiredText of [
+    "fileURLToPath",
+    "localizationContentPackageEntry",
+    "../../platform/zdp-platform-localization/packages/content/src/index.ts",
+    "resolve:",
+    "alias:",
+    "'@zdp/localization-content': localizationContentPackageEntry"
+  ]) {
+    if (!astroConfig.includes(requiredText)) {
+      failures.push(`astro.config.mjs is missing localization content alias contract ${requiredText}.`);
+    }
+  }
+
+  if (packageJson.scripts["check:glossary"] !== "bun scripts/check-glossary.ts") {
+    failures.push('package.json scripts.check:glossary must be "bun scripts/check-glossary.ts".');
+  }
+
+  if (packageJson.scripts["glossary:generate"] !== "bun scripts/generate-glossary.ts") {
+    failures.push('package.json scripts.glossary:generate must be "bun scripts/generate-glossary.ts".');
   }
 
   if (packageJson.dependencies["zdp-design-system"] !== "file:../zdp-design-system") {
     failures.push('package.json dependencies.zdp-design-system must stay "file:../zdp-design-system".');
   }
 
-  if (packageJson.dependencies["@fontsource/rubik-distressed"] !== "^5.2.7") {
-    failures.push('package.json dependencies.@fontsource/rubik-distressed must stay "^5.2.7".');
+  if ("@fontsource/playwrite-au-vic-guides" in packageJson.dependencies) {
+    failures.push("zdp-web-public must use zdp-design-system/brand-fonts.css instead of owning @fontsource/playwrite-au-vic-guides.");
   }
 
-  if (designSystemPackageJson.version !== "0.31.0") {
-    failures.push("Sibling zdp-design-system package must be version 0.31.0 for the shared shortcut hint contract.");
+  if (designSystemPackageJson.version !== "0.41.12") {
+    failures.push("Sibling zdp-design-system package must be version 0.41.12 for the shortcut policy contract.");
   }
 
   if (
@@ -202,11 +242,13 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
 
   for (const requiredText of [
     '@import "zdp-design-system/styles.css";',
+    '@import "zdp-design-system/brand-fonts.css";',
     '@import "zdp-design-system/locale-fonts.css";',
-    '@import "@fontsource/rubik-distressed";',
     "--font-sans: var(--zdp-font-family-multiscript);",
     "--font-title: var(--zdp-font-family-latin);",
-    '--font-logo: "Rubik Distressed", var(--font-title);',
+    "--font-logo: var(--zdp-font-family-brand,",
+    '[data-zdp-theme="dark"]',
+    "color-scheme: dark;",
     "--shadow-soft: none;",
     "--radius-pill: var(--zdp-radius-md);"
   ]) {
@@ -223,6 +265,8 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
 
   for (const requiredText of [
     "font-family: var(--font-logo);",
+    ".zdp-surface-reset .brand .brand-name",
+    "font-weight: var(--zdp-font-weight-medium);",
     "font-weight: var(--zdp-font-weight-regular);"
   ]) {
     if (!globalCss.includes(requiredText)) {
@@ -286,10 +330,17 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
         "control.choiceSize",
     "control.switchWidth",
     "control.scrollbarSize",
+    "font.family.brand",
+    "font.family.expressionSans",
+    "expressive-fonts.css",
+    "brand-fonts.css",
+    ".zdp-brand-wordmark",
     "color.scrollbar.track",
     "control.glyphMd",
     "zdpShareIcons",
     "zdp-design-system/share",
+    "ThemeToggle은 light/dark",
+    ".zdp-theme-toggle",
     "onconfirm",
     "readonly",
     "zdp-design-system/src/..."
@@ -304,7 +355,9 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
       "src/layouts/BaseLayout.astro",
       layout,
       [
+        'html lang="ko" data-zdp-theme="light"',
         'body class="zdp-surface-reset"',
+        'zdp-web-public-theme',
         'class="shell zdp-page zdp-page--canvas"',
         'site-header zdp-container zdp-container--lg zdp-container--padding-md',
         'site-footer zdp-container zdp-container--lg zdp-container--padding-md',
@@ -314,12 +367,21 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
         'tabindex="-1"',
         'class="zdp-link zdp-link--muted"',
         'aria-current={item.href === currentPath ? "page" : undefined}',
+        'class="brand zdp-brand-lockup"',
+        'class="brand-mark zdp-brand-lockup__mark"',
+        'class="brand-name zdp-brand-wordmark zdp-brand-wordmark--compact"',
+        'data-site-theme-toggle',
+        'data-zdp-theme-toggle',
+        'data-zdp-theme-state="light"',
+        'aria-label="다크 모드로 전환"',
+        'aria-pressed="false"',
+        "라이트 모드로 전환",
+        "다크 모드로 전환",
         "brand-mark__ship",
         "brand-mark__sail",
         "brand-mark__hull",
         '{ href: "/design", label: "디자인" }',
         '{ href: "/security", label: "보안" }',
-        '{ href: "/payment-safety", label: "결제 안전" }',
         '{ href: "/labs", label: "실험실" }',
         '{ href: "/roadmap", label: "로드맵" }'
       ]
@@ -351,54 +413,49 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
       "src/pages/[surface].astro",
       surfacePage + publicShareDock,
       [
-        "zdp-callout zdp-callout--info",
         "page-hero zdp-section zdp-section--spacing-xl",
         "page-hero__inner zdp-container zdp-container--lg zdp-container--padding-md",
         "zdp-page-header zdp-page-header--align-start",
         "zdp-page-header__body",
         "zdp-page-header__title",
         "zdp-page-header__summary",
-        "detail-section zdp-section zdp-section--spacing-lg zdp-divider zdp-divider--horizontal zdp-divider--subtle",
-        "detail-section__inner zdp-container zdp-container--lg zdp-container--padding-md",
-        "zdp-callout__mark",
-        "zdp-callout__body",
         "zdp-badge zdp-badge--primary zdp-badge--sm",
+        "zdp-badge zdp-badge--neutral zdp-badge--sm",
         "zdp-button zdp-button--md zdp-button--secondary",
         "zdp-page-header__actions",
-        "surface-grid zdp-grid zdp-grid--columns-three zdp-grid--gap-md",
         "zdp-breadcrumb page-breadcrumb",
         "zdp-breadcrumb__link",
         "zdp-breadcrumb__current",
         "design-doc zdp-section zdp-section--spacing-lg zdp-divider zdp-divider--horizontal zdp-divider--subtle",
         "design-doc__layout zdp-container zdp-container--lg zdp-container--padding-md",
         "design-doc__rail",
-        "design-doc__finder",
+        "design-doc__nav",
         "design-doc__article",
-        "design-link-grid",
-        "design-link-card zdp-surface zdp-surface--panel zdp-surface--padding-lg",
-        "기준 사용하기",
-        "기준 찾기",
+        "design-showcase",
+        "showcase-group",
+        "swatch-grid",
+        "swatch-card",
+        "typography-specimen zdp-surface zdp-surface--panel zdp-surface--padding-md",
+        "components-preview zdp-surface zdp-surface--panel zdp-surface--padding-lg",
+        "preview-row zdp-inline",
+        "기본 방향",
+        "컴포넌트 & 토큰 카탈로그",
+        "Color Palette",
+        "Typography",
+        "Interactive Components",
         "기준 토큰",
-        "운영 기준",
-        "data-design-finder",
-        "data-design-search",
-        "design-section-list",
-        "moveToDesignTarget",
-        'event.key === "/"',
+        "검증 체크리스트",
         "zdp-visually-hidden",
-        "zdp-stack zdp-stack--gap-md",
         "zdp-key-value zdp-key-value--columns-two",
         "zdp-table-wrap",
         "zdp-table zdp-table--density-compact",
         "zdp-table__caption zdp-table__caption--hidden",
-        "aria-keyshortcuts=\"/\"",
-        "zdp-shortcut-hint",
-        "검색 단축키 슬래시",
+        "zdp-kbd zdp-kbd--md",
         'scope="col"',
         'scope="row"',
         'import PublicShareDock from "../components/PublicShareDock.astro";',
         'import { zdpShareIcons, type ZdpShareIconName } from "zdp-design-system/share";',
-        'placement="side"',
+        'placement?: "side"',
         'placement="rail"',
         "zdp-share-dock zdp-share-dock--${placement}",
         "zdp-share-dock__list",
@@ -427,10 +484,6 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
         "navigator.clipboard.writeText",
         "복사 권한 필요",
         "zdp-empty-state surface-placeholder",
-        "zdp-empty-state__body",
-        "zdp-empty-state__actions",
-        "evidence-block",
-        "이 페이지가 지키는 선",
         "핵심 정보",
         'aria-current="page"'
       ]
@@ -496,6 +549,10 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     ".zdp-shortcut-hint__separator",
     ".zdp-command-field",
     ".zdp-command-field__input",
+    ".zdp-brand-wordmark",
+    ".zdp-brand-lockup",
+    ".zdp-theme-toggle",
+    ".zdp-theme-toggle__icon",
     "var(--zdp-color-focus-surface)",
     "var(--zdp-color-focus-line)",
     "position: fixed",
@@ -511,12 +568,15 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
   }
 
   for (const requiredText of [
-    ".design-link-card:hover:not(:focus-visible)",
-    "background: var(--color-ink)",
-    ".design-link-card:hover:not(:focus-visible) span"
+    ".showcase-group",
+    ".swatch-card:hover",
+    ".typography-specimen",
+    ".components-preview",
+    ".preview-row",
+    ".site-theme-toggle"
   ]) {
     if (!globalCss.includes(requiredText)) {
-      failures.push(`src/styles/global.css is missing design card hover contract ${requiredText}.`);
+      failures.push(`src/styles/global.css is missing design showcase contract ${requiredText}.`);
     }
   }
 
@@ -537,14 +597,45 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
   }
 
   for (const requiredText of [
+    "scrollbar-color: var(--zdp-color-scrollbar-thumb) var(--zdp-color-scrollbar-track)",
+    "scrollbar-width: thin",
+    "html::-webkit-scrollbar",
+    "body::-webkit-scrollbar",
+    "height: var(--zdp-control-scrollbar-size)",
+    "width: var(--zdp-control-scrollbar-size)",
+    "background: var(--zdp-color-scrollbar-track)",
+    "background-color: var(--zdp-color-scrollbar-thumb)",
+    "background-color: var(--zdp-color-scrollbar-thumb-hover)",
+    "html::-webkit-scrollbar-corner",
+    "body::-webkit-scrollbar-corner"
+  ]) {
+    if (!globalCss.includes(requiredText)) {
+      failures.push(`src/styles/global.css is missing root themed scrollbar contract ${requiredText}.`);
+    }
+  }
+
+  for (const requiredText of [
     "scrollbar-width: thin",
     "::-webkit-scrollbar-thumb",
     "var(--zdp-control-scrollbar-size)",
+    "--zdp-font-family-brand",
+    "--zdp-font-family-expression-sans",
+    "--zdp-font-family-expression-editorial",
     "--zdp-type-page-title-size: 2.75rem",
     "--zdp-type-page-title-compact-size: 2rem"
   ]) {
     if (!designSystemTokenCss.includes(requiredText)) {
       failures.push(`Sibling design-system token CSS is missing ${requiredText}.`);
+    }
+  }
+
+  for (const requiredText of [
+    "family=Google+Sans",
+    "family=Tangerine:wght@400;700",
+    "family=Libertinus+Keyboard"
+  ]) {
+    if (!designSystemExpressiveFontCss.includes(requiredText)) {
+      failures.push(`Sibling design-system expressive font CSS is missing ${requiredText}.`);
     }
   }
 }
@@ -647,13 +738,257 @@ async function checkNoViewportScaledTypography(): Promise<void> {
   }
 }
 
+async function checkGlossarySheetContract(): Promise<void> {
+  const [
+    layout,
+    surfacePage,
+    homePage,
+    globalCss,
+    glossaryData,
+    glossaryText,
+    glossarySheet,
+    glossaryScript,
+    glossaryYaml,
+    glossaryManifest,
+    glossaryBuild,
+    glossaryGenerate,
+    glossaryCheck
+  ] =
+    await Promise.all([
+      readText("src/layouts/BaseLayout.astro"),
+      readText("src/pages/[surface].astro"),
+      readText("src/pages/index.astro"),
+      readText("src/styles/global.css"),
+      readText("src/content/glossary.ts"),
+      readText("src/components/GlossaryText.astro"),
+      readText("src/components/GlossarySheet.astro"),
+      readText("src/scripts/glossary-sheet.ts"),
+      readText("glossary/terms/public.yaml"),
+      readText("src/content/glossary-manifest.json"),
+      readText("scripts/glossary-build.ts"),
+      readText("scripts/generate-glossary.ts"),
+      readText("scripts/check-glossary.ts")
+    ]);
+
+  for (const requiredText of [
+    'import GlossarySheet from "../components/GlossarySheet.astro";',
+    "<GlossarySheet />"
+  ]) {
+    if (!layout.includes(requiredText)) {
+      failures.push(`BaseLayout.astro is missing glossary sheet shell ${requiredText}.`);
+    }
+  }
+
+  for (const [path, content, requiredTexts] of [
+    [
+      "src/content/glossary.ts",
+      glossaryData,
+      [
+        "export type GlossaryLocale",
+        'import runtimeGlossaryManifest from "./glossary-manifest.json";',
+        "const publicGlossaryManifest",
+        "matchPhrases",
+        "adPolicy",
+        "getGlossaryManifest",
+        "markGlossaryText"
+      ]
+    ],
+        [
+          "src/components/GlossaryText.astro",
+          glossaryText,
+          [
+            'class="glossary-trigger"',
+            "data-glossary-term",
+            "data-term-id",
+            "data-zdp-term-id",
+            'aria-haspopup="dialog"',
+            'aria-controls="glossary-sheet"',
+            'aria-expanded="false"'
+      ]
+    ],
+    [
+      "src/components/GlossarySheet.astro",
+          glossarySheet,
+          [
+            "data-glossary-root",
+            'role="dialog"',
+            'aria-modal="true"',
+            'aria-hidden="true"',
+            'data-zdp-ad-exclude="true"',
+            'data-zdp-term-placement="right-sheet"',
+            'data-zdp-term-surface="sheet"',
+            "data-glossary-close",
+            "data-glossary-summary",
+            "data-glossary-detail",
+            "data-glossary-source",
+            "data-glossary-manifest"
+          ]
+        ],
+    [
+      "src/scripts/glossary-sheet.ts",
+      glossaryScript,
+      [
+        "data-glossary-term",
+            "openSheet",
+            "closeSheet",
+            "Escape",
+            "trapFocus",
+            "dataset.zdpTermId",
+            "dataset.zdpTermPlacement",
+            "getCurrentPlacement",
+            "getClientRects().length > 0",
+            "requestAnimationFrame"
+          ]
+        ],
+    [
+      "src/styles/global.css",
+      globalCss,
+      [
+        ".glossary-trigger",
+        ".glossary-trigger:focus-visible",
+            ".glossary-sheet__backdrop",
+            ".glossary-sheet",
+            ".glossary-sheet.is-open",
+            "transform: translateX(100%)",
+            "transform: translateY(100%)",
+            "height: min(82dvh, 34rem)"
+      ]
+    ],
+    [
+      "glossary/terms/public.yaml",
+      glossaryYaml,
+      [
+        "terms:",
+        "id: design.oklch",
+        "id: security.privacy-access-broker",
+        "id: security.owasp-asvs",
+        "id: operations.rate-limit",
+        "products:",
+        "- zdp-web-public",
+        "sites:",
+        "- web-public-home",
+        "translation_status: reviewed",
+        "trigger: click",
+        "surface: term-sheet",
+            "desktop_placement: right-sheet",
+            "mobile_placement: bottom-sheet",
+            "hover_card: forbidden",
+            "term_sheet: forbidden",
+            "detail_page: future-experiment-only"
+          ]
+        ],
+    [
+      "src/content/glossary-manifest.json",
+      glossaryManifest,
+      [
+        '"id": "design.oklch"',
+            '"id": "security.privacy-access-broker"',
+            '"id": "security.owasp-asvs"',
+            '"id": "operations.rate-limit"',
+            '"slot": "glossary-detail-design-oklch"',
+            '"matchPhrases"'
+          ]
+        ],
+    [
+      "scripts/glossary-build.ts",
+      glossaryBuild,
+      [
+        "buildRuntimeGlossaryManifest",
+        "buildGlossaryManifest",
+            "GLOSSARY_RUNTIME_MANIFEST_PATH",
+            "src/content/glossary-manifest.json",
+            "toRuntimeGlossaryEntry",
+            "hover-card advertising",
+            "Term Sheet advertising",
+            "glossary-detail-${term.id.replaceAll"
+          ]
+        ],
+    [
+      "scripts/generate-glossary.ts",
+      glossaryGenerate,
+      [
+        "buildRuntimeGlossaryManifest",
+        "serializeRuntimeManifest",
+        "writeFile",
+        "Glossary manifest generated"
+      ]
+    ],
+    [
+      "scripts/check-glossary.ts",
+      glossaryCheck,
+      [
+        "buildRuntimeGlossaryManifest",
+        "GLOSSARY_RUNTIME_MANIFEST_PATH",
+        "is stale",
+        "Run bun run glossary:generate",
+        "Glossary check passed"
+      ]
+    ],
+    [
+      "src/pages/[surface].astro",
+      surfacePage,
+      [
+        'import GlossaryText from "../components/GlossaryText.astro";',
+        "<GlossaryText text={heroSummary} />",
+        "<GlossaryText text={section.body} />",
+        "<GlossaryText text={fact.description} />",
+        "<GlossaryText text={check.note} />"
+      ]
+    ],
+    [
+      "src/pages/index.astro",
+      homePage,
+      [
+        'import GlossaryText from "../components/GlossaryText.astro";',
+        "<GlossaryText text={section.summary} />",
+        "<GlossaryText text={item.body} />"
+      ]
+    ]
+  ] as const) {
+    for (const requiredText of requiredTexts) {
+      if (!content.includes(requiredText)) {
+        failures.push(`${path} is missing glossary sheet contract ${requiredText}.`);
+      }
+    }
+  }
+
+  for (const forbiddenText of [
+    "mouseenter",
+    "mouseover",
+    "data-glossary-hover",
+    "data-glossary-ads",
+    "data-glossary-ad-slot",
+    "data-glossary-ad-note",
+    ".glossary-sheet__ad-slot",
+    'root.getAttribute("data-glossary-ads")',
+    ":hover .glossary-sheet",
+    "role=\"tooltip\""
+  ]) {
+    if (
+      glossaryScript.includes(forbiddenText) ||
+      glossarySheet.includes(forbiddenText) ||
+      globalCss.includes(forbiddenText)
+    ) {
+      failures.push(`Glossary contract must stay click-sheet based, not hover-tooltip based: ${forbiddenText}.`);
+    }
+  }
+
+  for (const forbiddenText of [
+    "publicGlossaryManifestTerms",
+    "Privacy Access Broker",
+    "OWASP ASVS",
+    "사람이 느끼는 밝기와 색 차이",
+    "웹 애플리케이션 보안을 점검"
+  ]) {
+    if (glossaryData.includes(forbiddenText)) {
+      failures.push(`src/content/glossary.ts must not duplicate YAML glossary source text: ${forbiddenText}.`);
+    }
+  }
+}
+
 function checkPublicPageContentContract(): void {
   const pagesThatMustHaveTrustCards = [
-    "design",
-    "security",
-    "payment-safety",
-    "labs",
-    "roadmap"
+    "design"
   ] as const;
 
   for (const pageId of pagesThatMustHaveTrustCards) {

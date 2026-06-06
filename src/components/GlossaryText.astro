@@ -1,0 +1,30 @@
+---
+import { getGlossaryManifest, markGlossaryText, type GlossaryLocale } from "../content/glossary";
+
+interface Props {
+  text: string;
+  locale?: GlossaryLocale;
+}
+
+const { text, locale = "ko" } = Astro.props;
+const tokens = markGlossaryText(text, getGlossaryManifest(locale));
+---
+
+{tokens.map((token) =>
+  token.type === "term" ? (
+    <button
+      class="glossary-trigger"
+      type="button"
+      data-glossary-term={token.term.id}
+      data-term-id={token.term.id}
+      data-zdp-term-id={token.term.id}
+      aria-controls="glossary-sheet"
+      aria-expanded="false"
+      aria-haspopup="dialog"
+    >
+      {token.text}
+    </button>
+  ) : (
+    token.text
+  )
+)}
