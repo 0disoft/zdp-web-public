@@ -26,13 +26,12 @@ const searchOptions = [
     if (page.id === "design") {
       return [
         { label: "디자인: 개요", href: "/design#design-start" },
-        { label: "디자인: 색상과 글꼴 (Foundation)", href: "/design#design-foundation" },
-        { label: "디자인: 컴포넌트 (Components)", href: "/design#design-components" },
-        { label: "디자인: 반복 흐름 (Patterns)", href: "/design#design-patterns" },
-        { label: "디자인: 인터랙션 (Interaction)", href: "/design#design-interaction" },
-        { label: "디자인: 접근성 (Accessibility)", href: "/design#design-accessibility" },
-        { label: "디자인: 기준 토큰 (Tokens)", href: "/design#design-tokens" },
-        { label: "디자인: 검증 체크리스트 (Checklist)", href: "/design#design-checks" }
+        { label: "디자인: 일관성", href: "/design#design-consistency" },
+        { label: "디자인: 접근성", href: "/design#design-accessibility" },
+        { label: "디자인: 안전", href: "/design#design-safety" },
+        { label: "디자인: 현지화", href: "/design#design-locale" },
+        { label: "디자인: 기준 토큰", href: "/design#design-tokens" },
+        { label: "디자인: 약속", href: "/design#design-checks" }
       ];
     }
     return [{ label: page.label, href: page.path }];

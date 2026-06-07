@@ -32,34 +32,28 @@ const designOverviewSection = {
 } as const;
 const designContentSections = [
   {
-    id: "design-foundation",
-    label: "Foundation",
-    title: "색상과 글꼴",
-    body: "색상은 OKLCH 토큰으로 관리하고, 서체는 Pretendard Variable을 씁니다. .zdp-surface-reset과 lang 속성을 함께 쓰면 ko·en·zh·ja·hi별 서체 스택이 자동 교체됩니다."
-  },
-  {
-    id: "design-components",
-    label: "Components",
-    title: "컴포넌트",
-    body: "버튼부터 Dialog·Menu·Toast·Skeleton까지 60개 Svelte 컴포넌트를 제공합니다. Astro 표면에서는 동일한 CSS 클래스(zdp-*)를 씁니다."
-  },
-  {
-    id: "design-patterns",
-    label: "Patterns",
-    title: "반복 흐름",
-    body: "공유(ShareDock), 검색, 브레드크럼, 용어 시트(TermSheet)는 패턴으로 정의해 둡니다. TermSheet는 데스크톱에서 오른쪽 sheet, 모바일에서 하단 sheet로 열립니다."
-  },
-  {
-    id: "design-interaction",
-    label: "Interaction",
-    title: "인터랙션",
-    body: "위험한 작업은 ConfirmAction으로 슬라이드·홀드 확인합니다. 키보드 단축키는 intent 기반(/, ?, G→H, G→S)으로 정의하고, IME·텍스트 입력 중에는 자동으로 무시합니다."
+    id: "design-consistency",
+    label: "일관성",
+    title: "어디서나 같은 경험",
+    body: "버튼·입력·링크는 어느 화면에서든 같은 규칙을 씁니다. 한 화면에서 익힌 조작이 전체에 통합니다."
   },
   {
     id: "design-accessibility",
-    label: "Accessibility",
-    title: "접근성",
-    body: "키보드로 모든 요소를 탐색할 수 있어야 하고, 포커스 아웃라인은 항상 보여야 합니다. 스크린 리더용 랜드마크도 빠뜨리지 않습니다."
+    label: "접근성",
+    title: "키보드와 스크린 리더",
+    body: "마우스 없이 키보드로 모든 요소를 탐색할 수 있습니다. 포커스 위치는 항상 화면에 표시되고, 스크린 리더용 랜드마크도 빠뜨리지 않습니다."
+  },
+  {
+    id: "design-safety",
+    label: "안전",
+    title: "실수 방지",
+    body: "삭제·결제처럼 되돌리기 어려운 작업은 슬라이드하거나 2초 누른 뒤에만 실행됩니다. 의도를 확인한 뒤에 작동합니다."
+  },
+  {
+    id: "design-locale",
+    label: "현지화",
+    title: "내 언어로",
+    body: "한국어·영어로 시작하며 스페인어·중국어·힌디어·프랑스어·일본어·독일어·포르투갈어·인도네시아어까지 10개 언어로 확대합니다. 언어 설정에 따라 서체와 줄바꿈 방식이 자동으로 바뀝니다."
   }
 ] as const;
 const hasOverviewSection = isDesignPage;
@@ -117,15 +111,15 @@ const detailSectionLabelId = hasOverviewSection
     >
     <div class="design-doc__layout zdp-container zdp-container--lg zdp-container--padding-md">
       <aside class="design-doc__rail" aria-label={`${page.label} 문서 네비게이션`}>
-        <p class="section-label">Docs Nav</p>
+        <p class="section-label">목차</p>
         <nav class="design-doc__nav" aria-label={`${page.label} 섹션`}>
-          {hasOverviewSection && <a class="zdp-link zdp-link--muted" href="#design-start">Overview</a>}
-          {isDesignPage && <a class="zdp-link zdp-link--muted" href="#design-showcase">Showcase</a>}
+          {hasOverviewSection && <a class="zdp-link zdp-link--muted" href="#design-start">개요</a>}
+          {isDesignPage && <a class="zdp-link zdp-link--muted" href="#design-showcase">미리보기</a>}
           {isDesignPage && designContentSections.map((section) => (
             <a class="zdp-link zdp-link--muted" href={`#${section.id}`}>{section.label}</a>
           ))}
-          {hasFactsSection && <a class="zdp-link zdp-link--muted" href="#design-tokens">{isDesignPage ? "Tokens" : "Facts"}</a>}
-          {hasChecksSection && <a class="zdp-link zdp-link--muted" href="#design-checks">Checklist</a>}
+          {hasFactsSection && <a class="zdp-link zdp-link--muted" href="#design-tokens">{isDesignPage ? "상세" : "상세"}</a>}
+          {hasChecksSection && <a class="zdp-link zdp-link--muted" href="#design-checks">{isDesignPage ? "약속" : "체크리스트"}</a>}
         </nav>
       </aside>
 
@@ -144,7 +138,7 @@ const detailSectionLabelId = hasOverviewSection
 
         {isDesignPage && (
           <section id="design-showcase" class="design-doc__section" aria-labelledby="design-showcase-title">
-            <p class="section-label">Showcase</p>
+            <p class="section-label">미리보기</p>
             <h2 id="design-showcase-title">컴포넌트 & 토큰 카탈로그</h2>
             <p><GlossaryText text="공통 테마로 적용되는 원천 토큰과 UI 요소의 실물 사양입니다." /></p>
 
