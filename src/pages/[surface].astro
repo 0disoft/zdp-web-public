@@ -35,38 +35,38 @@ const designContentSections = [
     id: "design-consistency",
     label: "일관성",
     title: "어디서나 같은 경험",
-    body: "버튼·입력·링크는 어느 화면에서든 같은 규칙을 씁니다. 한 화면에서 익힌 조작이 전체에 통합니다."
+    body: "버튼, 입력, 링크는 어느 화면에서든 같은 규칙을 씁니다. 한 화면에서 익힌 조작이 전체에 통하기 때문에, 새로운 화면에 들어가도 조작법을 다시 배울 필요가 없습니다."
   },
   {
     id: "design-accessibility",
     label: "접근성",
     title: "키보드와 스크린 리더",
-    body: "마우스 없이 키보드로 모든 요소를 탐색할 수 있습니다. 포커스 위치는 항상 화면에 표시되고, 스크린 리더용 랜드마크도 빠뜨리지 않습니다."
+    body: "마우스 없이 키보드로 모든 요소를 탐색할 수 있습니다. 포커스 위치는 항상 화면에 표시되고, 스크린 리더용 랜드마크도 빠뜨리지 않습니다. 시각, 운동, 인지적 차이에 관계없이 정보에 접근할 수 있습니다."
   },
   {
     id: "design-safety",
     label: "안전",
     title: "실수 방지",
-    body: "삭제·결제처럼 되돌리기 어려운 작업은 슬라이드하거나 2초 누른 뒤에만 실행됩니다. 의도를 확인한 뒤에 작동합니다."
+    body: "삭제·결제처럼 되돌리기 어려운 작업은 슬라이드하거나 2초 이상 누른 뒤에만 실행됩니다. 의도를 명확히 확인한 뒤에 작동하며, 실수로 중요한 데이터를 잃지 않도록 합니다."
   },
   {
     id: "design-locale",
     label: "현지화",
     title: "내 언어로",
-    body: "한국어·영어로 시작하며 스페인어·중국어·힌디어·프랑스어·일본어·독일어·포르투갈어·인도네시아어까지 10개 언어로 확대합니다. 언어 설정에 따라 서체와 줄바꿈 방식이 자동으로 바뀝니다."
+    body: "한국어·영어로 시작하며, 스페인어·중국어·힌디어·프랑스어·일본어·독일어·포르투갈어·인도네시아어까지 10개 언어로 확대합니다. 언어 설정에 따라 서체와 줄바꿈 방식이 자동으로 바뀌어, 각 언어의 가독성을 최적화합니다."
   }
 ] as const;
 const hasOverviewSection = isDesignPage;
-const hasFactsSection = isDesignPage || page.facts.length > 0;
+const hasDetailsSection = isDesignPage || page.details.length > 0;
 const hasChecksSection = isDesignPage || page.checks.length > 0;
 const hasPageDetailContent =
   hasOverviewSection ||
-  hasFactsSection ||
+  hasDetailsSection ||
   hasChecksSection;
 const detailSectionLabelId = hasOverviewSection
   ? "design-start-title"
-  : hasFactsSection
-    ? "design-tokens-title"
+  : hasDetailsSection
+    ? "design-details-title"
     : "design-checks-title";
 ---
 
@@ -118,7 +118,7 @@ const detailSectionLabelId = hasOverviewSection
           {isDesignPage && designContentSections.map((section) => (
             <a class="zdp-link zdp-link--muted" href={`#${section.id}`}>{section.label}</a>
           ))}
-          {hasFactsSection && <a class="zdp-link zdp-link--muted" href="#design-tokens">{isDesignPage ? "상세" : "상세"}</a>}
+          {hasDetailsSection && <a class="zdp-link zdp-link--muted" href="#design-details">{isDesignPage ? "상세" : "상세"}</a>}
           {hasChecksSection && <a class="zdp-link zdp-link--muted" href="#design-checks">{isDesignPage ? "약속" : "체크리스트"}</a>}
         </nav>
       </aside>
@@ -396,18 +396,18 @@ const detailSectionLabelId = hasOverviewSection
           </section>
         ))}
 
-        {hasFactsSection && (
-          <section id="design-tokens" class="design-doc__section" aria-labelledby="design-tokens-title">
-            <p class="section-label">{isDesignPage ? "Tokens" : "Facts"}</p>
-            <h2 id="design-tokens-title">{isDesignPage ? "기준 토큰" : "핵심 정보"}</h2>
-            <dl class="zdp-key-value zdp-key-value--columns-two" aria-labelledby="design-tokens-title">
-              {page.facts.map((fact) => (
-                <>
-                  <dt>{fact.term}</dt>
-                  <dd><GlossaryText text={fact.description} /></dd>
-                </>
+        {hasDetailsSection && (
+          <section id="design-details" class="design-doc__section" aria-labelledby="design-details-title">
+            <p class="section-label">{isDesignPage ? "Details" : "상세"}</p>
+            <h2 id="design-details-title">{isDesignPage ? "디자인 상세" : "핵심 정보"}</h2>
+            <div class="details-grid zdp-grid zdp-grid--columns-two zdp-grid--gap-md">
+              {page.details.map((detail) => (
+                <article class="detail-card zdp-surface zdp-surface--panel zdp-surface--padding-md">
+                  <h3>{detail.title}</h3>
+                  <p><GlossaryText text={detail.body} /></p>
+                </article>
               ))}
-            </dl>
+            </div>
           </section>
         )}
 

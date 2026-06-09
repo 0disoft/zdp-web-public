@@ -4,9 +4,9 @@ export interface PublicPageItem {
   readonly status: string;
 }
 
-export interface PublicPageFact {
-  readonly term: string;
-  readonly description: string;
+export interface PublicPageDetail {
+  readonly title: string;
+  readonly body: string;
 }
 
 export interface PublicPageCheck {
@@ -22,7 +22,7 @@ export interface PublicPage {
   readonly heading: string;
   readonly summary?: string;
   readonly items: readonly PublicPageItem[];
-  readonly facts: readonly PublicPageFact[];
+  readonly details: readonly PublicPageDetail[];
   readonly checks: readonly PublicPageCheck[];
 }
 
@@ -32,9 +32,9 @@ export const publicPages: readonly PublicPage[] = [
     path: "/products",
     label: "제품",
     heading: "제품",
-    summary: "출시 예정 서비스입니다.",
+    summary: "8ailors에서 만들고 있는 제품과 실험입니다. 각 제품은 충분히 검증된 뒤에만 공개 목록에 올라갑니다.",
     items: [],
-    facts: [],
+    details: [],
     checks: []
   },
   {
@@ -42,41 +42,41 @@ export const publicPages: readonly PublicPage[] = [
     path: "/design",
     label: "디자인",
     heading: "디자인",
-    summary: "화면이 달라도 조작법은 같습니다. 키보드만으로도 됩니다.",
+    summary: "화면이 달라도 조작법은 같습니다. 마우스 없이도 모든 기능을 사용할 수 있으며, 되돌리기 어려운 작업은 항상 확인을 거칩니다.",
     items: [
       {
-        title: "어디서나 같은 방식으로 작동합니다",
-        body: "버튼, 입력, 링크는 어느 화면에서든 같은 규칙을 씁니다. 한 화면에서 익힌 조작이 전체에 통합니다.",
+        title: "한 화면에서 익힌 조작이 전체에 통합니다",
+        body: "버튼, 입력, 링크는 어느 화면에서든 같은 규칙을 씁니다. 새로운 화면에 들어가도 조작법을 다시 배울 필요가 없습니다.",
         status: "일관성"
       },
       {
-        title: "키보드만으로도 탐색할 수 있습니다",
-        body: "마우스 없이 키보드로 모든 요소를 탐색할 수 있습니다. 지금 어디 있는지 항상 화면에 표시됩니다.",
+        title: "마우스 없이도 모든 요소를 탐색할 수 있습니다",
+        body: "키보드로 링크, 버튼, 입력 필드를 이동할 수 있고, 지금 어디에 있는지 포커스 표시로 항상 알려줍니다.",
         status: "접근성"
       },
       {
-        title: "위험한 작업은 실수로 눌리지 않습니다",
-        body: "삭제나 결제처럼 되돌리기 어려운 작업은 밀거나 2초 누른 뒤에만 실행됩니다.",
+        title: "실수로 중요한 작업을 눌러도 실행되지 않습니다",
+        body: "삭제나 결제처럼 되돌리기 어려운 작업은 슬라이드하거나 2초 이상 누른 뒤에만 실행됩니다. 의도를 다시 한번 확인합니다.",
         status: "안전"
       },
       {
-        title: "내 언어에 맞게 표시됩니다",
-        body: "한국어·영어로 시작하며 스페인어·중국어·힌디어·프랑스어·일본어·독일어·포르투갈어·인도네시아어까지 10개 언어로 확대합니다. 언어별 서체와 줄바꿈 방식은 자동으로 선택됩니다.",
+        title: "언어 설정에 맞는 서체와 줄바꿈이 자동으로 적용됩니다",
+        body: "한국어·영어로 시작하며, 스페인어·중국어·힌디어·프랑스어·일본어·독일어·포르투갈어·인도네시아어까지 10개 언어로 확대합니다. 언어별 서체와 줄바꿈 방식은 자동으로 선택됩니다.",
         status: "현지화"
       }
     ],
-    facts: [
+    details: [
       {
-        term: "다크 모드",
-        description: "지원합니다. OS 설정과 별개로 직접 선택할 수 있습니다."
+        title: "어떤 환경에서도 읽을 수 있습니다",
+        body: "밝은 배경과 어두운 배경을 모두 지원합니다. OS 설정을 따라가거나, 화면에서 직접 선택할 수도 있습니다."
       },
       {
-        term: "텍스트 복사",
-        description: "화면에 표시된 값은 복사할 수 있습니다. 의도적으로 막지 않습니다."
+        title: "화면에 보이는 값은 복사할 수 있습니다",
+        body: "가격, 날짜, 코드, 주소처럼 화면에 표시된 데이터는 의도적으로 막지 않습니다. 필요한 정보를 쉽게 가져갈 수 있습니다."
       },
       {
-        term: "용어 설명",
-        description: "전문 용어는 클릭하면 그 자리에서 설명을 볼 수 있습니다."
+        title: "모르는 용어는 클릭하면 설명이 나옵니다",
+        body: "전문 용어가 나오면 클릭 한 번으로 그 자리에서 설명을 볼 수 있습니다. 별도 페이지로 이동하지 않아도 됩니다."
       }
     ],
     checks: [
@@ -107,36 +107,36 @@ export const publicPages: readonly PublicPage[] = [
     path: "/security",
     label: "보안",
     heading: "보안",
-    summary: "내 정보를 누가 봤는지, 저희도 감시받습니다.",
+    summary: "사용자 정보는 서비스와 분리된 경계에서 보호합니다. 누가, 언제, 어떤 데이터를 봤는지 모두 기록하고, 그 기록은 삭제할 수 없습니다.",
     items: [
       {
-        title: "결제와 개인정보는 따로 보관합니다",
-        body: "결제 정보와 개인정보는 서비스 코드와 분리된 곳에 저장됩니다. 기능을 개발할 때 그 값을 직접 꺼내볼 수 없습니다.",
+        title: "결제와 개인정보는 서비스 코드와 분리된 곳에 보관합니다",
+        body: "결제 정보와 개인정보는 서비스 코드와 다른 경계에서 저장됩니다. 기능을 개발할 때 그 값을 직접 꺼내볼 수 없도록 구조적으로 차단합니다.",
         status: "격리"
       },
       {
-        title: "열람하면 흔적이 남습니다",
-        body: "임직원이 개인정보나 결제 내역을 열람하면 기록이 남습니다. 그 기록은 삭제할 수 없습니다.",
+        title: "임직원이 열람하면 흔적이 남습니다",
+        body: "개인정보나 결제 내역을 열람하면 사유와 시간이 기록됩니다. 그 기록은 어떤 권한으로도 삭제할 수 없는 별도 감사 로그에 남습니다.",
         status: "기록"
       },
       {
-        title: "자동화도 필요한 것만 봅니다",
-        body: "알림·정산 같은 자동 처리는 필요한 최소한의 데이터만 전달받습니다. 동의 없이 전체 정보를 읽지 않습니다.",
+        title: "자동화 처리는 필요한 최소한의 데이터만 봅니다",
+        body: "알림·정산·백업 같은 자동 처리는 동의된 범위 안에서 필요한 최소 데이터만 전달받습니다. 동의 없이 전체 정보를 읽지 않습니다.",
         status: "제한"
       }
     ],
-    facts: [
+    details: [
       {
-        term: "개인정보 열람",
-        description: "사유와 만료 시간 입력 후에만 가능. 이력은 삭제 불가."
+        title: "개인정보는 사유와 기한을 정하고 열람합니다",
+        body: "임직원이 개인정보를 볼 때는 사유와 만료 시간을 입력해야 합니다. 열람 기록은 삭제할 수 없는 별도 감사 로그에 남습니다."
       },
       {
-        term: "계정 삭제",
-        description: "요청하면 DB·검색 색인·캐시 전체에서 삭제됩니다."
+        title: "계정을 삭제하면 흔적도 함께 지웁니다",
+        body: "사용자가 계정 삭제를 요청하면 데이터베이스, 검색 색인, 캐시, 백업에서 해당 데이터를 제거합니다. 삭제 요청 자체도 감사 로그에 남습니다."
       },
       {
-        term: "비밀번호·결제 정보",
-        description: "서버에 평문으로 저장되지 않습니다."
+        title: "비밀번호와 결제 정보는 평문으로 남지 않습니다",
+        body: "비밀번호는 해싱 후 저장하고, 결제 정보는 별도 결제 시스템에서만 처리합니다. 서버에 민감한 금융 정보가 평문으로 저장되지 않습니다."
       }
     ],
     checks: [
@@ -153,7 +153,7 @@ export const publicPages: readonly PublicPage[] = [
       {
         item: "결제 정보는 저희 서버에 저장되지 않습니다",
         status: "약속",
-        note: "결제는 분리된 외부 시스템에서만 처리됩니다."
+        note: "결제는 분리된 외부 시스템에서만 처리합니다."
       }
     ]
   },
@@ -163,9 +163,9 @@ export const publicPages: readonly PublicPage[] = [
     path: "/labs",
     label: "실험실",
     heading: "실험실",
-    summary: "검증 중인 제품과 기술 실험입니다.",
+    summary: "아직 검증되지 않은 제품과 기술 실험을 진행합니다. 실험은 독립된 환경에서만 실행되며, 실패하더라도 플랫폼 핵심 기능에는 영향을 주지 않습니다.",
     items: [],
-    facts: [],
+    details: [],
     checks: []
   },
   {
@@ -173,8 +173,9 @@ export const publicPages: readonly PublicPage[] = [
     path: "/roadmap",
     label: "로드맵",
     heading: "로드맵",
+    summary: "8ailors와 ZDP 플랫폼의 다음 단계를 정리합니다. 검토가 끝난 항목만 공개 로드맵에 올라갑니다.",
     items: [],
-    facts: [],
+    details: [],
     checks: []
   },
   {
@@ -182,9 +183,9 @@ export const publicPages: readonly PublicPage[] = [
     path: "/notes",
     label: "기록",
     heading: "기록",
-    summary: "개발 과정의 기록입니다.",
+    summary: "제품과 플랫폼을 만들며 나온 기록과 결정 사유입니다. 기술 선택, 구조 변경, 정책 결정의 과정을 남깁니다.",
     items: [],
-    facts: [],
+    details: [],
     checks: []
   },
   {
@@ -192,9 +193,9 @@ export const publicPages: readonly PublicPage[] = [
     path: "/trust",
     label: "정책",
     heading: "정책",
-    summary: "데이터 보호와 보안에 관한 기준입니다.",
+    summary: "데이터 보호, 개인정보 처리, 보안 정책에 관한 기준입니다. 사용자가 자신의 데이터를 어떻게 관리하고 삭제할 수 있는지를 명시합니다.",
     items: [],
-    facts: [],
+    details: [],
     checks: []
   },
   {
@@ -202,9 +203,9 @@ export const publicPages: readonly PublicPage[] = [
     path: "/contact",
     label: "문의",
     heading: "문의",
-    summary: "서비스 개방 시 연락 채널을 공개합니다.",
+    summary: "서비스 개방과 동시에 공개될 연락 채널입니다.",
     items: [],
-    facts: [],
+    details: [],
     checks: []
   }
 ];
