@@ -203,8 +203,108 @@ export const publicPages: readonly PublicPage[] = [
     path: "/contact",
     label: "문의",
     heading: "문의",
-    summary: "서비스 개방과 동시에 공개될 연락 채널입니다.",
-    items: [],
+    summary: "서비스와 관련된 문의는 이메일로 받습니다. 답변은 영업일 기준 2일 안에 드립니다.",
+    items: [
+      {
+        title: "이메일 문의",
+        body: "hello@8ailors.xyz",
+        status: "연락처"
+      }
+    ],
+    details: [],
+    checks: []
+  },
+  {
+    id: "privacy",
+    path: "/privacy",
+    label: "개인정보",
+    heading: "개인정보 처리방침",
+    summary: "수집하는 정보, 사용 목적, 보관 기간, 삭제 방법을 명시합니다.",
+    items: [
+      {
+        title: "수집 항목",
+        body: "서비스 이용에 필요한 최소한의 정보만 수집합니다. 이메일, 기기 식별자, 로그 기록 등은 목적에 맞게 제한적으로 사용합니다.",
+        status: "수집"
+      },
+      {
+        title: "사용 목적",
+        body: "수집한 정보는 서비스 제공, 보안, 오류 대응에만 사용합니다. 동의 없이 마케팅이나 제3자 제공에 쓰지 않습니다.",
+        status: "목적"
+      },
+      {
+        title: "보관과 삭제",
+        body: "계정 삭제 요청 시 데이터베이스와 백업에서 해당 정보를 제거합니다. 삭제 요청 자체도 감사 로그에 남습니다.",
+        status: "보관"
+      }
+    ],
+    details: [],
+    checks: []
+  },
+  {
+    id: "terms",
+    path: "/terms",
+    label: "약관",
+    heading: "이용약관",
+    summary: "서비스 이용 조건, 권리와 의무, 책임 범위를 정합니다.",
+    items: [
+      {
+        title: "서비스 범위",
+        body: "8ailors가 제공하는 제품과 플랫폼 기능은 현재 버전 기준으로 제공됩니다. 실험실 기능은 별도 안내 없이 변경되거나 중단될 수 있습니다.",
+        status: "범위"
+      },
+      {
+        title: "사용자 의무",
+        body: "타인의 계정을 무단으로 사용하거나, 서비스를 악용하여 다른 사용자나 시스템에 피해를 주는 행위는 금지됩니다.",
+        status: "의무"
+      },
+      {
+        title: "책임 제한",
+        body: "서비스 중단, 데이터 손실, 오류로 인한 피해에 대해 법적 책임을 지는 범위는 관련 법규가 정한 한도 내로 제한됩니다.",
+        status: "책임"
+      }
+    ],
+    details: [],
+    checks: []
+  },
+  {
+    id: "refunds",
+    path: "/refunds",
+    label: "환불",
+    heading: "환불정책",
+    summary: "결제 취소와 환불 조건, 절차, 기한을 명시합니다.",
+    items: [
+      {
+        title: "환불 조건",
+        body: "서비스 미제공, 중대한 오류, 또는 법적 의무가 있는 경우 전액 환불을 처리합니다. 단순 변심은 개시 후 7일 이내에 가능합니다.",
+        status: "조건"
+      },
+      {
+        title: "절차와 기한",
+        body: "환불 요청은 이메일로 접수합니다. 접수 후 영업일 기준 5일 안에 검토하고, 승인 시 10일 안에 결제 수단으로 환불합니다.",
+        status: "절차"
+      }
+    ],
+    details: [],
+    checks: []
+  },
+  {
+    id: "about",
+    path: "/about",
+    label: "소개",
+    heading: "소개",
+    summary: "8ailors는 Rodisoft가 만드는 제품 포털입니다.",
+    items: [
+      {
+        title: "Rodisoft",
+        body: "Rodisoft는 제품과 플랫폼을 설계하고 개발합니다. 사용자 중심의 안전한 소프트웨어를 만드는 것을 목표로 합니다.",
+        status: "회사"
+      },
+      {
+        title: "8ailors",
+        body: "8ailors는 Rodisoft의 제품과 실험, 정책, 기록을 공개하는 포털입니다. 충분히 검증된 제품만 공개 목록에 올라갑니다.",
+        status: "브랜드"
+      }
+    ],
     details: [],
     checks: []
   }

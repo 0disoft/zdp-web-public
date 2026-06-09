@@ -229,8 +229,8 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     failures.push("zdp-web-public must use zdp-design-system/brand-fonts.css instead of owning @fontsource/playwrite-au-vic-guides.");
   }
 
-  if (designSystemPackageJson.version !== "0.41.15") {
-    failures.push("Sibling zdp-design-system package must be version 0.41.15 for the Storybook accessibility contract.");
+  if (designSystemPackageJson.version !== "0.42.0") {
+    failures.push("Sibling zdp-design-system package must be version 0.42.0 for the Storybook accessibility contract.");
   }
 
   if (

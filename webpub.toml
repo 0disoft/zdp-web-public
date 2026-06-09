@@ -75,3 +75,31 @@ title = "문의"
 section = "contact"
 status = "draft"
 indexing = "blocked"
+
+[[pages]]
+url = "/privacy"
+title = "개인정보"
+section = "privacy"
+status = "draft"
+indexing = "blocked"
+
+[[pages]]
+url = "/terms"
+title = "약관"
+section = "terms"
+status = "draft"
+indexing = "blocked"
+
+[[pages]]
+url = "/refunds"
+title = "환불"
+section = "refunds"
+status = "draft"
+indexing = "blocked"
+
+[[pages]]
+url = "/about"
+title = "소개"
+section = "about"
+status = "draft"
+indexing = "blocked"

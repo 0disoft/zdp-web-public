@@ -14,7 +14,11 @@ This site is a static public preview. Treat `8ailors.xyz` as a candidate domain 
 - `/roadmap`: Public roadmap boundary
 - `/notes`: Public notes and changelog placeholder
 - `/trust`: Trust, policy, and public-boundary placeholder
-- `/contact`: Public contact path placeholder
+- `/contact`: Public contact path
+- `/privacy`: Privacy policy
+- `/terms`: Terms of service
+- `/refunds`: Refund policy
+- `/about`: About Rodisoft and 8ailors
 
 ## Boundaries
 
