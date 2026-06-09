@@ -440,13 +440,13 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
         "preview-row zdp-inline",
         "적용 범위",
         "hasOverviewSection",
-        "hasFactsSection",
+        "hasDetailsSection",
         "hasChecksSection",
         "컴포넌트 & 토큰 카탈로그",
         "Color Palette",
         "Typography",
         "Interactive Components",
-        "기준 토큰",
+        "디자인 상세",
         "검증 체크리스트",
         "zdp-visually-hidden",
         "zdp-key-value zdp-key-value--columns-two",
@@ -802,11 +802,11 @@ async function checkGlossarySheetContract(): Promise<void> {
       readText("src/scripts/glossary-sheet.ts"),
       readText("glossary/terms/public.yaml"),
       readText("glossary/locales/ko/public.yaml"),
-      readText("../../contracts/zdp-libs-ts/glossary/terms/design.yaml"),
-      readText("../../contracts/zdp-libs-ts/glossary/terms/security.yaml"),
-      readText("../../contracts/zdp-libs-ts/glossary/terms/operations.yaml"),
-      readText("../../contracts/zdp-libs-ts/glossary/locales/ko/design.yaml"),
-      readText("../../contracts/zdp-libs-ts/glossary/locales/ko/security.yaml"),
+      readText("../../contracts/zdp-libs-ts/glossary/terms/design/oklch.yaml"),
+      readText("../../contracts/zdp-libs-ts/glossary/terms/security/privacy-access-broker.yaml"),
+      readText("../../contracts/zdp-libs-ts/glossary/terms/operations/rate-limit.yaml"),
+      readText("../../contracts/zdp-libs-ts/glossary/locales/ko/design/oklch.yaml"),
+      readText("../../contracts/zdp-libs-ts/glossary/locales/ko/security/privacy-access-broker.yaml"),
       readText("src/content/glossary-manifest.json"),
       readText("scripts/glossary-build.ts"),
       readText("scripts/generate-glossary.ts"),
@@ -917,11 +917,10 @@ async function checkGlossarySheetContract(): Promise<void> {
       ]
     ],
     [
-      "../../contracts/zdp-libs-ts/glossary/terms/design.yaml",
+      "../../contracts/zdp-libs-ts/glossary/terms/design/oklch.yaml",
       commonDesignTermsYaml,
       [
         "id: design.oklch",
-        "id: design.semantic-token",
         "trigger: click",
         "surface: term-sheet",
         "desktop_placement: right-sheet",
@@ -931,11 +930,10 @@ async function checkGlossarySheetContract(): Promise<void> {
       ]
     ],
     [
-      "../../contracts/zdp-libs-ts/glossary/terms/security.yaml",
+      "../../contracts/zdp-libs-ts/glossary/terms/security/privacy-access-broker.yaml",
       commonSecurityTermsYaml,
       [
         "id: security.privacy-access-broker",
-        "id: security.owasp-asvs",
         "trigger: click",
         "surface: term-sheet",
         "desktop_placement: right-sheet",
@@ -945,7 +943,7 @@ async function checkGlossarySheetContract(): Promise<void> {
       ]
     ],
     [
-      "../../contracts/zdp-libs-ts/glossary/terms/operations.yaml",
+      "../../contracts/zdp-libs-ts/glossary/terms/operations/rate-limit.yaml",
       commonOperationsTermsYaml,
       [
         "id: operations.rate-limit",
@@ -954,10 +952,9 @@ async function checkGlossarySheetContract(): Promise<void> {
       ]
     ],
     [
-      "../../contracts/zdp-libs-ts/glossary/locales/ko/design.yaml",
+      "../../contracts/zdp-libs-ts/glossary/locales/ko/design/oklch.yaml",
       commonDesignLocaleYaml,
       [
-        "locale: ko",
         "id: design.oklch",
         "translation_status: reviewed",
         "aliases:",
@@ -965,12 +962,10 @@ async function checkGlossarySheetContract(): Promise<void> {
       ]
     ],
     [
-      "../../contracts/zdp-libs-ts/glossary/locales/ko/security.yaml",
+      "../../contracts/zdp-libs-ts/glossary/locales/ko/security/privacy-access-broker.yaml",
       commonSecurityLocaleYaml,
       [
-        "locale: ko",
         "id: security.privacy-access-broker",
-        "id: security.owasp-asvs",
         "translation_status: reviewed",
         "aliases:",
         "match_phrases:"
@@ -1036,7 +1031,7 @@ async function checkGlossarySheetContract(): Promise<void> {
         "heroSummary &&",
         "<GlossaryText text={heroSummary} />",
         "<GlossaryText text={section.body} />",
-        "<GlossaryText text={fact.description} />",
+        "<GlossaryText text={detail.body} />",
         "<GlossaryText text={check.note} />"
       ]
     ],
