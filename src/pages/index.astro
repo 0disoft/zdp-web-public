@@ -10,7 +10,7 @@ const homeSections = publicPages.filter(
   (section) =>
     section.summary !== undefined ||
     section.items.length > 0 ||
-    section.facts.length > 0 ||
+    section.details.length > 0 ||
     section.checks.length > 0
 );
 const devLocalizationPatcherScript = import.meta.env.DEV
@@ -65,7 +65,6 @@ const devLocalizationPatcherScript = import.meta.env.DEV
           <div class="surface-grid zdp-grid zdp-grid--columns-three zdp-grid--gap-md">
             {section.items.map((item) => (
               <article class="surface-item zdp-surface zdp-surface--panel zdp-surface--padding-lg">
-                <span class="zdp-badge zdp-badge--primary zdp-badge--sm">{item.status}</span>
                 <h3>{item.title}</h3>
                 <p><GlossaryText text={item.body} /></p>
               </article>
