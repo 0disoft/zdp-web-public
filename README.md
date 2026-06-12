@@ -57,6 +57,8 @@ bun run build
 
 `check:localization`은 `messages/` 아래의 `zdp-platform-localization` schema/content 분리를 검사하고, 임시 디렉터리에서 strict production compile을 실행해 fallback message가 0개인지 확인한다. 홈의 작은 Astro dogfooding 표면이라도 문구 JSON이 schema params를 깨거나 잘못된 message syntax를 갖거나 production manifest에 fallback이 생기면 `bun run check`가 먼저 실패해야 한다.
 
+현재 `zdp-platform-localization` 적용 범위는 홈 hero의 제목과 두 CTA 문구로 제한한다. 더 많은 공개 문구를 옮기기 전까지는 정적 Astro 문구로 되돌릴 수 있어야 하며, 이 정적 공개 사이트 안에 별도 런타임 feature flag를 만들지 않는다.
+
 `glossary:generate`는 `../../contracts/zdp-libs-ts/glossary/terms/*.yaml` 공통 용어 계약, `../../contracts/zdp-libs-ts/glossary/locales/ko/*.yaml` 공통 한국어 문구, `glossary/terms/*.yaml` 사이트 전용 용어 계약, `glossary/locales/ko/*.yaml` 사이트 전용 한국어 문구를 `zdp-platform-devex`의 glossary manifest 빌더로 함께 읽고 `src/content/glossary-manifest.json`을 만든다. Astro 런타임은 이 JSON만 소비하며, `src/content/glossary.ts`에는 용어 본문을 중복해서 넣지 않는다.
 
 `check:glossary`는 YAML에서 다시 만든 런타임 manifest와 현재 `src/content/glossary-manifest.json`이 같은지 비교한다. `bun run check`는 stale manifest를 고치지 않고 실패해야 하므로, 용어 YAML을 수정한 뒤에는 먼저 `bun run glossary:generate`로 generated JSON을 갱신한다. 용어 설명 원천은 사이트 코드 안 임시 배열이 아니라 ZDP 플랫폼 glossary 계약을 따르는 YAML이어야 한다.

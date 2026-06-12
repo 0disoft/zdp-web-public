@@ -154,6 +154,7 @@ async function checkLayoutNoindex(): Promise<void> {
 async function checkDesignSystemConsumerContract(): Promise<void> {
   const [
     packageJson,
+    serviceYaml,
     globalCss,
     tokensCss,
     homePage,
@@ -168,6 +169,7 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     designSystemComponentCss
   ] = await Promise.all([
     readPackageJson("package.json"),
+    readText("service.yaml"),
     readText("src/styles/global.css"),
     readText("src/styles/tokens.css"),
     readText("src/pages/index.astro"),
@@ -186,6 +188,18 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     failures.push(
       "package.json version must be 0.4.69 for the split shared glossary source contract."
     );
+  }
+
+  for (const requiredText of [
+    "zdp-platform-localization adoption is limited to the home hero Astro canary until a broader public-copy migration is reviewed",
+    "home hero localization dogfood only; keep static Astro copy rollback available before expanding to more public copy",
+    "feature_flag_required: false",
+    "The first zdp-platform-localization product canary is intentionally limited to the home hero title and CTA messages",
+    "Static Astro copy remains the rollback boundary for the localization canary, so this static public site does not require a runtime feature flag"
+  ]) {
+    if (!serviceYaml.includes(requiredText)) {
+      failures.push(`service.yaml is missing localization canary contract ${requiredText}.`);
+    }
   }
 
   if (!packageJson.scripts.check.startsWith("bun run check:glossary &&")) {
