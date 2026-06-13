@@ -65,6 +65,20 @@ jobs:
           token: ${{ secrets.ZDP_CI_READ_TOKEN || github.token }}
           path: projects/zdp-platforms/platform/zdp-platform-localization
 
+      - name: Checkout platform devex
+        uses: actions/checkout@v6
+        with:
+          repository: 0disoft/zdp-platform-devex
+          token: ${{ secrets.ZDP_CI_READ_TOKEN || github.token }}
+          path: projects/zdp-platforms/platform/zdp-platform-devex
+
+      - name: Checkout library contracts
+        uses: actions/checkout@v6
+        with:
+          repository: 0disoft/zdp-libs-ts
+          token: ${{ secrets.ZDP_CI_READ_TOKEN || github.token }}
+          path: projects/zdp-platforms/contracts/zdp-libs-ts
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
 
