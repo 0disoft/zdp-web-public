@@ -81,7 +81,7 @@ jobs:
         run: bun run package:build
 
       - name: Install web public dependencies
-        run: bun install --frozen-lockfile
+        run: bun install --no-save
 
       - name: Check
         run: bun run check

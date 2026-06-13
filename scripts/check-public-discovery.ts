@@ -235,6 +235,7 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     "token: ${{ secrets.ZDP_CI_READ_TOKEN || github.token }}",
     "path: projects/zdp-platforms/platform/zdp-platform-localization",
     "bun run package:build",
+    "bun install --no-save",
     "bun run check",
     "bun run build"
   ]) {
