@@ -18,7 +18,7 @@ service:
   tier: tier3
   risk_level: low
   public_docs_url: null
-  runbook_url: null
+  runbook_url: RUNBOOK.md
 
 lifecycle:
   stage: experiment

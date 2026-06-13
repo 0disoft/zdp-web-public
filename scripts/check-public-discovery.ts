@@ -162,6 +162,8 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     publicShareDock,
     layout,
     astroConfig,
+    runbook,
+    ciWorkflow,
     designSystemPackageJson,
     designSystemConsumerContract,
     designSystemTokenCss,
@@ -177,6 +179,8 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     readText("src/components/PublicShareDock.astro"),
     readText("src/layouts/BaseLayout.astro"),
     readText("astro.config.mjs"),
+    readText("RUNBOOK.md"),
+    readText(".github/workflows/ci.yml"),
     readPackageJson("../zdp-design-system/package.json"),
     readText("../zdp-design-system/docs/CONSUMER_CONTRACT.md"),
     readText("../zdp-design-system/src/styles/tokens.css"),
@@ -190,6 +194,10 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     );
   }
 
+  if (!serviceYaml.includes("runbook_url: RUNBOOK.md")) {
+    failures.push("service.yaml must point runbook_url at RUNBOOK.md.");
+  }
+
   for (const requiredText of [
     "zdp-platform-localization adoption is limited to the home hero Astro canary until a broader public-copy migration is reviewed",
     "home hero localization dogfood only; keep static Astro copy rollback available before expanding to more public copy",
@@ -199,6 +207,39 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
   ]) {
     if (!serviceYaml.includes(requiredText)) {
       failures.push(`service.yaml is missing localization canary contract ${requiredText}.`);
+    }
+  }
+
+  for (const requiredText of [
+    "`zdp-platform-localization` canary is limited to three home hero messages",
+    "`hero.title`",
+    "`hero.cta.products`",
+    "`hero.cta.trust`",
+    "`bun run check:localization` must pass with catalog diagnostics 0 and production fallback messages 0",
+    "Keep hardcoded static Astro copy available as the rollback path",
+    "does not require a runtime feature flag",
+    "pause for product review before moving more public copy into `zdp-platform-localization`"
+  ]) {
+    if (!runbook.includes(requiredText)) {
+      failures.push(`RUNBOOK.md is missing localization canary contract ${requiredText}.`);
+    }
+  }
+
+  for (const requiredText of [
+    "public-site:",
+    "uses: actions/checkout@v6",
+    "path: projects/zdp-platforms/client-surfaces/zdp-web-public",
+    "repository: 0disoft/zdp-design-system",
+    "path: projects/zdp-platforms/client-surfaces/zdp-design-system",
+    "repository: 0disoft/zdp-platform-localization",
+    "token: ${{ secrets.ZDP_CI_READ_TOKEN || github.token }}",
+    "path: projects/zdp-platforms/platform/zdp-platform-localization",
+    "bun run package:build",
+    "bun run check",
+    "bun run build"
+  ]) {
+    if (!ciWorkflow.includes(requiredText)) {
+      failures.push(`.github/workflows/ci.yml is missing public-site localization canary CI contract ${requiredText}.`);
     }
   }
 

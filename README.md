@@ -30,6 +30,8 @@ ZDP 공개 웹 서비스 저장소다. 초기 목적은 `8ailors.xyz` 본체 사
 
 루트 `service.yaml`이 이 저장소의 서비스 계약이다. 실제 도메인을 구매하기 전까지 `8ailors.xyz`는 `candidate_public_domains`에만 둔다.
 
+운영 절차와 public localization canary 롤백 경계는 `RUNBOOK.md`에 둔다. 홈 hero canary를 넓히거나 정적 Astro copy 롤백 경계를 바꾸기 전에는 먼저 제품 리뷰를 거친다.
+
 루트 `webpub.toml`은 공개 발행 메타데이터 계약이다. 도메인 구매 전에는 `domain_status = "candidate"`와 검색 노출 차단 정책을 유지한다. 현재 생성된 페이지도 `indexing = "blocked"` 상태로 둔다.
 
 ## 교차 제품 표준 적용
@@ -58,6 +60,8 @@ bun run build
 `check:localization`은 `messages/` 아래의 `zdp-platform-localization` schema/content 분리를 검사하고, 임시 디렉터리에서 strict production compile을 실행해 fallback message가 0개인지 확인한다. 홈의 작은 Astro dogfooding 표면이라도 문구 JSON이 schema params를 깨거나 잘못된 message syntax를 갖거나 production manifest에 fallback이 생기면 `bun run check`가 먼저 실패해야 한다.
 
 현재 `zdp-platform-localization` 적용 범위는 홈 hero의 제목과 두 CTA 문구로 제한한다. 더 많은 공개 문구를 옮기기 전까지는 정적 Astro 문구로 되돌릴 수 있어야 하며, 이 정적 공개 사이트 안에 별도 런타임 feature flag를 만들지 않는다.
+
+GitHub Actions의 `public-site` job은 `zdp-web-public`, sibling `zdp-design-system`, `zdp-platform-localization`을 같은 workspace 상대 경로로 checkout한 뒤 `bun run check`와 `bun run build`를 실행한다. private sibling checkout은 `ZDP_CI_READ_TOKEN`이 있으면 그 토큰을 쓰고, 없으면 `github.token`으로 시도한다.
 
 `glossary:generate`는 `../../contracts/zdp-libs-ts/glossary/terms/*.yaml` 공통 용어 계약, `../../contracts/zdp-libs-ts/glossary/locales/ko/*.yaml` 공통 한국어 문구, `glossary/terms/*.yaml` 사이트 전용 용어 계약, `glossary/locales/ko/*.yaml` 사이트 전용 한국어 문구를 `zdp-platform-devex`의 glossary manifest 빌더로 함께 읽고 `src/content/glossary-manifest.json`을 만든다. Astro 런타임은 이 JSON만 소비하며, `src/content/glossary.ts`에는 용어 본문을 중복해서 넣지 않는다.
 
