@@ -40,7 +40,7 @@ const searchOptions = [
 ---
 
 <!doctype html>
-<html lang="ko" data-zdp-theme="light">
+<html lang="ko" data-zdp-theme="light" data-zdp-text-scale="base">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -48,20 +48,29 @@ const searchOptions = [
     <meta name="robots" content="noindex,nofollow" />
     <script is:inline>
       (() => {
-        const storageKey = "zdp-web-public-theme";
+        const themeStorageKey = "zdp-web-public-theme";
+        const textScaleStorageKey = "zdp-web-public-text-scale";
         const root = document.documentElement;
-        let stored = null;
+        let storedTheme = null;
+        let storedTextScale = null;
 
         try {
-          stored = window.localStorage.getItem(storageKey);
+          storedTheme = window.localStorage.getItem(themeStorageKey);
+          storedTextScale = window.localStorage.getItem(textScaleStorageKey);
         } catch {
-          stored = null;
+          storedTheme = null;
+          storedTextScale = null;
         }
 
         const systemTheme = window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-        const theme = stored === "light" || stored === "dark" ? stored : systemTheme;
+        const theme = storedTheme === "light" || storedTheme === "dark" ? storedTheme : systemTheme;
+        const textScale =
+          storedTextScale === "base" || storedTextScale === "large" || storedTextScale === "larger"
+            ? storedTextScale
+            : "base";
 
         root.dataset.zdpTheme = theme;
+        root.dataset.zdpTextScale = textScale;
         root.style.colorScheme = theme;
       })();
     </script>
@@ -125,27 +134,78 @@ const searchOptions = [
           </div>
         </div>
 
-        <button
-          class="site-theme-toggle zdp-theme-toggle zdp-theme-toggle--md"
-          type="button"
-          aria-label="다크 모드로 전환"
-          aria-pressed="false"
-          data-site-theme-toggle
-          data-zdp-theme-toggle
-          data-zdp-theme-state="light"
-        >
-          <span class="zdp-theme-toggle__icon zdp-theme-toggle__icon--sun" aria-hidden="true">
-            <svg viewBox="0 0 24 24" focusable="false">
-              <circle cx="12" cy="12" r="3.6"></circle>
-              <path d="M12 3v2.2M12 18.8V21M3 12h2.2M18.8 12H21M5.6 5.6l1.6 1.6M16.8 16.8l1.6 1.6M18.4 5.6l-1.6 1.6M7.2 16.8l-1.6 1.6"></path>
-            </svg>
-          </span>
-          <span class="zdp-theme-toggle__icon zdp-theme-toggle__icon--moon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" focusable="false">
-              <path d="M17.8 15.4A7 7 0 0 1 8.6 6.2 7.4 7.4 0 1 0 17.8 15.4Z"></path>
-            </svg>
-          </span>
-        </button>
+        <div class="site-preference-controls" role="group" aria-label="화면 설정">
+          <div
+            class="site-text-scale-control zdp-text-scale-control zdp-text-scale-control--md"
+            role="radiogroup"
+            aria-label="글자 크기"
+            data-site-text-scale-control
+            data-zdp-text-scale-control
+            data-zdp-text-scale-value="base"
+          >
+            <button
+              class="zdp-text-scale-control__item zdp-text-scale-control__item--selected"
+              type="button"
+              role="radio"
+              aria-label="기본 글자 크기"
+              aria-checked="true"
+              tabindex="0"
+              data-site-text-scale-option
+              data-zdp-text-scale-option
+              data-zdp-text-scale-option-value="base"
+            >
+              <span class="zdp-text-scale-control__sample" aria-hidden="true">가</span>
+            </button>
+            <button
+              class="zdp-text-scale-control__item"
+              type="button"
+              role="radio"
+              aria-label="큰 글자 크기"
+              aria-checked="false"
+              tabindex="-1"
+              data-site-text-scale-option
+              data-zdp-text-scale-option
+              data-zdp-text-scale-option-value="large"
+            >
+              <span class="zdp-text-scale-control__sample" aria-hidden="true">가+</span>
+            </button>
+            <button
+              class="zdp-text-scale-control__item"
+              type="button"
+              role="radio"
+              aria-label="더 큰 글자 크기"
+              aria-checked="false"
+              tabindex="-1"
+              data-site-text-scale-option
+              data-zdp-text-scale-option
+              data-zdp-text-scale-option-value="larger"
+            >
+              <span class="zdp-text-scale-control__sample" aria-hidden="true">가++</span>
+            </button>
+          </div>
+
+          <button
+            class="site-theme-toggle zdp-theme-toggle zdp-theme-toggle--md"
+            type="button"
+            aria-label="다크 모드로 전환"
+            aria-pressed="false"
+            data-site-theme-toggle
+            data-zdp-theme-toggle
+            data-zdp-theme-state="light"
+          >
+            <span class="zdp-theme-toggle__icon zdp-theme-toggle__icon--sun" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false">
+                <circle cx="12" cy="12" r="3.6"></circle>
+                <path d="M12 3v2.2M12 18.8V21M3 12h2.2M18.8 12H21M5.6 5.6l1.6 1.6M16.8 16.8l1.6 1.6M18.4 5.6l-1.6 1.6M7.2 16.8l-1.6 1.6"></path>
+              </svg>
+            </span>
+            <span class="zdp-theme-toggle__icon zdp-theme-toggle__icon--moon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false">
+                <path d="M17.8 15.4A7 7 0 0 1 8.6 6.2 7.4 7.4 0 1 0 17.8 15.4Z"></path>
+              </svg>
+            </span>
+          </button>
+        </div>
 
         <nav aria-label="주요 링크">
           <ul class="nav-list">
@@ -185,10 +245,16 @@ const searchOptions = [
 
     <script>
       type ThemeMode = "light" | "dark";
+      type TextScaleMode = "base" | "large" | "larger";
 
       const themeStorageKey = "zdp-web-public-theme";
+      const textScaleStorageKey = "zdp-web-public-text-scale";
       const rootElement = document.documentElement;
       const themeToggle = document.querySelector<HTMLButtonElement>("[data-site-theme-toggle]");
+      const textScaleControl = document.querySelector<HTMLElement>("[data-site-text-scale-control]");
+      const textScaleOptions = Array.from(
+        document.querySelectorAll<HTMLButtonElement>("[data-site-text-scale-option]")
+      );
       const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
 
       function normalizeTheme(value: string | undefined | null): ThemeMode | null {
@@ -208,6 +274,26 @@ const searchOptions = [
           window.localStorage.setItem(themeStorageKey, theme);
         } catch {
           // Storage can be blocked; the visible page theme still updates.
+        }
+      }
+
+      function normalizeTextScale(value: string | undefined | null): TextScaleMode | null {
+        return value === "base" || value === "large" || value === "larger" ? value : null;
+      }
+
+      function readStoredTextScale(): TextScaleMode | null {
+        try {
+          return normalizeTextScale(window.localStorage.getItem(textScaleStorageKey));
+        } catch {
+          return null;
+        }
+      }
+
+      function writeStoredTextScale(textScale: TextScaleMode): void {
+        try {
+          window.localStorage.setItem(textScaleStorageKey, textScale);
+        } catch {
+          // Storage can be blocked; the visible text scale still updates.
         }
       }
 
@@ -236,12 +322,72 @@ const searchOptions = [
         }
       }
 
+      function syncTextScaleControl(textScale: TextScaleMode): void {
+        textScaleControl?.setAttribute("data-zdp-text-scale-value", textScale);
+
+        for (const option of textScaleOptions) {
+          const selected = normalizeTextScale(option.dataset.zdpTextScaleOptionValue) === textScale;
+          option.classList.toggle("zdp-text-scale-control__item--selected", selected);
+          option.setAttribute("aria-checked", selected ? "true" : "false");
+          option.tabIndex = selected ? 0 : -1;
+        }
+      }
+
+      function applyTextScale(textScale: TextScaleMode, persist = false): void {
+        rootElement.dataset.zdpTextScale = textScale;
+        syncTextScaleControl(textScale);
+
+        if (persist) {
+          writeStoredTextScale(textScale);
+        }
+      }
+
+      function moveTextScaleFocus(current: HTMLButtonElement, key: string): void {
+        const enabledOptions = textScaleOptions.filter((option) => !option.disabled);
+        const currentIndex = Math.max(0, enabledOptions.indexOf(current));
+        const nextIndex =
+          key === "Home"
+            ? 0
+            : key === "End"
+              ? enabledOptions.length - 1
+              : key === "ArrowLeft"
+                ? (currentIndex - 1 + enabledOptions.length) % enabledOptions.length
+                : (currentIndex + 1) % enabledOptions.length;
+        const nextOption = enabledOptions[nextIndex];
+        const nextTextScale = normalizeTextScale(nextOption?.dataset.zdpTextScaleOptionValue);
+
+        if (nextOption && nextTextScale) {
+          nextOption.focus();
+          applyTextScale(nextTextScale, true);
+        }
+      }
+
       applyTheme(normalizeTheme(rootElement.dataset.zdpTheme) ?? readStoredTheme() ?? preferredTheme());
+      applyTextScale(normalizeTextScale(rootElement.dataset.zdpTextScale) ?? readStoredTextScale() ?? "base");
 
       themeToggle?.addEventListener("click", () => {
         const current = normalizeTheme(rootElement.dataset.zdpTheme) ?? preferredTheme();
         applyTheme(current === "dark" ? "light" : "dark", true);
       });
+
+      for (const option of textScaleOptions) {
+        option.addEventListener("click", () => {
+          const textScale = normalizeTextScale(option.dataset.zdpTextScaleOptionValue);
+
+          if (textScale) {
+            applyTextScale(textScale, true);
+          }
+        });
+
+        option.addEventListener("keydown", (event) => {
+          if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) {
+            return;
+          }
+
+          event.preventDefault();
+          moveTextScaleFocus(option, event.key);
+        });
+      }
 
       prefersDark.addEventListener("change", () => {
         if (!readStoredTheme()) {

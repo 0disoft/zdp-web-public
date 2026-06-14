@@ -402,7 +402,9 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     "zdpShareIcons",
     "zdp-design-system/share",
     "ThemeToggle은 light/dark",
+    "TextScaleControl은 글자 크기 선택",
     ".zdp-theme-toggle",
+    ".zdp-text-scale-control",
     "onconfirm",
     "readonly",
     "zdp-design-system/src/..."
@@ -418,8 +420,10 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
       layout,
       [
         'html lang="ko" data-zdp-theme="light"',
+        'data-zdp-text-scale="base"',
         'body class="zdp-surface-reset"',
         'zdp-web-public-theme',
+        'zdp-web-public-text-scale',
         'class="shell zdp-page zdp-page--canvas"',
         'site-header zdp-container zdp-container--lg zdp-container--padding-md',
         'site-footer zdp-container zdp-container--lg zdp-container--padding-md',
@@ -435,6 +439,17 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
         'data-site-theme-toggle',
         'data-zdp-theme-toggle',
         'data-zdp-theme-state="light"',
+        'role="group" aria-label="화면 설정"',
+        'data-site-text-scale-control',
+        'data-zdp-text-scale-control',
+        'data-zdp-text-scale-value="base"',
+        'data-site-text-scale-option',
+        'data-zdp-text-scale-option-value="large"',
+        'data-zdp-text-scale-option-value="larger"',
+        'TextScaleMode = "base" | "large" | "larger"',
+        'normalizeTextScale',
+        'applyTextScale',
+        'moveTextScaleFocus',
         'aria-label="다크 모드로 전환"',
         'aria-pressed="false"',
         "라이트 모드로 전환",
@@ -640,6 +655,9 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     "font-size: calc(var(--zdp-type-page-title-compact-size) - 0.5rem)",
     ".zdp-theme-toggle",
     ".zdp-theme-toggle__icon",
+    ".zdp-text-scale-control",
+    ".zdp-text-scale-control__item",
+    ".zdp-text-scale-control__sample",
     "var(--zdp-color-focus-surface)",
     "var(--zdp-color-focus-line)",
     "position: fixed",
@@ -670,7 +688,13 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     ".header-search-results",
     ".header-search-results::-webkit-scrollbar",
     ".header-search-option[data-active=\"true\"]",
-    ".site-theme-toggle"
+    ".site-theme-toggle",
+    ".site-preference-controls",
+    ".site-text-scale-control",
+    "html[data-zdp-text-scale=\"large\"]",
+    "--site-text-scale: 1.08",
+    "--site-heading-scale: 1.08",
+    "font-size: calc(var(--zdp-font-size-md) * var(--site-text-scale))"
   ]) {
     if (!globalCss.includes(requiredText)) {
       failures.push(`src/styles/global.css is missing design showcase contract ${requiredText}.`);
@@ -783,6 +807,7 @@ async function checkNoLocalTextLink(): Promise<void> {
 
   for (const requiredText of [
     ".zdp-surface-reset .brand:focus-visible",
+    ".site-text-scale-control .zdp-text-scale-control__item:focus-visible",
     ".site-theme-toggle.zdp-theme-toggle[data-zdp-theme-state=\"dark\"]",
     ".site-theme-toggle.zdp-theme-toggle:hover:not(:disabled)",
     ".site-theme-toggle.zdp-theme-toggle:focus-visible",
@@ -835,9 +860,9 @@ async function checkNoViewportScaledTypography(): Promise<void> {
   }
 
   for (const requiredText of [
-    "font-size: var(--zdp-type-page-title-size);",
+    "font-size: calc(var(--zdp-type-page-title-size) * var(--site-heading-scale));",
     "line-height: var(--zdp-type-page-title-line-height);",
-    "font-size: var(--zdp-type-page-title-compact-size);"
+    "font-size: calc(var(--zdp-type-page-title-compact-size) * var(--site-heading-scale));"
   ]) {
     if (!globalCss.includes(requiredText)) {
       failures.push(`src/styles/global.css must use moderated design-system page title token: ${requiredText}.`);
