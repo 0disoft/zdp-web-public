@@ -289,8 +289,8 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     failures.push("zdp-web-public must use zdp-design-system/brand-fonts.css instead of owning @fontsource/playwrite-au-vic-guides.");
   }
 
-  if (designSystemPackageJson.version !== "0.42.0") {
-    failures.push("Sibling zdp-design-system package must be version 0.42.0 for the Storybook accessibility contract.");
+  if (designSystemPackageJson.version !== "0.43.1") {
+    failures.push("Sibling zdp-design-system package must be version 0.43.1 for the CommandField shortcut contract.");
   }
 
   if (
@@ -386,6 +386,8 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
         ".zdp-kbd",
         ".zdp-shortcut-hint",
         "ariaKeyShortcuts",
+        "ariaAutocomplete",
+        "Button, IconButton, Link, CommandField",
         "실제 keydown",
         "control.choiceSize",
     "control.switchWidth",
@@ -440,6 +442,17 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
         "brand-mark__ship",
         "brand-mark__sail",
         "brand-mark__hull",
+        'role="search" aria-label="사이트 검색"',
+        'aria-keyshortcuts="/"',
+        'aria-autocomplete="list"',
+        'aria-controls="global-search-results"',
+        'aria-expanded="false"',
+        'role="listbox"',
+        'data-global-search-results',
+        'data-global-search-option',
+        "isComposingKeyEvent(event)",
+        'Reflect.get(event, "keyCode") === 229',
+        'activeElement?.getAttribute("role") === "searchbox"',
         '{ href: "/design", label: "디자인" }',
         '{ href: "/security", label: "보안" }',
         '{ href: "/labs", label: "실험실" }',
@@ -654,6 +667,9 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     ".typography-specimen",
     ".components-preview",
     ".preview-row",
+    ".header-search-results",
+    ".header-search-results::-webkit-scrollbar",
+    ".header-search-option[data-active=\"true\"]",
     ".site-theme-toggle"
   ]) {
     if (!globalCss.includes(requiredText)) {
