@@ -1,0 +1,40 @@
+---
+import { defaultLocale, siteLocales } from "../lib/site-locales";
+---
+
+<!doctype html>
+<html lang={defaultLocale} data-zdp-locale={defaultLocale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>8ailors</title>
+    <script is:inline define:vars={{ defaultLocale, siteLocales }}>
+      (() => {
+        const supportedLocales = siteLocales;
+        const currentPath = window.location.pathname || "/";
+        const segments = currentPath.split("/").filter(Boolean);
+        const firstSegment = segments[0] || "";
+        const hasSupportedLocale = supportedLocales.includes(firstSegment);
+
+        if (hasSupportedLocale) {
+          return;
+        }
+
+        const looksLikeLocale = /^[a-z]{2}(?:-[a-z0-9]{2,8})?$/i.test(firstSegment);
+        const fallbackSegments = looksLikeLocale ? segments.slice(1) : segments;
+        const fallbackPath = `/${[defaultLocale, ...fallbackSegments].filter(Boolean).join("/")}`;
+        const destination = new URL(fallbackPath, window.location.origin);
+        destination.search = window.location.search;
+        destination.hash = window.location.hash;
+
+        if (destination.pathname !== currentPath) {
+          window.location.replace(destination.toString());
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <a href="/en">Continue to 8ailors</a>
+  </body>
+</html>

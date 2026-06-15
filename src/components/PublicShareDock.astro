@@ -1,18 +1,38 @@
 ---
 import { zdpShareIcons, type ZdpShareIconName } from "zdp-design-system/share";
+import type { SupportedLocale } from "../lib/site-locales";
 
 interface Props {
   pageId: string;
   title: string;
   text: string;
   path: string;
+  locale: SupportedLocale;
   placement?: "side" | "rail";
 }
 
-const { pageId, title, text, path, placement = "side" } = Astro.props;
+const { pageId, title, text, path, locale, placement = "side" } = Astro.props;
+const copy = {
+  en: {
+    heading: "Share",
+    ariaLabel: `${title} share actions`,
+    copy: "Copy link",
+    copied: "Copied",
+    device: "Share",
+    platformSuffix: "Share on"
+  },
+  ko: {
+    heading: "공유",
+    ariaLabel: `${title} 공유`,
+    copy: "링크 복사",
+    copied: "복사됨",
+    device: "기기 공유",
+    platformSuffix: "공유"
+  }
+}[locale];
 const shareActions = [
-  { id: "copy", label: "링크 복사", copiedLabel: "복사됨", icon: "copy" },
-  { id: "device", label: "기기 공유", icon: "device" }
+  { id: "copy", label: copy.copy, copiedLabel: copy.copied, icon: "copy" },
+  { id: "device", label: copy.device, icon: "device" }
 ] as const satisfies readonly {
   id: string;
   label: string;
@@ -20,11 +40,11 @@ const shareActions = [
   icon: ZdpShareIconName;
 }[];
 const sharePlatforms = [
-  { id: "telegram", label: "텔레그램", icon: "telegram" },
-  { id: "line", label: "라인", icon: "line" },
-  { id: "whatsapp", label: "왓츠앱", icon: "whatsapp" },
+  { id: "telegram", label: locale === "ko" ? "텔레그램" : "Telegram", icon: "telegram" },
+  { id: "line", label: locale === "ko" ? "라인" : "LINE", icon: "line" },
+  { id: "whatsapp", label: locale === "ko" ? "왓츠앱" : "WhatsApp", icon: "whatsapp" },
   { id: "x", label: "X", icon: "x" },
-  { id: "reddit", label: "레딧", icon: "reddit" }
+  { id: "reddit", label: locale === "ko" ? "레딧" : "Reddit", icon: "reddit" }
 ] as const satisfies readonly {
   id: string;
   label: string;
@@ -37,10 +57,11 @@ const sharePlatforms = [
   data-share-panel
   data-share-title={title}
   data-share-text={text}
+  data-share-locale={locale}
   aria-labelledby={`${pageId}-share-title`}
 >
-  <h2 id={`${pageId}-share-title`} class="zdp-visually-hidden">공유</h2>
-  <div class="zdp-share-dock__list" aria-label={`${title} 공유`}>
+  <h2 id={`${pageId}-share-title`} class="zdp-visually-hidden">{copy.heading}</h2>
+  <div class="zdp-share-dock__list" aria-label={copy.ariaLabel}>
     {shareActions.map((action) => {
       const icon = zdpShareIcons[action.icon];
 
@@ -102,7 +123,7 @@ const sharePlatforms = [
           target="_blank"
           rel="noopener noreferrer"
           data-share-platform={platform.id}
-          aria-label={`${platform.label}으로 공유`}
+          aria-label={locale === "ko" ? `${platform.label}으로 공유` : `${copy.platformSuffix} ${platform.label}`}
         >
           <span class="zdp-share-action__mark" aria-hidden="true">
             <svg class={`zdp-share-icon zdp-share-icon--${platform.icon}`} viewBox={icon.viewBox} focusable="false">

@@ -6,9 +6,11 @@ import {
   patchEventName,
 } from "virtual:zdp-localization/runtime";
 import { createPublicLocalizationRuntime } from "../lib/localization-catalog";
+import { normalizeLocale } from "../lib/site-locales";
 
 const runtime = installZdpLocalizationRuntime(
   createPublicLocalizationRuntime({
+    locale: normalizeLocale(document.documentElement.dataset.zdpLocale),
     schemaHash: zdpLocalizationDevSchemaHash ?? undefined,
     version: zdpLocalizationDevVersion,
   }),

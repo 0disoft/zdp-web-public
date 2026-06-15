@@ -1,0 +1,70 @@
+---
+import { defaultLocale, localizePath, siteLocales } from "../lib/site-locales";
+
+interface Props {
+  targetPath: `/${string}`;
+}
+
+const { targetPath } = Astro.props as Props;
+const fallbackHref = localizePath(targetPath, defaultLocale);
+const supportedLocales = JSON.stringify(siteLocales);
+---
+
+<!doctype html>
+<html lang="en" data-zdp-locale="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <meta http-equiv="refresh" content={`0;url=${fallbackHref}`} />
+    <title>8ailors</title>
+    <script is:inline define:vars={{ targetPath, fallbackHref, supportedLocales }}>
+      (() => {
+        const localeStorageKey = "zdp-web-public-locale";
+        const locales = JSON.parse(supportedLocales);
+
+        function normalizeLocale(value) {
+          return typeof value === "string" && locales.includes(value) ? value : null;
+        }
+
+        function readStoredLocale() {
+          try {
+            return normalizeLocale(window.localStorage.getItem(localeStorageKey));
+          } catch {
+            return null;
+          }
+        }
+
+        function preferredLocale() {
+          const languages = Array.isArray(navigator.languages) && navigator.languages.length > 0
+            ? navigator.languages
+            : [navigator.language];
+
+          for (const language of languages) {
+            const locale = normalizeLocale(String(language).toLowerCase().split("-")[0]);
+            if (locale) {
+              return locale;
+            }
+          }
+
+          return "en";
+        }
+
+        function localizePath(path, locale) {
+          const cleanPath = path === "/" ? "" : path;
+          return `/${locale}${cleanPath}`;
+        }
+
+        const locale = readStoredLocale() || preferredLocale();
+        const destination = new URL(localizePath(targetPath, locale), window.location.href);
+        destination.search = window.location.search;
+        destination.hash = window.location.hash;
+
+        window.location.replace(destination.toString());
+      })();
+    </script>
+  </head>
+  <body>
+    <a href={fallbackHref}>Continue to 8ailors</a>
+  </body>
+</html>

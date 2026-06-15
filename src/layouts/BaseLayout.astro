@@ -1,38 +1,97 @@
 ---
 import "../styles/global.css";
-import { publicPages } from "../content/public-pages";
+import { getPublicPages } from "../content/public-pages";
 import GlossarySheet from "../components/GlossarySheet.astro";
+import {
+  defaultLocale,
+  localizePath,
+  siteLocaleLabels,
+  siteLocales,
+  type SupportedLocale
+} from "../lib/site-locales";
 
 interface Props {
   title: string;
   description: string;
   currentPath?: string;
+  locale?: SupportedLocale;
 }
 
-const { title, description, currentPath } = Astro.props;
-const navItems = [
-  { href: "/products", label: "제품" },
-  { href: "/design", label: "디자인" },
-  { href: "/security", label: "보안" },
-  { href: "/labs", label: "실험실" },
-  { href: "/roadmap", label: "로드맵" },
-  { href: "/notes", label: "기록" },
-  { href: "/trust", label: "정책" },
-  { href: "/contact", label: "문의" }
-] as const;
+const { title, description, currentPath, locale = defaultLocale } = Astro.props;
+const localizedPages = getPublicPages(locale);
+const navItems = localizedPages.filter((page) =>
+  ["products", "design", "security", "labs", "roadmap", "notes", "trust", "contact"].includes(page.id)
+);
+const footerItems = localizedPages.filter((page) => ["privacy", "terms", "refunds", "contact", "about"].includes(page.id));
+const currentLocalizedPath = currentPath ?? localizePath("/", locale);
+const currentLocaleLabel = siteLocaleLabels[locale].short;
+const textSample = locale === "ko" ? "가" : "Aa";
+const layoutCopy = {
+  en: {
+    skip: "Skip to content",
+    header: "Site header",
+    search: "Site search",
+    searchPlaceholder: "Search...",
+    searchShortcut: "Search shortcut slash",
+    searchResults: "Search results",
+    preferences: "Display settings",
+    language: "Language",
+    textScale: "Text size",
+    textBase: "Default text size",
+    textLarge: "Large text size",
+    textLarger: "Larger text size",
+    darkMode: "Switch to dark mode",
+    lightMode: "Switch to light mode",
+    nav: "Primary links",
+    footer: "Policies and contact"
+  },
+  ko: {
+    skip: "본문으로 건너뛰기",
+    header: "사이트 상단",
+    search: "사이트 검색",
+    searchPlaceholder: "검색...",
+    searchShortcut: "검색 단축키 슬래시",
+    searchResults: "검색 결과",
+    preferences: "화면 설정",
+    language: "언어",
+    textScale: "글자 크기",
+    textBase: "기본 글자 크기",
+    textLarge: "큰 글자 크기",
+    textLarger: "더 큰 글자 크기",
+    darkMode: "다크 모드로 전환",
+    lightMode: "라이트 모드로 전환",
+    nav: "주요 링크",
+    footer: "정책 및 문의"
+  }
+}[locale];
 
 const searchOptions = [
-  ...publicPages.flatMap((page) => {
+  ...localizedPages.flatMap((page) => {
     if (page.id === "design") {
-      return [
-        { label: "디자인: 개요", href: "/design#design-start" },
-        { label: "디자인: 일관성", href: "/design#design-consistency" },
-        { label: "디자인: 접근성", href: "/design#design-accessibility" },
-        { label: "디자인: 안전", href: "/design#design-safety" },
-        { label: "디자인: 현지화", href: "/design#design-locale" },
-        { label: "디자인: 기준 토큰", href: "/design#design-tokens" },
-        { label: "디자인: 약속", href: "/design#design-checks" }
-      ];
+      const designLabels =
+        locale === "ko"
+          ? [
+              ["개요", "design-start"],
+              ["일관성", "design-consistency"],
+              ["접근성", "design-accessibility"],
+              ["안전", "design-safety"],
+              ["현지화", "design-locale"],
+              ["기준 토큰", "design-showcase"],
+              ["약속", "design-checks"]
+            ]
+          : [
+              ["Overview", "design-start"],
+              ["Consistency", "design-consistency"],
+              ["Accessibility", "design-accessibility"],
+              ["Safety", "design-safety"],
+              ["Localization", "design-locale"],
+              ["Tokens", "design-showcase"],
+              ["Promises", "design-checks"]
+            ];
+      return designLabels.map(([label, hash]) => ({
+        label: `${page.label}: ${label}`,
+        href: `${page.path}#${hash}`
+      }));
     }
     return [{ label: page.label, href: page.path }];
   })
@@ -40,7 +99,7 @@ const searchOptions = [
 ---
 
 <!doctype html>
-<html lang="ko" data-zdp-locale="ko" data-zdp-theme="light" data-zdp-text-scale="base">
+<html lang={locale} data-zdp-locale={locale} data-zdp-theme="light" data-zdp-text-scale="base">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -49,26 +108,22 @@ const searchOptions = [
     <script is:inline>
       (() => {
         const themeStorageKey = "zdp-web-public-theme";
-        const localeStorageKey = "zdp-web-public-locale";
         const textScaleStorageKey = "zdp-web-public-text-scale";
         const root = document.documentElement;
         let storedTheme = null;
-        let storedLocale = null;
         let storedTextScale = null;
 
         try {
           storedTheme = window.localStorage.getItem(themeStorageKey);
-          storedLocale = window.localStorage.getItem(localeStorageKey);
           storedTextScale = window.localStorage.getItem(textScaleStorageKey);
         } catch {
           storedTheme = null;
-          storedLocale = null;
           storedTextScale = null;
         }
 
         const systemTheme = window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
         const theme = storedTheme === "light" || storedTheme === "dark" ? storedTheme : systemTheme;
-        const locale = storedLocale === "ko" ? storedLocale : "ko";
+        const locale = root.dataset.zdpLocale === "en" || root.dataset.zdpLocale === "ko" ? root.dataset.zdpLocale : "en";
         const textScale =
           storedTextScale === "base" || storedTextScale === "large" || storedTextScale === "larger"
             ? storedTextScale
@@ -84,10 +139,10 @@ const searchOptions = [
     <title>{title}</title>
   </head>
   <body class="zdp-surface-reset">
-    <a class="zdp-skip-link" href="#content">본문으로 건너뛰기</a>
+    <a class="zdp-skip-link" href="#content">{layoutCopy.skip}</a>
     <div class="shell zdp-page zdp-page--canvas">
-      <header class="site-header zdp-container zdp-container--lg zdp-container--padding-md" aria-label="사이트 상단">
-        <a class="brand zdp-brand-lockup" href="/" aria-label="8ailors 홈">
+      <header class="site-header zdp-container zdp-container--lg zdp-container--padding-md" aria-label={layoutCopy.header}>
+        <a class="brand zdp-brand-lockup" href={localizePath("/", locale)} aria-label="8ailors">
           <span class="brand-mark zdp-brand-lockup__mark" aria-hidden="true">
             <svg class="brand-mark__ship" viewBox="0 0 48 48" focusable="false">
               <path class="brand-mark__sail brand-mark__sail--aft" d="M23 8v20H12c1.5-7.8 5-14.1 11-20Z" />
@@ -100,13 +155,13 @@ const searchOptions = [
           <span class="brand-name zdp-brand-wordmark zdp-brand-wordmark--compact">8ailors</span>
         </a>
 
-        <div class="header-search zdp-command-field zdp-command-field--md" role="search" aria-label="사이트 검색">
-          <label class="zdp-visually-hidden" for="global-search">사이트 검색</label>
+        <div class="header-search zdp-command-field zdp-command-field--md" role="search" aria-label={layoutCopy.search}>
+          <label class="zdp-visually-hidden" for="global-search">{layoutCopy.search}</label>
           <input
             id="global-search"
             class="zdp-command-field__input"
             type="search"
-            placeholder="검색..."
+            placeholder={layoutCopy.searchPlaceholder}
             autocomplete="off"
             aria-keyshortcuts="/"
             aria-autocomplete="list"
@@ -114,14 +169,14 @@ const searchOptions = [
             aria-expanded="false"
             data-global-search
           />
-          <span class="zdp-shortcut-hint" aria-label="검색 단축키 슬래시">
+          <span class="zdp-shortcut-hint" aria-label={layoutCopy.searchShortcut}>
             <kbd class="zdp-kbd zdp-kbd--md">/</kbd>
           </span>
           <div
             id="global-search-results"
             class="header-search-results"
             role="listbox"
-            aria-label="검색 결과"
+            aria-label={layoutCopy.searchResults}
             hidden
             data-global-search-results
           >
@@ -141,84 +196,103 @@ const searchOptions = [
           </div>
         </div>
 
-        <div class="site-preference-controls" role="group" aria-label="화면 설정">
-          <div
-            class="site-locale-switcher zdp-locale-switcher zdp-locale-switcher--md"
-            role="radiogroup"
-            aria-label="언어"
-            data-site-locale-switcher
-            data-zdp-locale-switcher
-            data-zdp-locale-value="ko"
-          >
-            <button
-              class="zdp-locale-switcher__item zdp-locale-switcher__item--selected"
-              type="button"
-              role="radio"
-              lang="ko"
-              aria-label="한국어"
-              aria-checked="true"
-              tabindex="0"
-              data-site-locale-option
-              data-zdp-locale-option
-              data-zdp-locale-option-value="ko"
-            >
-              <span class="zdp-locale-switcher__label" aria-hidden="true">KO</span>
-            </button>
-          </div>
+        <div class="site-preference-controls" role="group" aria-label={layoutCopy.preferences}>
+          <details class="site-preference-menu" data-site-preference-menu>
+            <summary class="site-preference-trigger" aria-label={layoutCopy.preferences}>
+              <span class="site-preference-trigger__locale" lang={locale}>{currentLocaleLabel}</span>
+            </summary>
+            <div class="site-preference-panel">
+              <section class="site-preference-panel__section" aria-labelledby="site-language-title">
+                <h2 id="site-language-title" class="site-preference-panel__title">{layoutCopy.language}</h2>
+                <div
+                  class="site-locale-switcher zdp-locale-switcher zdp-locale-switcher--md"
+                  role="radiogroup"
+                  aria-label={layoutCopy.language}
+                  data-site-locale-switcher
+                  data-zdp-locale-switcher
+                  data-zdp-locale-value={locale}
+                >
+                  {siteLocales.map((optionLocale) => (
+                    <button
+                      class:list={[
+                        "zdp-locale-switcher__item",
+                        optionLocale === locale && "zdp-locale-switcher__item--selected"
+                      ]}
+                      type="button"
+                      role="radio"
+                      lang={optionLocale}
+                      aria-label={siteLocaleLabels[optionLocale].label}
+                      aria-checked={optionLocale === locale ? "true" : "false"}
+                      tabindex={optionLocale === locale ? "0" : "-1"}
+                      data-site-locale-option
+                      data-zdp-locale-option
+                      data-zdp-locale-option-value={optionLocale}
+                    >
+                      <span class="zdp-locale-switcher__label" aria-hidden="true">{siteLocaleLabels[optionLocale].short}</span>
+                      <span class="site-locale-switcher__name">{siteLocaleLabels[optionLocale].label}</span>
+                    </button>
+                  ))}
+                </div>
+              </section>
 
-          <div
-            class="site-text-scale-control zdp-text-scale-control zdp-text-scale-control--md"
-            role="radiogroup"
-            aria-label="글자 크기"
-            data-site-text-scale-control
-            data-zdp-text-scale-control
-            data-zdp-text-scale-value="base"
-          >
-            <button
-              class="zdp-text-scale-control__item zdp-text-scale-control__item--selected"
-              type="button"
-              role="radio"
-              aria-label="기본 글자 크기"
-              aria-checked="true"
-              tabindex="0"
-              data-site-text-scale-option
-              data-zdp-text-scale-option
-              data-zdp-text-scale-option-value="base"
-            >
-              <span class="zdp-text-scale-control__sample" aria-hidden="true">가</span>
-            </button>
-            <button
-              class="zdp-text-scale-control__item"
-              type="button"
-              role="radio"
-              aria-label="큰 글자 크기"
-              aria-checked="false"
-              tabindex="-1"
-              data-site-text-scale-option
-              data-zdp-text-scale-option
-              data-zdp-text-scale-option-value="large"
-            >
-              <span class="zdp-text-scale-control__sample" aria-hidden="true">가+</span>
-            </button>
-            <button
-              class="zdp-text-scale-control__item"
-              type="button"
-              role="radio"
-              aria-label="더 큰 글자 크기"
-              aria-checked="false"
-              tabindex="-1"
-              data-site-text-scale-option
-              data-zdp-text-scale-option
-              data-zdp-text-scale-option-value="larger"
-            >
-              <span class="zdp-text-scale-control__sample" aria-hidden="true">가++</span>
-            </button>
-          </div>
+              <section class="site-preference-panel__section" aria-labelledby="site-text-scale-title">
+                <h2 id="site-text-scale-title" class="site-preference-panel__title">{layoutCopy.textScale}</h2>
+                <div
+                  class="site-text-scale-control zdp-text-scale-control zdp-text-scale-control--md"
+                  role="radiogroup"
+                  aria-label={layoutCopy.textScale}
+                  data-site-text-scale-control
+                  data-zdp-text-scale-control
+                  data-zdp-text-scale-value="base"
+                >
+                  <button
+                    class="zdp-text-scale-control__item zdp-text-scale-control__item--selected"
+                    type="button"
+                    role="radio"
+                    aria-label={layoutCopy.textBase}
+                    aria-checked="true"
+                    tabindex="0"
+                    data-site-text-scale-option
+                    data-zdp-text-scale-option
+                    data-zdp-text-scale-option-value="base"
+                  >
+                    <span class="zdp-text-scale-control__sample" aria-hidden="true">{textSample}</span>
+                  </button>
+                  <button
+                    class="zdp-text-scale-control__item"
+                    type="button"
+                    role="radio"
+                    aria-label={layoutCopy.textLarge}
+                    aria-checked="false"
+                    tabindex="-1"
+                    data-site-text-scale-option
+                    data-zdp-text-scale-option
+                    data-zdp-text-scale-option-value="large"
+                  >
+                    <span class="zdp-text-scale-control__sample zdp-text-scale-control__sample--large" aria-hidden="true">{textSample}</span>
+                  </button>
+                  <button
+                    class="zdp-text-scale-control__item"
+                    type="button"
+                    role="radio"
+                    aria-label={layoutCopy.textLarger}
+                    aria-checked="false"
+                    tabindex="-1"
+                    data-site-text-scale-option
+                    data-zdp-text-scale-option
+                    data-zdp-text-scale-option-value="larger"
+                  >
+                    <span class="zdp-text-scale-control__sample zdp-text-scale-control__sample--larger" aria-hidden="true">{textSample}</span>
+                  </button>
+                </div>
+              </section>
+            </div>
+          </details>
 
           <button
             class="site-theme-toggle zdp-theme-toggle zdp-theme-toggle--md"
             type="button"
-            aria-label="다크 모드로 전환"
+            aria-label={layoutCopy.darkMode}
             aria-pressed="false"
             data-site-theme-toggle
             data-zdp-theme-toggle
@@ -238,14 +312,14 @@ const searchOptions = [
           </button>
         </div>
 
-        <nav aria-label="주요 링크">
+        <nav aria-label={layoutCopy.nav}>
           <ul class="nav-list">
             {navItems.map((item) => (
               <li>
                 <a
                   class="zdp-link zdp-link--muted"
-                  href={item.href}
-                  aria-current={item.href === currentPath ? "page" : undefined}
+                  href={item.path}
+                  aria-current={item.path === currentLocalizedPath ? "page" : undefined}
                 >
                   {item.label}
                 </a>
@@ -260,43 +334,39 @@ const searchOptions = [
       <footer class="site-footer zdp-container zdp-container--lg zdp-container--padding-md">
         <div class="footer-inner">
           <p class="footer-copyright">© 2026 Rodisoft</p>
-          <nav class="footer-links" aria-label="정책 및 문의">
+          <nav class="footer-links" aria-label={layoutCopy.footer}>
             <ul class="footer-link-list">
-              <li><a class="zdp-link zdp-link--muted" href="/privacy">개인정보</a></li>
-              <li><a class="zdp-link zdp-link--muted" href="/terms">약관</a></li>
-              <li><a class="zdp-link zdp-link--muted" href="/refunds">환불</a></li>
-              <li><a class="zdp-link zdp-link--muted" href="/contact">문의</a></li>
-              <li><a class="zdp-link zdp-link--muted" href="/about">소개</a></li>
+              {footerItems.map((item) => (
+                <li><a class="zdp-link zdp-link--muted" href={item.path}>{item.label}</a></li>
+              ))}
             </ul>
           </nav>
         </div>
       </footer>
     </div>
-    <GlossarySheet />
+    <GlossarySheet locale={locale} />
 
-    <script>
-      type ThemeMode = "light" | "dark";
-      type LocaleMode = "ko";
-      type TextScaleMode = "base" | "large" | "larger";
-
+    <script is:inline define:vars={{ currentLocale: locale, lightModeLabel: layoutCopy.lightMode, darkModeLabel: layoutCopy.darkMode }}>
+      const supportedLocales = ["en", "ko"];
       const themeStorageKey = "zdp-web-public-theme";
       const localeStorageKey = "zdp-web-public-locale";
       const textScaleStorageKey = "zdp-web-public-text-scale";
       const rootElement = document.documentElement;
-      const themeToggle = document.querySelector<HTMLButtonElement>("[data-site-theme-toggle]");
-      const localeSwitcher = document.querySelector<HTMLElement>("[data-site-locale-switcher]");
-      const localeOptions = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-site-locale-option]"));
-      const textScaleControl = document.querySelector<HTMLElement>("[data-site-text-scale-control]");
+      const preferenceMenu = document.querySelector("[data-site-preference-menu]");
+      const themeToggle = document.querySelector("[data-site-theme-toggle]");
+      const localeSwitcher = document.querySelector("[data-site-locale-switcher]");
+      const localeOptions = Array.from(document.querySelectorAll("[data-site-locale-option]"));
+      const textScaleControl = document.querySelector("[data-site-text-scale-control]");
       const textScaleOptions = Array.from(
-        document.querySelectorAll<HTMLButtonElement>("[data-site-text-scale-option]")
+        document.querySelectorAll("[data-site-text-scale-option]")
       );
       const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
 
-      function normalizeTheme(value: string | undefined | null): ThemeMode | null {
+      function normalizeTheme(value) {
         return value === "light" || value === "dark" ? value : null;
       }
 
-      function readStoredTheme(): ThemeMode | null {
+      function readStoredTheme() {
         try {
           return normalizeTheme(window.localStorage.getItem(themeStorageKey));
         } catch {
@@ -304,7 +374,7 @@ const searchOptions = [
         }
       }
 
-      function writeStoredTheme(theme: ThemeMode): void {
+      function writeStoredTheme(theme) {
         try {
           window.localStorage.setItem(themeStorageKey, theme);
         } catch {
@@ -312,19 +382,11 @@ const searchOptions = [
         }
       }
 
-      function normalizeLocale(value: string | undefined | null): LocaleMode | null {
-        return value === "ko" ? value : null;
+      function normalizeLocale(value) {
+        return supportedLocales.includes(value) ? value : null;
       }
 
-      function readStoredLocale(): LocaleMode | null {
-        try {
-          return normalizeLocale(window.localStorage.getItem(localeStorageKey));
-        } catch {
-          return null;
-        }
-      }
-
-      function writeStoredLocale(locale: LocaleMode): void {
+      function writeStoredLocale(locale) {
         try {
           window.localStorage.setItem(localeStorageKey, locale);
         } catch {
@@ -332,11 +394,11 @@ const searchOptions = [
         }
       }
 
-      function normalizeTextScale(value: string | undefined | null): TextScaleMode | null {
+      function normalizeTextScale(value) {
         return value === "base" || value === "large" || value === "larger" ? value : null;
       }
 
-      function readStoredTextScale(): TextScaleMode | null {
+      function readStoredTextScale() {
         try {
           return normalizeTextScale(window.localStorage.getItem(textScaleStorageKey));
         } catch {
@@ -344,7 +406,7 @@ const searchOptions = [
         }
       }
 
-      function writeStoredTextScale(textScale: TextScaleMode): void {
+      function writeStoredTextScale(textScale) {
         try {
           window.localStorage.setItem(textScaleStorageKey, textScale);
         } catch {
@@ -352,11 +414,23 @@ const searchOptions = [
         }
       }
 
-      function preferredTheme(): ThemeMode {
+      function closePreferenceMenu({ restoreFocus = false } = {}) {
+        if (!(preferenceMenu instanceof HTMLDetailsElement) || !preferenceMenu.open) {
+          return;
+        }
+
+        preferenceMenu.open = false;
+
+        if (restoreFocus) {
+          preferenceMenu.querySelector("summary")?.focus();
+        }
+      }
+
+      function preferredTheme() {
         return prefersDark.matches ? "dark" : "light";
       }
 
-      function syncThemeToggle(theme: ThemeMode): void {
+      function syncThemeToggle(theme) {
         if (!themeToggle) {
           return;
         }
@@ -364,10 +438,10 @@ const searchOptions = [
         const isDark = theme === "dark";
         themeToggle.dataset.zdpThemeState = theme;
         themeToggle.setAttribute("aria-pressed", isDark ? "true" : "false");
-        themeToggle.setAttribute("aria-label", isDark ? "라이트 모드로 전환" : "다크 모드로 전환");
+        themeToggle.setAttribute("aria-label", isDark ? lightModeLabel : darkModeLabel);
       }
 
-      function applyTheme(theme: ThemeMode, persist = false): void {
+      function applyTheme(theme, persist = false) {
         rootElement.dataset.zdpTheme = theme;
         rootElement.style.colorScheme = theme;
         syncThemeToggle(theme);
@@ -377,7 +451,7 @@ const searchOptions = [
         }
       }
 
-      function syncLocaleSwitcher(locale: LocaleMode): void {
+      function syncLocaleSwitcher(locale) {
         localeSwitcher?.setAttribute("data-zdp-locale-value", locale);
 
         for (const option of localeOptions) {
@@ -388,7 +462,7 @@ const searchOptions = [
         }
       }
 
-      function applyLocale(locale: LocaleMode, persist = false): void {
+      function applyLocale(locale, persist = false) {
         rootElement.lang = locale;
         rootElement.dataset.zdpLocale = locale;
         syncLocaleSwitcher(locale);
@@ -398,7 +472,26 @@ const searchOptions = [
         }
       }
 
-      function moveLocaleFocus(current: HTMLButtonElement, key: string): void {
+      function buildLocalizedCurrentPath(locale) {
+        const segments = window.location.pathname.split("/").filter(Boolean);
+        if (normalizeLocale(segments[0])) {
+          segments.shift();
+        }
+
+        const suffix = segments.length > 0 ? `/${segments.join("/")}` : "";
+        return `/${locale}${suffix}${window.location.search}${window.location.hash}`;
+      }
+
+      function navigateLocale(locale) {
+        applyLocale(locale, true);
+        const target = buildLocalizedCurrentPath(locale);
+
+        if (target !== `${window.location.pathname}${window.location.search}${window.location.hash}`) {
+          window.location.href = target;
+        }
+      }
+
+      function moveLocaleFocus(current, key) {
         const enabledOptions = localeOptions.filter((option) => !option.disabled);
         const currentIndex = Math.max(0, enabledOptions.indexOf(current));
         const nextIndex =
@@ -414,11 +507,11 @@ const searchOptions = [
 
         if (nextOption && nextLocale) {
           nextOption.focus();
-          applyLocale(nextLocale, true);
+          navigateLocale(nextLocale);
         }
       }
 
-      function syncTextScaleControl(textScale: TextScaleMode): void {
+      function syncTextScaleControl(textScale) {
         textScaleControl?.setAttribute("data-zdp-text-scale-value", textScale);
 
         for (const option of textScaleOptions) {
@@ -429,7 +522,7 @@ const searchOptions = [
         }
       }
 
-      function applyTextScale(textScale: TextScaleMode, persist = false): void {
+      function applyTextScale(textScale, persist = false) {
         rootElement.dataset.zdpTextScale = textScale;
         syncTextScaleControl(textScale);
 
@@ -438,7 +531,7 @@ const searchOptions = [
         }
       }
 
-      function moveTextScaleFocus(current: HTMLButtonElement, key: string): void {
+      function moveTextScaleFocus(current, key) {
         const enabledOptions = textScaleOptions.filter((option) => !option.disabled);
         const currentIndex = Math.max(0, enabledOptions.indexOf(current));
         const nextIndex =
@@ -458,8 +551,11 @@ const searchOptions = [
         }
       }
 
+      const pageLocale = normalizeLocale(rootElement.dataset.zdpLocale) ?? normalizeLocale(currentLocale) ?? "en";
+      const searchLocale = pageLocale === "ko" ? "ko-KR" : "en-US";
+
       applyTheme(normalizeTheme(rootElement.dataset.zdpTheme) ?? readStoredTheme() ?? preferredTheme());
-      applyLocale(normalizeLocale(rootElement.dataset.zdpLocale) ?? readStoredLocale() ?? "ko");
+      applyLocale(pageLocale, true);
       applyTextScale(normalizeTextScale(rootElement.dataset.zdpTextScale) ?? readStoredTextScale() ?? "base");
 
       themeToggle?.addEventListener("click", () => {
@@ -491,7 +587,7 @@ const searchOptions = [
           const locale = normalizeLocale(option.dataset.zdpLocaleOptionValue);
 
           if (locale) {
-            applyLocale(locale, true);
+            navigateLocale(locale);
           }
         });
 
@@ -505,34 +601,48 @@ const searchOptions = [
         });
       }
 
+      document.addEventListener("pointerdown", (event) => {
+        if (!(event.target instanceof Node) || preferenceMenu?.contains(event.target)) {
+          return;
+        }
+
+        closePreferenceMenu();
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          closePreferenceMenu({ restoreFocus: true });
+        }
+      });
+
       prefersDark.addEventListener("change", () => {
         if (!readStoredTheme()) {
           applyTheme(preferredTheme());
         }
       });
 
-      const globalSearch = document.querySelector<HTMLInputElement>("[data-global-search]");
-      const globalSearchResults = document.querySelector<HTMLElement>("[data-global-search-results]");
+      const globalSearch = document.querySelector("[data-global-search]");
+      const globalSearchResults = document.querySelector("[data-global-search-results]");
       const globalSearchOptions = Array.from(
-        document.querySelectorAll<HTMLElement>("[data-global-search-option]")
+        document.querySelectorAll("[data-global-search-option]")
       );
       let activeSearchIndex = -1;
 
-      function optionLabel(option: HTMLElement): string {
+      function optionLabel(option) {
         return option.dataset.searchLabel || option.textContent?.trim() || "";
       }
 
-      function optionHref(option: HTMLElement): string {
+      function optionHref(option) {
         return option.dataset.href || "";
       }
 
       const searchOptions = new Map(globalSearchOptions.map((option) => [optionLabel(option), optionHref(option)]));
 
-      function visibleSearchOptions(): HTMLElement[] {
+      function visibleSearchOptions() {
         return globalSearchOptions.filter((option) => !option.hidden);
       }
 
-      function setSearchExpanded(expanded: boolean): void {
+      function setSearchExpanded(expanded) {
         if (!globalSearch || !globalSearchResults) {
           return;
         }
@@ -550,7 +660,7 @@ const searchOptions = [
         }
       }
 
-      function setActiveSearchOption(nextIndex: number): void {
+      function setActiveSearchOption(nextIndex) {
         if (!globalSearch) {
           return;
         }
@@ -574,12 +684,12 @@ const searchOptions = [
         activeOption.scrollIntoView({ block: "nearest" });
       }
 
-      function updateSearchResults(): void {
+      function updateSearchResults() {
         if (!globalSearch) {
           return;
         }
 
-        const query = globalSearch.value.trim().toLocaleLowerCase("ko-KR");
+        const query = globalSearch.value.trim().toLocaleLowerCase(searchLocale);
         if (!query) {
           for (const option of globalSearchOptions) {
             option.hidden = true;
@@ -591,7 +701,7 @@ const searchOptions = [
         }
 
         for (const option of globalSearchOptions) {
-          const matched = optionLabel(option).toLocaleLowerCase("ko-KR").includes(query);
+          const matched = optionLabel(option).toLocaleLowerCase(searchLocale).includes(query);
           option.hidden = !matched;
           option.removeAttribute("data-active");
           option.setAttribute("aria-selected", "false");
@@ -605,7 +715,7 @@ const searchOptions = [
         }
       }
 
-      function handleSearchRedirect(value: string): void {
+      function handleSearchRedirect(value) {
         const target = searchOptions.get(value.trim());
         if (target) {
           window.location.href = target;
@@ -615,7 +725,7 @@ const searchOptions = [
         }
       }
 
-      function handleOptionRedirect(option: HTMLElement | null | undefined): void {
+      function handleOptionRedirect(option) {
         const target = option ? optionHref(option) : "";
         if (target) {
           window.location.href = target;
@@ -625,7 +735,7 @@ const searchOptions = [
         }
       }
 
-      function isComposingKeyEvent(event: KeyboardEvent): boolean {
+      function isComposingKeyEvent(event) {
         return event.isComposing || Reflect.get(event, "keyCode") === 229;
       }
 

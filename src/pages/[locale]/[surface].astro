@@ -1,0 +1,571 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import {
+  getPublicPage,
+  publicPageIds,
+  type PublicPage
+} from "../../content/public-pages";
+import GlossaryText from "../../components/GlossaryText.astro";
+import PublicShareDock from "../../components/PublicShareDock.astro";
+import { localizePath, siteLocales, type SupportedLocale } from "../../lib/site-locales";
+
+export function getStaticPaths() {
+  return siteLocales.flatMap((locale) =>
+    publicPageIds.map((surface) => {
+      const page = getPublicPage(locale, surface);
+      if (page === undefined) {
+        throw new Error(`Missing public page ${surface} for locale ${locale}.`);
+      }
+
+      return {
+        params: {
+          locale,
+          surface
+        },
+        props: {
+          locale,
+          page
+        }
+      };
+    })
+  );
+}
+
+interface Props {
+  locale: SupportedLocale;
+  page: PublicPage;
+}
+
+const { locale, page } = Astro.props as Props;
+const isDesignPage = page.id === "design";
+const heroHeading = page.heading;
+const heroSummary = page.summary;
+const title = `${heroHeading} - 8ailors`;
+const description = heroSummary ?? `${heroHeading} - 8ailors`;
+const copy = {
+  en: {
+    breadcrumbLabel: "Current page",
+    home: "8ailors",
+    homeAction: "Back home",
+    railLabel: "Contents",
+    railNavSuffix: "sections",
+    overview: "Overview",
+    preview: "Preview",
+    details: "Details",
+    promises: "Promises",
+    checklist: "Checklist",
+    scopeTitle: "Applies to",
+    showcaseLabel: "Preview",
+    showcaseTitle: "Component and token catalog",
+    showcaseSummary: "A public sample of source tokens and shared UI parts applied through the same theme.",
+    bodySample: "Body text keeps a readable rhythm across supported languages.",
+    shortcutText: "Focus global search",
+    commandPlaceholder: "Search projects, docs, settings",
+    commandLabel: "Quick jump",
+    emptyTitle: "No public items yet.",
+    emptyBody: "Reviewed items will appear here.",
+    refresh: "Refresh",
+    reducedMotion: "reduced to 1ms",
+    detailsTitle: "Key information",
+    designDetailsTitle: "Design details",
+    checksTitle: "Verification checklist",
+    designChecksCaption: "Design verification checklist",
+    checksCaption: "Verification checklist",
+    tableItem: "Item",
+    tableStatus: "Status",
+    tableCriteria: "Criteria",
+    shareCopyDenied: "Copy permission required",
+    shareCopied: "Link copied",
+    shareUnavailable: "Sharing is unavailable."
+  },
+  ko: {
+    breadcrumbLabel: "현재 위치",
+    home: "8ailors",
+    homeAction: "홈으로 돌아가기",
+    railLabel: "목차",
+    railNavSuffix: "섹션",
+    overview: "개요",
+    preview: "미리보기",
+    details: "상세",
+    promises: "약속",
+    checklist: "체크리스트",
+    scopeTitle: "적용 범위",
+    showcaseLabel: "미리보기",
+    showcaseTitle: "컴포넌트 & 토큰 카탈로그",
+    showcaseSummary: "공통 테마로 적용되는 원천 토큰과 UI 요소의 실물 사양입니다.",
+    bodySample: "가독성을 높인 본문 기본 텍스트 폰트와 자간 배치입니다.",
+    shortcutText: "키로 글로벌 검색 포커스",
+    commandPlaceholder: "프로젝트, 문서, 설정 검색",
+    commandLabel: "빠른 이동",
+    emptyTitle: "아직 공개할 항목이 없습니다.",
+    emptyBody: "준비되면 여기에 표시됩니다.",
+    refresh: "새로 고침",
+    reducedMotion: "1ms로 낮춤",
+    detailsTitle: "핵심 정보",
+    designDetailsTitle: "디자인 상세",
+    checksTitle: "검증 체크리스트",
+    designChecksCaption: "디자인 검증 체크리스트",
+    checksCaption: "검증 체크리스트",
+    tableItem: "항목",
+    tableStatus: "상태",
+    tableCriteria: "기준",
+    shareCopyDenied: "복사 권한 필요",
+    shareCopied: "링크 복사됨",
+    shareUnavailable: "공유를 사용할 수 없습니다."
+  }
+}[locale];
+const designOverviewSection = {
+  id: "design-start",
+  title: copy.scopeTitle
+} as const;
+const designContentSections =
+  locale === "ko"
+    ? [
+        {
+          id: "design-consistency",
+          label: "일관성",
+          title: "어디서나 같은 경험",
+          body:
+            "버튼, 입력, 링크는 어느 화면에서든 같은 규칙을 씁니다. 한 화면에서 익힌 조작이 전체에 통하기 때문에, 새로운 화면에 들어가도 조작법을 다시 배울 필요가 없습니다."
+        },
+        {
+          id: "design-accessibility",
+          label: "접근성",
+          title: "키보드와 스크린 리더",
+          body:
+            "마우스 없이 키보드로 모든 요소를 탐색할 수 있습니다. 포커스 위치는 항상 화면에 표시되고, 스크린 리더용 랜드마크도 빠뜨리지 않습니다. 시각, 운동, 인지적 차이에 관계없이 정보에 접근할 수 있습니다."
+        },
+        {
+          id: "design-safety",
+          label: "안전",
+          title: "실수 방지",
+          body:
+            "삭제·결제처럼 되돌리기 어려운 작업은 슬라이드하거나 2초 이상 누른 뒤에만 실행됩니다. 의도를 명확히 확인한 뒤에 작동하며, 실수로 중요한 데이터를 잃지 않도록 합니다."
+        },
+        {
+          id: "design-locale",
+          label: "현지화",
+          title: "내 언어로",
+          body:
+            "한국어와 영어로 시작하고, 다른 언어는 콘텐츠와 QA 기준이 준비된 뒤에 추가합니다. 언어 설정에 따라 서체와 줄바꿈 방식이 자동으로 바뀌어 각 언어의 가독성을 유지합니다."
+        }
+      ]
+    : [
+        {
+          id: "design-consistency",
+          label: "Consistency",
+          title: "A familiar experience everywhere",
+          body:
+            "Buttons, inputs, and links use the same rules across screens. A visitor should not need to relearn basic interaction when moving to a new page."
+        },
+        {
+          id: "design-accessibility",
+          label: "Accessibility",
+          title: "Keyboard and screen reader support",
+          body:
+            "Every control must be reachable without a mouse. Focus position remains visible, and landmarks are available for assistive technology."
+        },
+        {
+          id: "design-safety",
+          label: "Safety",
+          title: "Mistake-resistant actions",
+          body:
+            "Actions that are hard to undo require an explicit confirmation pattern before they run. The interface should make intent clear before changing important data."
+        },
+        {
+          id: "design-locale",
+          label: "Localization",
+          title: "In the visitor's language",
+          body:
+            "English and Korean are the first supported locales. Additional languages should be added only when content, layout, and QA coverage are ready."
+        }
+      ];
+const hasOverviewSection = isDesignPage;
+const hasDetailsSection = isDesignPage || page.details.length > 0;
+const hasChecksSection = isDesignPage || page.checks.length > 0;
+const hasPageDetailContent = hasOverviewSection || hasDetailsSection || hasChecksSection;
+const detailSectionLabelId = hasOverviewSection
+  ? "design-start-title"
+  : hasDetailsSection
+    ? "design-details-title"
+    : "design-checks-title";
+---
+
+<BaseLayout title={title} description={description} currentPath={page.path} locale={locale}>
+  <section class="page-hero zdp-section zdp-section--spacing-xl page-hero--docs" aria-labelledby="page-title">
+    <div class="page-hero__inner zdp-container zdp-container--lg zdp-container--padding-md">
+      <nav class="zdp-breadcrumb page-breadcrumb" aria-label={copy.breadcrumbLabel}>
+        <ol class="zdp-breadcrumb__list">
+          <li class="zdp-breadcrumb__item">
+            <a class="zdp-breadcrumb__link" href={localizePath("/", locale)}>{copy.home}</a>
+          </li>
+          <li class="zdp-breadcrumb__item">
+            <span class="zdp-breadcrumb__separator" aria-hidden="true">/</span>
+            <span class="zdp-breadcrumb__current" aria-current="page">{page.label}</span>
+          </li>
+        </ol>
+      </nav>
+      <header class="zdp-page-header zdp-page-header--align-start" aria-labelledby="page-title">
+        <div class="zdp-page-header__body">
+          <div class="zdp-page-header__title">
+            <h1 id="page-title">{heroHeading}</h1>
+          </div>
+          {heroSummary && (
+            <div class="zdp-page-header__summary">
+              <p><GlossaryText text={heroSummary} locale={locale} /></p>
+            </div>
+          )}
+        </div>
+        <div class="zdp-page-header__actions">
+          <a class="zdp-button zdp-button--md zdp-button--secondary" href={localizePath("/", locale)}>
+            {copy.homeAction}
+          </a>
+        </div>
+      </header>
+    </div>
+  </section>
+
+  {hasPageDetailContent && (
+    <section
+      class="design-doc zdp-section zdp-section--spacing-lg zdp-divider zdp-divider--horizontal zdp-divider--subtle"
+      aria-labelledby={detailSectionLabelId}
+    >
+      <div class="design-doc__layout zdp-container zdp-container--lg zdp-container--padding-md">
+        <aside class="design-doc__rail" aria-label={`${page.label} ${copy.railNavSuffix}`}>
+          <p class="section-label">{copy.railLabel}</p>
+          <nav class="design-doc__nav" aria-label={`${page.label} ${copy.railNavSuffix}`}>
+            {hasOverviewSection && <a class="zdp-link zdp-link--muted" href="#design-start">{copy.overview}</a>}
+            {isDesignPage && <a class="zdp-link zdp-link--muted" href="#design-showcase">{copy.preview}</a>}
+            {isDesignPage && designContentSections.map((section) => (
+              <a class="zdp-link zdp-link--muted" href={`#${section.id}`}>{section.label}</a>
+            ))}
+            {hasDetailsSection && <a class="zdp-link zdp-link--muted" href="#design-details">{copy.details}</a>}
+            {hasChecksSection && <a class="zdp-link zdp-link--muted" href="#design-checks">{isDesignPage ? copy.promises : copy.checklist}</a>}
+          </nav>
+        </aside>
+
+        <article class="design-doc__article">
+          {hasOverviewSection && (
+            <section id="design-start" class="design-doc__section" aria-labelledby="design-start-title">
+              <h2 id="design-start-title">{designOverviewSection.title}</h2>
+              <div class="design-doc__platforms zdp-inline zdp-inline--gap-xs" aria-label={copy.scopeTitle}>
+                <span class="zdp-badge zdp-badge--neutral zdp-badge--sm">Astro</span>
+                <span class="zdp-badge zdp-badge--neutral zdp-badge--sm">Svelte</span>
+                <span class="zdp-badge zdp-badge--neutral zdp-badge--sm">Tauri</span>
+                <span class="zdp-badge zdp-badge--neutral zdp-badge--sm">Flutter tokens</span>
+              </div>
+            </section>
+          )}
+
+          {isDesignPage && (
+            <section id="design-showcase" class="design-doc__section" aria-labelledby="design-showcase-title">
+              <p class="section-label">{copy.showcaseLabel}</p>
+              <h2 id="design-showcase-title">{copy.showcaseTitle}</h2>
+              <p><GlossaryText text={copy.showcaseSummary} locale={locale} /></p>
+
+              <div class="showcase-group">
+                <h3 class="showcase-group__title">Color Palette - Light</h3>
+                <div class="swatch-grid">
+                  {[
+                    ["Surface Canvas", "--zdp-color-surface-canvas", "var(--zdp-color-surface-canvas)"],
+                    ["Surface Panel", "--zdp-color-surface-panel", "var(--zdp-color-surface-panel)"],
+                    ["Surface Raised", "--zdp-color-surface-raised", "var(--zdp-color-surface-raised)"],
+                    ["Ink Normal", "--zdp-color-ink-normal", "var(--zdp-color-ink-normal)"],
+                    ["Ink Muted", "--zdp-color-ink-muted", "var(--zdp-color-ink-muted)"],
+                    ["Accent Primary", "--zdp-color-accent-primary", "var(--zdp-color-accent-primary)"],
+                    ["Accent Success", "--zdp-color-accent-success", "var(--zdp-color-accent-success)"],
+                    ["Accent Warning", "--zdp-color-accent-warning", "var(--zdp-color-accent-warning)"],
+                    ["Accent Danger", "--zdp-color-accent-danger", "var(--zdp-color-accent-danger)"],
+                    ["Focus Surface", "--zdp-color-focus-surface", "var(--zdp-color-focus-surface)"]
+                  ].map(([name, token, value]) => (
+                    <div class="swatch-card" style={`background: ${value}; border: 1px solid var(--zdp-color-line-subtle);`}>
+                      <div class="swatch-info">
+                        <span class="swatch-name">{name}</span>
+                        <code class="swatch-token">{token}</code>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div class="showcase-group">
+                <h3 class="showcase-group__title">Color Palette - Dark</h3>
+                <div class="swatch-grid" data-zdp-theme="dark" style="padding: var(--zdp-space-4); border-radius: var(--zdp-radius-md); background: oklch(23% 0.035 70);">
+                  {[
+                    ["Surface Canvas", "--zdp-color-surface-canvas", "oklch(23% 0.035 70)"],
+                    ["Surface Panel", "--zdp-color-surface-panel", "oklch(27% 0.04 70)"],
+                    ["Surface Raised", "--zdp-color-surface-raised", "oklch(34% 0.05 70)"],
+                    ["Ink Normal", "--zdp-color-ink-normal", "oklch(91% 0.045 82)"],
+                    ["Focus Surface", "--zdp-color-focus-surface", "oklch(84% 0.1 86)"]
+                  ].map(([name, token, value]) => (
+                    <div class="swatch-card" style={`background: ${value}; border: 1px solid oklch(43% 0.055 76);`}>
+                      <div class="swatch-info">
+                        <span class="swatch-name">{name}</span>
+                        <code class="swatch-token">{token}</code>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div class="showcase-group">
+                <h3 class="showcase-group__title">Typography</h3>
+                <div class="typography-specimen zdp-surface zdp-surface--panel zdp-surface--padding-md">
+                  <div class="specimen-row">
+                    <span class="specimen-label">Page Title</span>
+                    <div class="specimen-content">
+                      <h1 style="margin: 0; font-family: var(--font-title); font-size: var(--zdp-type-page-title-size); font-weight: var(--zdp-font-weight-medium);">Heading 1</h1>
+                    </div>
+                  </div>
+                  <div class="specimen-row">
+                    <span class="specimen-label">Body Text</span>
+                    <div class="specimen-content">
+                      <p style="margin: 0; line-height: 1.6;">{copy.bodySample}</p>
+                    </div>
+                  </div>
+                  <div class="specimen-row">
+                    <span class="specimen-label">Brand Logo</span>
+                    <div class="specimen-content">
+                      <span style="margin: 0; font-family: var(--font-logo); font-size: 1.5rem; font-weight: var(--zdp-font-weight-semibold);">8ailors</span>
+                    </div>
+                  </div>
+                  <div class="specimen-row">
+                    <span class="specimen-label">Code Block</span>
+                    <div class="specimen-content">
+                      <code style="margin: 0;">import 'zdp-design-system';</code>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="showcase-group">
+                <h3 class="showcase-group__title">Interactive Components</h3>
+                <div class="components-preview zdp-surface zdp-surface--panel zdp-surface--padding-lg">
+                  <div class="preview-item">
+                    <span class="preview-label">Buttons</span>
+                    <div class="preview-row zdp-inline zdp-inline--gap-sm">
+                      <button class="zdp-button zdp-button--md zdp-button--primary">Primary Button</button>
+                      <button class="zdp-button zdp-button--md zdp-button--secondary">Secondary Button</button>
+                    </div>
+                  </div>
+                  <div class="preview-item">
+                    <span class="preview-label">Badges</span>
+                    <div class="preview-row zdp-inline zdp-inline--gap-xs">
+                      <span class="zdp-badge zdp-badge--primary zdp-badge--sm">Primary</span>
+                      <span class="zdp-badge zdp-badge--neutral zdp-badge--sm">Neutral</span>
+                      <span class="zdp-badge zdp-badge--success zdp-badge--sm">Success</span>
+                      <span class="zdp-badge zdp-badge--warning zdp-badge--sm">Warning</span>
+                      <span class="zdp-badge zdp-badge--danger zdp-badge--sm">Danger</span>
+                    </div>
+                  </div>
+                  <div class="preview-item">
+                    <span class="preview-label">Shortcuts</span>
+                    <div class="preview-row zdp-inline zdp-inline--gap-xs">
+                      <kbd class="zdp-kbd zdp-kbd--md">/</kbd>
+                      <span>{copy.shortcutText}</span>
+                    </div>
+                  </div>
+                  <div class="preview-item">
+                    <span class="preview-label">CommandField</span>
+                    <div class="preview-row">
+                      <div class="zdp-command-field-shell" style="max-width: 28rem;">
+                        <input
+                          class="zdp-command-field zdp-command-field__input"
+                          type="search"
+                          placeholder={copy.commandPlaceholder}
+                          aria-label={copy.commandLabel}
+                          readonly
+                        />
+                        <span class="zdp-shortcut-hint" aria-hidden="true">
+                          <kbd class="zdp-kbd zdp-kbd--md">/</kbd>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="preview-item">
+                    <span class="preview-label">EmptyState</span>
+                    <div class="preview-row">
+                      <div class="zdp-empty-state zdp-empty-state--raised" style="max-width: 28rem;">
+                        <div class="zdp-empty-state__body">
+                          <p style="margin: 0; font-weight: var(--zdp-font-weight-medium);">{copy.emptyTitle}</p>
+                          <p style="margin: var(--zdp-space-1) 0 0; color: var(--zdp-color-ink-muted); font-size: var(--zdp-font-size-sm);">{copy.emptyBody}</p>
+                        </div>
+                        <div class="zdp-empty-state__actions">
+                          <button class="zdp-button zdp-button--md zdp-button--secondary">{copy.refresh}</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="showcase-group">
+                <h3 class="showcase-group__title">Spacing & Motion Tokens</h3>
+                <div class="zdp-surface zdp-surface--panel zdp-surface--padding-md" style="display: flex; flex-direction: column; gap: var(--zdp-space-4);">
+                  <div>
+                    <p class="section-label" style="margin: 0 0 var(--zdp-space-2);">Spacing Scale</p>
+                    <div class="preview-row zdp-inline zdp-inline--gap-xs" style="align-items: flex-end;">
+                      {[1, 2, 3, 4, 5, 6, 8, 10, 12].map((step) => (
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                          <div style={`width: calc(var(--zdp-space-${step}) + 0.25rem); height: calc(var(--zdp-space-${step}) + 0.25rem); min-width: 4px; min-height: 4px; background: var(--zdp-color-accent-primary-strong); border-radius: var(--zdp-radius-sm);`}></div>
+                          <code style="font-size: 0.7rem; color: var(--zdp-color-ink-muted);">{step}</code>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <p class="section-label" style="margin: 0 0 var(--zdp-space-2);">Motion</p>
+                    <dl class="zdp-key-value zdp-key-value--columns-two" style="font-size: var(--zdp-font-size-xs);">
+                      <dt>--zdp-motion-fast</dt><dd>120ms</dd>
+                      <dt>--zdp-motion-normal</dt><dd>180ms</dd>
+                      <dt>prefers-reduced-motion</dt><dd>{copy.reducedMotion}</dd>
+                    </dl>
+                  </div>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {isDesignPage && designContentSections.map((section) => (
+            <section id={section.id} class="design-doc__section" aria-labelledby={`${section.id}-title`}>
+              <p class="section-label">{section.label}</p>
+              <h2 id={`${section.id}-title`}>{section.title}</h2>
+              <p><GlossaryText text={section.body} locale={locale} /></p>
+            </section>
+          ))}
+
+          {hasDetailsSection && (
+            <section id="design-details" class="design-doc__section" aria-labelledby="design-details-title">
+              <p class="section-label">{copy.details}</p>
+              <h2 id="design-details-title">{isDesignPage ? copy.designDetailsTitle : copy.detailsTitle}</h2>
+              <div class="details-grid zdp-grid zdp-grid--columns-two zdp-grid--gap-md">
+                {page.details.map((detail) => (
+                  <article class="detail-card zdp-surface zdp-surface--panel zdp-surface--padding-md">
+                    <h3>{detail.title}</h3>
+                    <p><GlossaryText text={detail.body} locale={locale} /></p>
+                  </article>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {hasChecksSection && (
+            <section id="design-checks" class="design-doc__section" aria-labelledby="design-checks-title">
+              <p class="section-label">{copy.checklist}</p>
+              <h2 id="design-checks-title">{copy.checksTitle}</h2>
+              <div class="zdp-table-wrap">
+                <table class="zdp-table zdp-table--density-compact" aria-labelledby="design-checks-title">
+                  <caption class="zdp-table__caption zdp-table__caption--hidden">{isDesignPage ? copy.designChecksCaption : copy.checksCaption}</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">{copy.tableItem}</th>
+                      <th scope="col">{copy.tableStatus}</th>
+                      <th scope="col">{copy.tableCriteria}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {page.checks.map((check) => (
+                      <tr>
+                        <th scope="row">{check.item}</th>
+                        <td>{check.status}</td>
+                        <td><GlossaryText text={check.note} locale={locale} /></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          )}
+        </article>
+
+        <PublicShareDock pageId={page.id} title={heroHeading} text={heroSummary ?? heroHeading} path={page.path} locale={locale} placement="rail" />
+      </div>
+    </section>
+  )}
+
+  <script is:inline define:vars={{ shareCopyDenied: copy.shareCopyDenied, shareCopied: copy.shareCopied, shareUnavailable: copy.shareUnavailable }}>
+    const sharePanels = document.querySelectorAll("[data-share-panel]");
+
+    function buildShareHref(platform, payload) {
+      const encodedUrl = encodeURIComponent(payload.url);
+      const encodedTitle = encodeURIComponent(payload.title);
+
+      switch (platform) {
+        case "telegram":
+          return `https://t.me/share/url?url=${encodedUrl}&text=${encodedTitle}`;
+        case "line":
+          return `https://social-plugins.line.me/lineit/share?url=${encodedUrl}&text=${encodedTitle}`;
+        case "whatsapp":
+          return `https://wa.me/?text=${encodeURIComponent([payload.title, payload.url].filter(Boolean).join(" "))}`;
+        case "x":
+          return `https://x.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`;
+        case "reddit":
+          return `https://www.reddit.com/submit?url=${encodedUrl}&title=${encodedTitle}`;
+        default:
+          return payload.url;
+      }
+    }
+
+    async function copyShareText(text) {
+      if (!navigator.clipboard?.writeText) {
+        return false;
+      }
+
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    for (const panel of sharePanels) {
+      const pageUrl = new URL(window.location.href);
+      pageUrl.hash = "";
+      const payload = {
+        title: panel.getAttribute("data-share-title") || document.title,
+        text: panel.getAttribute("data-share-text") || "",
+        url: pageUrl.toString()
+      };
+      const feedback = panel.querySelector("[data-share-feedback]");
+      const copyButton = panel.querySelector('[data-share-action="copy"]');
+      const deviceButton = panel.querySelector('[data-share-action="device"]');
+
+      for (const link of panel.querySelectorAll("[data-share-platform]")) {
+        const platform = link.getAttribute("data-share-platform");
+        link.setAttribute("href", buildShareHref(platform, payload));
+      }
+
+      copyButton?.addEventListener("click", async () => {
+        const copied = await copyShareText(payload.url);
+        const copiedText = copyButton.getAttribute("data-share-copied-label") || shareCopied;
+        if (feedback) {
+          feedback.textContent = copied ? copiedText : shareCopyDenied;
+        }
+        window.setTimeout(() => {
+          if (feedback) {
+            feedback.textContent = "";
+          }
+        }, 1500);
+      });
+
+      deviceButton?.addEventListener("click", async () => {
+        if (typeof navigator.share === "function") {
+          try {
+            await navigator.share(payload);
+            return;
+          } catch (error) {
+            if (error && typeof error === "object" && "name" in error && error.name === "AbortError") {
+              return;
+            }
+          }
+        }
+
+        const copied = await copyShareText(payload.url);
+        if (feedback) {
+          feedback.textContent = copied ? shareCopied : shareUnavailable;
+        }
+      });
+    }
+  </script>
+</BaseLayout>

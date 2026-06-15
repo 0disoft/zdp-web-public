@@ -7,7 +7,9 @@ import type {
   MessageSchema,
 } from "@zdp/localization-core";
 import homeSchemaSource from "../../messages/_schema/home.json";
+import homeEnSource from "../../messages/en/home.json";
 import homeKoSource from "../../messages/ko/home.json";
+import { defaultLocale, siteLocales } from "./site-locales";
 
 type SourceSchemaEntry = {
   params?: Record<string, MessageParamType>;
@@ -23,20 +25,24 @@ type SourceSchema = {
 type SourceMessages = Record<string, string>;
 
 const homeSchema = readSourceSchema(homeSchemaSource);
+const homeEnMessages = readSourceMessages(homeEnSource);
 const homeKoMessages = readSourceMessages(homeKoSource);
 
 export const publicLocalizationSnapshot: CatalogSnapshot = {
-  defaultLocale: "ko",
-  locales: ["ko"],
+  defaultLocale,
+  locales: [...siteLocales],
   schemas: createSchemas(homeSchema),
-  contents: createContents("ko", homeSchema.scope, homeKoMessages),
+  contents: [
+    ...createContents("en", homeSchema.scope, homeEnMessages),
+    ...createContents("ko", homeSchema.scope, homeKoMessages),
+  ],
 };
 
 export function createPublicLocalizationRuntime(
   options: Partial<ZdpLocalizationRuntimeOptions> = {},
 ) {
   return createZdpLocalizationRuntime(publicLocalizationSnapshot, {
-    locale: "ko",
+    locale: defaultLocale,
     ...options,
   });
 }

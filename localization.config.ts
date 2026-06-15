@@ -1,8 +1,8 @@
 import type { ZdpLocalizationConfig } from "@zdp/localization-core";
 
 const config: ZdpLocalizationConfig = {
-  defaultLocale: "ko",
-  locales: ["ko"],
+  defaultLocale: "en",
+  locales: ["en", "ko"],
   messages: "messages",
   scopes: ["home"],
 };
