@@ -40,7 +40,7 @@ const searchOptions = [
 ---
 
 <!doctype html>
-<html lang="ko" data-zdp-theme="light" data-zdp-text-scale="base">
+<html lang="ko" data-zdp-locale="ko" data-zdp-theme="light" data-zdp-text-scale="base">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -49,26 +49,33 @@ const searchOptions = [
     <script is:inline>
       (() => {
         const themeStorageKey = "zdp-web-public-theme";
+        const localeStorageKey = "zdp-web-public-locale";
         const textScaleStorageKey = "zdp-web-public-text-scale";
         const root = document.documentElement;
         let storedTheme = null;
+        let storedLocale = null;
         let storedTextScale = null;
 
         try {
           storedTheme = window.localStorage.getItem(themeStorageKey);
+          storedLocale = window.localStorage.getItem(localeStorageKey);
           storedTextScale = window.localStorage.getItem(textScaleStorageKey);
         } catch {
           storedTheme = null;
+          storedLocale = null;
           storedTextScale = null;
         }
 
         const systemTheme = window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
         const theme = storedTheme === "light" || storedTheme === "dark" ? storedTheme : systemTheme;
+        const locale = storedLocale === "ko" ? storedLocale : "ko";
         const textScale =
           storedTextScale === "base" || storedTextScale === "large" || storedTextScale === "larger"
             ? storedTextScale
             : "base";
 
+        root.lang = locale;
+        root.dataset.zdpLocale = locale;
         root.dataset.zdpTheme = theme;
         root.dataset.zdpTextScale = textScale;
         root.style.colorScheme = theme;
@@ -135,6 +142,30 @@ const searchOptions = [
         </div>
 
         <div class="site-preference-controls" role="group" aria-label="화면 설정">
+          <div
+            class="site-locale-switcher zdp-locale-switcher zdp-locale-switcher--md"
+            role="radiogroup"
+            aria-label="언어"
+            data-site-locale-switcher
+            data-zdp-locale-switcher
+            data-zdp-locale-value="ko"
+          >
+            <button
+              class="zdp-locale-switcher__item zdp-locale-switcher__item--selected"
+              type="button"
+              role="radio"
+              lang="ko"
+              aria-label="한국어"
+              aria-checked="true"
+              tabindex="0"
+              data-site-locale-option
+              data-zdp-locale-option
+              data-zdp-locale-option-value="ko"
+            >
+              <span class="zdp-locale-switcher__label" aria-hidden="true">KO</span>
+            </button>
+          </div>
+
           <div
             class="site-text-scale-control zdp-text-scale-control zdp-text-scale-control--md"
             role="radiogroup"
@@ -245,12 +276,16 @@ const searchOptions = [
 
     <script>
       type ThemeMode = "light" | "dark";
+      type LocaleMode = "ko";
       type TextScaleMode = "base" | "large" | "larger";
 
       const themeStorageKey = "zdp-web-public-theme";
+      const localeStorageKey = "zdp-web-public-locale";
       const textScaleStorageKey = "zdp-web-public-text-scale";
       const rootElement = document.documentElement;
       const themeToggle = document.querySelector<HTMLButtonElement>("[data-site-theme-toggle]");
+      const localeSwitcher = document.querySelector<HTMLElement>("[data-site-locale-switcher]");
+      const localeOptions = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-site-locale-option]"));
       const textScaleControl = document.querySelector<HTMLElement>("[data-site-text-scale-control]");
       const textScaleOptions = Array.from(
         document.querySelectorAll<HTMLButtonElement>("[data-site-text-scale-option]")
@@ -274,6 +309,26 @@ const searchOptions = [
           window.localStorage.setItem(themeStorageKey, theme);
         } catch {
           // Storage can be blocked; the visible page theme still updates.
+        }
+      }
+
+      function normalizeLocale(value: string | undefined | null): LocaleMode | null {
+        return value === "ko" ? value : null;
+      }
+
+      function readStoredLocale(): LocaleMode | null {
+        try {
+          return normalizeLocale(window.localStorage.getItem(localeStorageKey));
+        } catch {
+          return null;
+        }
+      }
+
+      function writeStoredLocale(locale: LocaleMode): void {
+        try {
+          window.localStorage.setItem(localeStorageKey, locale);
+        } catch {
+          // Storage can be blocked; the visible language state still updates.
         }
       }
 
@@ -322,6 +377,47 @@ const searchOptions = [
         }
       }
 
+      function syncLocaleSwitcher(locale: LocaleMode): void {
+        localeSwitcher?.setAttribute("data-zdp-locale-value", locale);
+
+        for (const option of localeOptions) {
+          const selected = normalizeLocale(option.dataset.zdpLocaleOptionValue) === locale;
+          option.classList.toggle("zdp-locale-switcher__item--selected", selected);
+          option.setAttribute("aria-checked", selected ? "true" : "false");
+          option.tabIndex = selected ? 0 : -1;
+        }
+      }
+
+      function applyLocale(locale: LocaleMode, persist = false): void {
+        rootElement.lang = locale;
+        rootElement.dataset.zdpLocale = locale;
+        syncLocaleSwitcher(locale);
+
+        if (persist) {
+          writeStoredLocale(locale);
+        }
+      }
+
+      function moveLocaleFocus(current: HTMLButtonElement, key: string): void {
+        const enabledOptions = localeOptions.filter((option) => !option.disabled);
+        const currentIndex = Math.max(0, enabledOptions.indexOf(current));
+        const nextIndex =
+          key === "Home"
+            ? 0
+            : key === "End"
+              ? enabledOptions.length - 1
+              : key === "ArrowLeft"
+                ? (currentIndex - 1 + enabledOptions.length) % enabledOptions.length
+                : (currentIndex + 1) % enabledOptions.length;
+        const nextOption = enabledOptions[nextIndex];
+        const nextLocale = normalizeLocale(nextOption?.dataset.zdpLocaleOptionValue);
+
+        if (nextOption && nextLocale) {
+          nextOption.focus();
+          applyLocale(nextLocale, true);
+        }
+      }
+
       function syncTextScaleControl(textScale: TextScaleMode): void {
         textScaleControl?.setAttribute("data-zdp-text-scale-value", textScale);
 
@@ -363,6 +459,7 @@ const searchOptions = [
       }
 
       applyTheme(normalizeTheme(rootElement.dataset.zdpTheme) ?? readStoredTheme() ?? preferredTheme());
+      applyLocale(normalizeLocale(rootElement.dataset.zdpLocale) ?? readStoredLocale() ?? "ko");
       applyTextScale(normalizeTextScale(rootElement.dataset.zdpTextScale) ?? readStoredTextScale() ?? "base");
 
       themeToggle?.addEventListener("click", () => {
@@ -386,6 +483,25 @@ const searchOptions = [
 
           event.preventDefault();
           moveTextScaleFocus(option, event.key);
+        });
+      }
+
+      for (const option of localeOptions) {
+        option.addEventListener("click", () => {
+          const locale = normalizeLocale(option.dataset.zdpLocaleOptionValue);
+
+          if (locale) {
+            applyLocale(locale, true);
+          }
+        });
+
+        option.addEventListener("keydown", (event) => {
+          if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) {
+            return;
+          }
+
+          event.preventDefault();
+          moveLocaleFocus(option, event.key);
         });
       }
 

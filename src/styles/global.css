@@ -127,6 +127,35 @@ code {
   align-items: center;
   gap: var(--space-2);
   flex: 0 0 auto;
+  flex-wrap: wrap;
+}
+
+.site-locale-switcher {
+  background: transparent;
+  border-color: transparent;
+  color: var(--color-muted);
+}
+
+.site-locale-switcher .zdp-locale-switcher__item {
+  color: var(--color-muted);
+}
+
+.site-locale-switcher .zdp-locale-switcher__item:hover:not(:disabled):not([aria-checked="true"]) {
+  background: var(--color-clay-wash);
+  border-color: var(--color-line);
+  color: var(--color-ink);
+}
+
+.site-locale-switcher .zdp-locale-switcher__item[aria-checked="true"] {
+  background: var(--color-clay-wash);
+  border-color: var(--color-line);
+  color: var(--color-ink);
+}
+
+.site-locale-switcher .zdp-locale-switcher__item:focus-visible {
+  background: var(--zdp-color-focus-surface);
+  border-color: var(--zdp-color-focus-line);
+  color: var(--zdp-color-focus-text);
 }
 
 .site-text-scale-control {
