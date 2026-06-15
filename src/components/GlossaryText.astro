@@ -6,7 +6,7 @@ interface Props {
   locale?: GlossaryLocale;
 }
 
-const { text, locale = "ko" } = Astro.props;
+const { text, locale = "en" } = Astro.props;
 const tokens = markGlossaryText(text, getGlossaryManifest(locale));
 ---
 

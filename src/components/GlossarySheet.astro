@@ -1,48 +1,82 @@
 ---
-import { getGlossaryManifest } from "../content/glossary";
+import { getGlossaryManifest, type GlossaryLocale } from "../content/glossary";
 
-const glossaryManifestJson = JSON.stringify(getGlossaryManifest("ko")).replace(/</g, "\\u003c");
+interface Props {
+  locale?: GlossaryLocale;
+}
+
+const { locale = "en" } = Astro.props;
+const glossaryTerms = getGlossaryManifest(locale);
+const hasGlossaryTerms = glossaryTerms.length > 0;
+const glossaryManifestJson = JSON.stringify(glossaryTerms).replace(/</g, "\\u003c");
+const glossaryCopy = {
+  en: {
+    title: "Glossary",
+    close: "Close",
+    closeDescription: "Close glossary",
+    source: "Open related page"
+  },
+  ko: {
+    title: "용어",
+    close: "닫기",
+    closeDescription: "용어 설명 닫기",
+    source: "관련 화면으로 이동"
+  }
+} satisfies Record<
+  GlossaryLocale,
+  {
+    readonly title: string;
+    readonly close: string;
+    readonly closeDescription: string;
+    readonly source: string;
+  }
+>;
+const copy = glossaryCopy[locale];
 ---
 
-<div class="glossary-sheet-root" data-glossary-root data-glossary-locale="ko">
-  <button
-    class="glossary-sheet__backdrop"
-    type="button"
-    data-glossary-close
-    aria-label="용어 설명 닫기"
-    hidden
-  ></button>
-  <aside
-    id="glossary-sheet"
-    class="glossary-sheet"
-    role="dialog"
-    aria-modal="true"
-    aria-hidden="true"
-    aria-labelledby="glossary-sheet-title"
-    tabindex="-1"
-    data-glossary-sheet
-    data-zdp-ad-exclude="true"
-    data-zdp-term-placement="right-sheet"
-    data-zdp-term-surface="sheet"
-  >
-    <div class="glossary-sheet__header">
-      <div class="glossary-sheet__title-group">
-        <p class="section-label" data-glossary-category>Glossary</p>
-        <h2 id="glossary-sheet-title" data-glossary-title>용어</h2>
+{hasGlossaryTerms && (
+  <div class="glossary-sheet-root" data-glossary-root data-glossary-locale={locale}>
+    <button
+      class="glossary-sheet__backdrop"
+      type="button"
+      data-glossary-close
+      aria-label={copy.closeDescription}
+      hidden
+    ></button>
+    <aside
+      id="glossary-sheet"
+      class="glossary-sheet"
+      role="dialog"
+      aria-modal="true"
+      aria-hidden="true"
+      aria-labelledby="glossary-sheet-title"
+      tabindex="-1"
+      data-glossary-sheet
+      data-zdp-ad-exclude="true"
+      data-zdp-term-placement="right-sheet"
+      data-zdp-term-surface="sheet"
+    >
+      <div class="glossary-sheet__header">
+        <div class="glossary-sheet__title-group">
+          <p class="section-label" data-glossary-category>Glossary</p>
+          <h2 id="glossary-sheet-title" data-glossary-title>{copy.title}</h2>
+        </div>
+        <button class="zdp-button zdp-button--md zdp-button--secondary" type="button" data-glossary-close>
+          {copy.close}
+        </button>
       </div>
-      <button class="zdp-button zdp-button--md zdp-button--secondary" type="button" data-glossary-close>
-        닫기
-      </button>
-    </div>
-    <div class="glossary-sheet__body">
-      <p class="glossary-sheet__summary" data-glossary-summary></p>
-      <div class="glossary-sheet__detail" data-glossary-detail></div>
-      <a class="zdp-link glossary-sheet__source" href="/" data-glossary-source>관련 화면으로 이동</a>
-    </div>
-  </aside>
-  <script is:inline type="application/json" data-glossary-manifest set:html={glossaryManifestJson} />
-</div>
+      <div class="glossary-sheet__body">
+        <p class="glossary-sheet__summary" data-glossary-summary></p>
+        <div class="glossary-sheet__detail" data-glossary-detail></div>
+        <a class="zdp-link glossary-sheet__source" href="/" data-glossary-source>{copy.source}</a>
+      </div>
+    </aside>
+    <script is:inline type="application/json" data-glossary-manifest set:html={glossaryManifestJson} />
+  </div>
+)}
 
-<script>
-  import "../scripts/glossary-sheet";
-</script>
+{hasGlossaryTerms && (
+  <script>
+    import "../scripts/glossary-sheet";
+  </script>
+)}

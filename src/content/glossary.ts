@@ -1,6 +1,7 @@
 import runtimeGlossaryManifest from "./glossary-manifest.json";
+import type { SupportedLocale } from "../lib/site-locales";
 
-export type GlossaryLocale = "ko";
+export type GlossaryLocale = SupportedLocale;
 export type GlossaryCategory = "design" | "security" | "platform" | "operations";
 
 export interface GlossaryMatchPhrase {
@@ -42,14 +43,14 @@ const publicGlossaryManifest =
   runtimeGlossaryManifest as readonly GlossaryManifestEntry[];
 
 export function getGlossaryManifest(
-  _locale: GlossaryLocale = "ko"
+  locale: GlossaryLocale = "en"
 ): readonly GlossaryManifestEntry[] {
-  return publicGlossaryManifest;
+  return locale === "ko" ? publicGlossaryManifest : [];
 }
 
 export function markGlossaryText(
   text: string,
-  terms: readonly GlossaryManifestEntry[] = getGlossaryManifest("ko")
+  terms: readonly GlossaryManifestEntry[] = getGlossaryManifest("en")
 ): readonly GlossaryTextToken[] {
   if (text.length === 0 || terms.length === 0) {
     return [{ type: "text", text }];
@@ -78,7 +79,7 @@ export function markGlossaryText(
 
   const termByMatch = new Map<string, GlossaryManifestEntry>();
   for (const entry of matchableTerms) {
-    termByMatch.set(entry.alias.toLocaleLowerCase("ko"), entry.term);
+    termByMatch.set(entry.alias.toLocaleLowerCase(), entry.term);
   }
 
   const pattern = new RegExp(
@@ -93,7 +94,7 @@ export function markGlossaryText(
   for (const match of text.matchAll(pattern)) {
     const matchedText = match[0];
     const start = match.index ?? 0;
-    const term = termByMatch.get(matchedText.toLocaleLowerCase("ko"));
+    const term = termByMatch.get(matchedText.toLocaleLowerCase());
 
     if (term === undefined) {
       continue;
