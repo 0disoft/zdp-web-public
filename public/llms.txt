@@ -4,21 +4,43 @@
 
 This site is a static public preview. Treat `8ailors.xyz` as a candidate domain until `service.yaml` and `webpub.toml` mark the domain as live.
 
+## Locale Policy
+
+- Default locale: `en`
+- Supported locales: `en`, `ko`
+- Canonical content URLs are locale-prefixed.
+- `/` and non-locale section paths are negotiation entries only.
+- Unsupported visitor languages fall back to English.
+
 ## Core Links
 
-- `/`: Public home and route map
-- `/products`: Public product and experiment list
-- `/design`: Public design-system principles
-- `/security`: Public security and trust principles
-- `/labs`: Public labs and experiment boundary
-- `/roadmap`: Public roadmap boundary
-- `/notes`: Public notes and changelog placeholder
-- `/trust`: Trust, policy, and public-boundary placeholder
-- `/contact`: Public contact path
-- `/privacy`: Privacy policy
-- `/terms`: Terms of service
-- `/refunds`: Refund policy
-- `/about`: About Rodisoft and 8ailors
+- `/`: Locale negotiation entry
+- `/en`: Public home and route map
+- `/en/products`: Public product and experiment list
+- `/en/design`: Public design-system principles
+- `/en/security`: Public security and trust principles
+- `/en/labs`: Public labs and experiment boundary
+- `/en/roadmap`: Public roadmap boundary
+- `/en/notes`: Public notes and changelog
+- `/en/trust`: Trust, policy, and public-boundary notes
+- `/en/contact`: Public contact path
+- `/en/privacy`: Privacy policy
+- `/en/terms`: Terms of service
+- `/en/refunds`: Refund policy
+- `/en/about`: About Rodisoft and 8ailors
+- `/ko`: 공개 홈과 경로 지도
+- `/ko/products`: 공개 제품 및 실험 목록
+- `/ko/design`: 공개 디자인 시스템 원칙
+- `/ko/security`: 공개 보안 및 신뢰 원칙
+- `/ko/labs`: 공개 실험실 경계
+- `/ko/roadmap`: 공개 로드맵 경계
+- `/ko/notes`: 공개 기록
+- `/ko/trust`: 신뢰, 정책, 공개 경계
+- `/ko/contact`: 공개 문의 경로
+- `/ko/privacy`: 개인정보 처리 기준
+- `/ko/terms`: 이용 약관
+- `/ko/refunds`: 환불 기준
+- `/ko/about`: Rodisoft와 8ailors 소개
 
 ## Boundaries
 

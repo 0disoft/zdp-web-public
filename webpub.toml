@@ -1,6 +1,10 @@
 version = "https://zdp.local/spec/webpub/v0.1"
 title = "8ailors"
-language = "ko"
+language = "en"
+default_locale = "en"
+fallback_locale = "en"
+locales = ["en", "ko"]
+locale_policy = "locale-prefixed-canonical"
 site_url = ""
 canonical_domain = ""
 domain_status = "candidate"
@@ -15,91 +19,216 @@ allow = []
 
 [[pages]]
 url = "/"
+title = "8ailors locale entry"
+section = "home"
+status = "draft"
+indexing = "blocked"
+locale_role = "negotiation-entry"
+
+[[pages]]
+url = "/en"
 title = "8ailors"
 section = "home"
 status = "draft"
 indexing = "blocked"
+locale = "en"
 
 [[pages]]
-url = "/products"
+url = "/en/products"
+title = "Products"
+section = "products"
+status = "draft"
+indexing = "blocked"
+locale = "en"
+
+[[pages]]
+url = "/en/design"
+title = "Design"
+section = "design"
+status = "draft"
+indexing = "blocked"
+locale = "en"
+
+[[pages]]
+url = "/en/security"
+title = "Security"
+section = "security"
+status = "draft"
+indexing = "blocked"
+locale = "en"
+
+[[pages]]
+url = "/en/labs"
+title = "Labs"
+section = "labs"
+status = "draft"
+indexing = "blocked"
+locale = "en"
+
+[[pages]]
+url = "/en/roadmap"
+title = "Roadmap"
+section = "roadmap"
+status = "draft"
+indexing = "blocked"
+locale = "en"
+
+[[pages]]
+url = "/en/notes"
+title = "Notes"
+section = "notes"
+status = "draft"
+indexing = "blocked"
+locale = "en"
+
+[[pages]]
+url = "/en/trust"
+title = "Trust"
+section = "trust"
+status = "draft"
+indexing = "blocked"
+locale = "en"
+
+[[pages]]
+url = "/en/contact"
+title = "Contact"
+section = "contact"
+status = "draft"
+indexing = "blocked"
+locale = "en"
+
+[[pages]]
+url = "/en/privacy"
+title = "Privacy"
+section = "privacy"
+status = "draft"
+indexing = "blocked"
+locale = "en"
+
+[[pages]]
+url = "/en/terms"
+title = "Terms"
+section = "terms"
+status = "draft"
+indexing = "blocked"
+locale = "en"
+
+[[pages]]
+url = "/en/refunds"
+title = "Refunds"
+section = "refunds"
+status = "draft"
+indexing = "blocked"
+locale = "en"
+
+[[pages]]
+url = "/en/about"
+title = "About"
+section = "about"
+status = "draft"
+indexing = "blocked"
+locale = "en"
+
+[[pages]]
+url = "/ko"
+title = "8ailors"
+section = "home"
+status = "draft"
+indexing = "blocked"
+locale = "ko"
+
+[[pages]]
+url = "/ko/products"
 title = "제품"
 section = "products"
 status = "draft"
 indexing = "blocked"
+locale = "ko"
 
 [[pages]]
-url = "/design"
+url = "/ko/design"
 title = "디자인"
 section = "design"
 status = "draft"
 indexing = "blocked"
+locale = "ko"
 
 [[pages]]
-url = "/security"
+url = "/ko/security"
 title = "보안"
 section = "security"
 status = "draft"
 indexing = "blocked"
+locale = "ko"
 
 [[pages]]
-url = "/labs"
+url = "/ko/labs"
 title = "실험실"
 section = "labs"
 status = "draft"
 indexing = "blocked"
+locale = "ko"
 
 [[pages]]
-url = "/roadmap"
+url = "/ko/roadmap"
 title = "로드맵"
 section = "roadmap"
 status = "draft"
 indexing = "blocked"
+locale = "ko"
 
 [[pages]]
-url = "/notes"
-title = "노트"
+url = "/ko/notes"
+title = "기록"
 section = "notes"
 status = "draft"
 indexing = "blocked"
+locale = "ko"
 
 [[pages]]
-url = "/trust"
+url = "/ko/trust"
 title = "정책"
 section = "trust"
 status = "draft"
 indexing = "blocked"
+locale = "ko"
 
 [[pages]]
-url = "/contact"
+url = "/ko/contact"
 title = "문의"
 section = "contact"
 status = "draft"
 indexing = "blocked"
+locale = "ko"
 
 [[pages]]
-url = "/privacy"
+url = "/ko/privacy"
 title = "개인정보"
 section = "privacy"
 status = "draft"
 indexing = "blocked"
+locale = "ko"
 
 [[pages]]
-url = "/terms"
+url = "/ko/terms"
 title = "약관"
 section = "terms"
 status = "draft"
 indexing = "blocked"
+locale = "ko"
 
 [[pages]]
-url = "/refunds"
+url = "/ko/refunds"
 title = "환불"
 section = "refunds"
 status = "draft"
 indexing = "blocked"
+locale = "ko"
 
 [[pages]]
-url = "/about"
+url = "/ko/about"
 title = "소개"
 section = "about"
 status = "draft"
 indexing = "blocked"
+locale = "ko"

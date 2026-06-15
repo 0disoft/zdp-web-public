@@ -6,8 +6,10 @@ ZDP 공개 웹 서비스 저장소다. 초기 목적은 `8ailors.xyz` 본체 사
 
 - Astro 정적 사이트 골격
 - 8ailors 본체 사이트 후보 정보 구조
-- 첫 홈 화면의 제품, 디자인, 보안, 결제 안전, 실험실, 로드맵, 노트, 정책, 문의 섹션
-- `/products`, `/design`, `/security`, `/payment-safety`, `/labs`, `/roadmap`, `/notes`, `/trust`, `/contact` 정적 페이지
+- 영어를 기본 fallback으로 두는 locale-prefixed 정적 라우트
+- `/en`, `/ko` 홈 화면의 제품, 디자인, 보안, 실험실, 로드맵, 기록, 정책, 문의 섹션
+- `/en/design`, `/ko/design`처럼 locale이 붙은 정적 페이지
+- `/`, `/design` 같은 비-locale 경로의 정적 locale negotiation entry와 지원하지 않는 locale prefix의 404 fallback
 - 디자인 시스템 Breadcrumb, Badge, EmptyState, Grid, Icon, Inline, KeyValue, Link, SkipLink, Stack, Table, Toolbar, VisuallyHidden, 현재 페이지 표시를 적용한 정적 페이지 탐색
 - 디자인, 보안, 결제 안전, 실험실, 로드맵 페이지의 공개 검증 기준 블록
 - 디자인, 보안, 결제 안전, 실험실, 로드맵 페이지의 핵심 정보 화면
@@ -30,9 +32,9 @@ ZDP 공개 웹 서비스 저장소다. 초기 목적은 `8ailors.xyz` 본체 사
 
 루트 `service.yaml`이 이 저장소의 서비스 계약이다. 실제 도메인을 구매하기 전까지 `8ailors.xyz`는 `candidate_public_domains`에만 둔다.
 
-운영 절차와 public localization canary 롤백 경계는 `RUNBOOK.md`에 둔다. 홈 hero canary를 넓히거나 정적 Astro copy 롤백 경계를 바꾸기 전에는 먼저 제품 리뷰를 거친다.
+운영 절차와 public localization canary 롤백 경계는 `RUNBOOK.md`에 둔다. `zdp-platform-localization`이 맡는 범위를 홈 hero 메시지 밖으로 넓히거나 정적 Astro copy 롤백 경계를 바꾸기 전에는 먼저 제품 리뷰를 거친다.
 
-루트 `webpub.toml`은 공개 발행 메타데이터 계약이다. 도메인 구매 전에는 `domain_status = "candidate"`와 검색 노출 차단 정책을 유지한다. 현재 생성된 페이지도 `indexing = "blocked"` 상태로 둔다.
+루트 `webpub.toml`은 공개 발행 메타데이터 계약이다. 도메인 구매 전에는 `domain_status = "candidate"`와 검색 노출 차단 정책을 유지한다. 현재 생성된 페이지도 `indexing = "blocked"` 상태로 둔다. Canonical content URL은 `/en/...`, `/ko/...`처럼 locale prefix를 갖고, 지원하지 않는 언어는 영어(`/en`)로 fallback한다. 정적 호스트가 알 수 없는 경로에 `404.html`을 제공하면 `/fr/design` 같은 unsupported locale prefix도 `/en/design`으로 되돌린다.
 
 ## 교차 제품 표준 적용
 
@@ -59,7 +61,7 @@ bun run build
 
 `check:localization`은 `messages/` 아래의 `zdp-platform-localization` schema/content 분리를 검사하고, 임시 디렉터리에서 strict production compile을 실행해 fallback message가 0개인지 확인한다. 홈의 작은 Astro dogfooding 표면이라도 문구 JSON이 schema params를 깨거나 잘못된 message syntax를 갖거나 production manifest에 fallback이 생기면 `bun run check`가 먼저 실패해야 한다.
 
-현재 `zdp-platform-localization` 적용 범위는 홈 hero의 제목과 두 CTA 문구로 제한한다. 더 많은 공개 문구를 옮기기 전까지는 정적 Astro 문구로 되돌릴 수 있어야 하며, 이 정적 공개 사이트 안에 별도 런타임 feature flag를 만들지 않는다.
+현재 `zdp-platform-localization` 적용 범위는 홈 hero의 제목과 두 CTA 문구로 제한한다. 이 세 메시지는 `en`, `ko` catalog를 모두 제공해야 하며, production compile에서 fallback message가 0개여야 한다. 나머지 공개 문구는 locale별 정적 Astro 콘텐츠로 유지하고, 더 많은 문구를 localization catalog로 옮기기 전까지는 정적 Astro 문구로 되돌릴 수 있어야 한다. 이 정적 공개 사이트 안에 별도 런타임 feature flag를 만들지 않는다.
 
 GitHub Actions의 `public-site` job은 `zdp-web-public`, sibling `zdp-design-system`, `zdp-platform-localization`, `zdp-platform-devex`, `zdp-libs-ts`를 같은 workspace 상대 경로로 checkout한 뒤 `bun run check`와 `bun run build`를 실행한다. private sibling checkout은 `ZDP_CI_READ_TOKEN`이 있으면 그 토큰을 쓰고, 없으면 `github.token`으로 시도한다. provider repo는 frozen install을 유지하고, file dependency consumer인 public site install은 CI에서 lockfile을 쓰지 않도록 `bun install --no-save`를 사용한다.
 
@@ -67,7 +69,7 @@ GitHub Actions의 `public-site` job은 `zdp-web-public`, sibling `zdp-design-sys
 
 `check:glossary`는 YAML에서 다시 만든 런타임 manifest와 현재 `src/content/glossary-manifest.json`이 같은지 비교한다. `bun run check`는 stale manifest를 고치지 않고 실패해야 하므로, 용어 YAML을 수정한 뒤에는 먼저 `bun run glossary:generate`로 generated JSON을 갱신한다. 용어 설명 원천은 사이트 코드 안 임시 배열이 아니라 ZDP 플랫폼 glossary 계약을 따르는 YAML이어야 한다.
 
-`check:discovery`는 후보 도메인 단계의 `webpub.toml`, `robots.txt`, `llms.txt`, 페이지 목록, 디자인 시스템 소비 계약, 검색 제출용 산출물 부재를 함께 확인한다. 홈과 상세 페이지가 `zdp-design-system`의 grid, toolbar, key-value, table, empty-state public utility를 실제로 소비하고, sibling design system이 ConfirmAction, icon glyph, choice control, themed scrollbar, brand font, expressive font 계약도 제공하는지 함께 본다. 브랜드 워드마크 폰트는 앱이 직접 Fontsource 패키지를 소유하지 않고 `zdp-design-system/brand-fonts.css`와 `--zdp-font-family-brand`를 통해 소비하며, `lang="ko"` 표면에서도 실제 워드마크 텍스트에 `.zdp-brand-wordmark`를 붙이고 `semibold` weight를 유지한다. 표현용 폰트는 public 사이트가 실제 캠페인 섹션에서 필요해질 때 `zdp-design-system/expressive-fonts.css`를 별도 import해서 쓴다. `sitemap.xml`, `rss.xml`, `atom.xml`, `feed.json`은 지금 빠진 것이 아니라 `domain_status = "live"`가 되기 전까지 의도적으로 만들지 않는 파일이다.
+`check:discovery`는 후보 도메인 단계의 `webpub.toml`, `robots.txt`, `llms.txt`, locale-prefixed 페이지 목록, 디자인 시스템 소비 계약, 검색 제출용 산출물 부재를 함께 확인한다. 홈과 상세 페이지가 `zdp-design-system`의 grid, toolbar, key-value, table, empty-state public utility를 실제로 소비하고, sibling design system이 ConfirmAction, icon glyph, choice control, themed scrollbar, brand font, expressive font 계약도 제공하는지 함께 본다. 브랜드 워드마크 폰트는 앱이 직접 Fontsource 패키지를 소유하지 않고 `zdp-design-system/brand-fonts.css`와 `--zdp-font-family-brand`를 통해 소비하며, `lang="en"`과 `lang="ko"` 표면 모두 실제 워드마크 텍스트에 `.zdp-brand-wordmark`를 붙이고 `semibold` weight를 유지한다. 표현용 폰트는 public 사이트가 실제 캠페인 섹션에서 필요해질 때 `zdp-design-system/expressive-fonts.css`를 별도 import해서 쓴다. `sitemap.xml`, `rss.xml`, `atom.xml`, `feed.json`은 지금 빠진 것이 아니라 `domain_status = "live"`가 되기 전까지 의도적으로 만들지 않는 파일이다.
 
 용어 설명은 hover tooltip이 아니라 click sheet 패턴으로 유지한다. 데스크톱에서는 오른쪽 sheet, 모바일에서는 bottom sheet로 열리고, sheet root는 stable `term_id`와 `data-zdp-ad-exclude`를 남긴다. Sheet 안에는 광고 slot을 넣지 않고, 광고 실험은 별도 용어 detail page 계약에서만 다룬다. Vault, Audit Log, OKLCH처럼 여러 공개 사이트가 반복해서 쓰는 용어는 `zdp-libs-ts/glossary/terms/*.yaml`과 `zdp-libs-ts/glossary/locales/<locale>/*.yaml`에 추가하고, 이 사이트에서만 쓰는 용어만 `glossary/terms/*.yaml`과 `glossary/locales/<locale>/*.yaml`에 둔다. 공통 용어의 base term에는 AI 작업 지시와 cross-locale 리뷰 기준으로 쓰는 `canonical_label`을 두고, 한국어·영어·일본어 같은 실제 표시 문구는 locale 파일의 `label`, `aliases`, `match_phrases`가 소유한다. Locale `short`는 정확히 1문단 2문장으로, `long`은 정확히 2문단이며 각 문단은 4문장으로 작성한다. 본문에 볼드체 마크다운 문법(`**`)과 띄어쓰기 없이 100자 이상 연결된 긴 단어는 사용하지 않는다. 공통 용어의 관련 화면 경로는 이 저장소의 manifest 빌더에서 term id별로 붙인 뒤 `bun run glossary:generate`로 런타임 manifest를 갱신한다.
 

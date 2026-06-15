@@ -1,31 +1,63 @@
 import { access, readFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
-import { publicPages } from "../src/content/public-pages";
+import {
+  publicEntryPaths,
+  publicLocalizedPaths,
+  publicPageIds,
+  publicPagesByLocale,
+  type PublicPage
+} from "../src/content/public-pages";
+import {
+  getGlossaryManifest,
+  markGlossaryText,
+  type GlossaryManifestEntry
+} from "../src/content/glossary";
+import { defaultLocale, siteLocales, type SupportedLocale } from "../src/lib/site-locales";
 
 const EXPECTED_CANDIDATE_DOMAIN = "8ailors.xyz";
+const REQUIRED_WEBPUB_PAGES = ["/", ...publicLocalizedPaths] as const;
 const FORBIDDEN_DISCOVERY_OUTPUTS = [
   "public/sitemap.xml",
   "public/rss.xml",
   "public/atom.xml",
   "public/feed.json"
 ] as const;
-
-const REQUIRED_WEBPUB_PAGES = ["/", ...publicPages.map((page) => page.path)];
 const FORBIDDEN_LLMS_PATTERNS = [
   { pattern: /https?:\/\//i, reason: "absolute URLs are not allowed before launch" },
   { pattern: /\blocalhost(?::\d+)?\b/i, reason: "local URLs are not public discovery content" },
   { pattern: /\b127\.0\.0\.1(?::\d+)?\b/, reason: "local URLs are not public discovery content" },
   { pattern: /\bstaging\.[a-z0-9.-]+\b/i, reason: "staging URLs are not public discovery content" },
-  { pattern: /\binternal\.[a-z0-9.-]+\b/i, reason: "internal URLs are not public discovery content" },
+  { pattern: /\binternal\.[a-z0-9.-]+\b/i, reason: "internal URLs are forbidden" },
   { pattern: /\/(?:internal|admin|customers?)(?:\/|\b)/i, reason: "private paths are forbidden" },
   { pattern: /\b(?:secret|token|api[_-]?key)\s*[:=]/i, reason: "secret-like values are forbidden" },
   { pattern: /\bsk-[a-z0-9_-]{12,}\b/i, reason: "secret-like values are forbidden" }
 ] as const;
+const glossaryCanaryTextsByLocale: Record<SupportedLocale, readonly string[]> = {
+  en: [
+    "English and Korean are the first supported locales. Color schemes remain readable.",
+    "A public sample of source tokens and shared UI parts applied through the same theme.",
+    "Buttons, inputs, and links use the same rules across screens.",
+    "Every control must be reachable without a mouse.",
+    "Actions that are hard to undo require an explicit confirmation pattern before they run."
+  ],
+  ko: [
+    "공통 테마로 적용되는 원천 토큰과 UI 요소의 실물 사양입니다.",
+    "버튼, 입력, 링크는 어느 화면에서든 같은 규칙을 씁니다.",
+    "마우스 없이 키보드로 모든 요소를 탐색할 수 있습니다.",
+    "삭제·결제처럼 되돌리기 어려운 작업은 명확한 확인 뒤에 실행됩니다.",
+    "언어 설정에 따라 서체와 줄바꿈 방식이 자동으로 바뀝니다."
+  ]
+} as const;
 
 interface WebpubCandidateContract {
   readonly siteUrl: string | null;
   readonly canonicalDomain: string | null;
   readonly domainStatus: string | null;
+  readonly language: string | null;
+  readonly defaultLocale: string | null;
+  readonly fallbackLocale: string | null;
+  readonly locales: readonly string[];
+  readonly localePolicy: string | null;
   readonly candidatePublicDomains: readonly string[];
   readonly pages: readonly string[];
   readonly robotsEnabled: boolean | null;
@@ -45,12 +77,10 @@ await checkWebpubContract();
 await checkRobots();
 await checkLlms();
 await checkForbiddenDiscoveryOutputs();
-await checkLayoutNoindex();
+await checkLocaleRouteContract();
+await checkLayoutContract();
+await checkLocalizationContract();
 await checkDesignSystemConsumerContract();
-await checkNoLocalStatusBadge();
-await checkNoLocalTextLink();
-await checkNoLocalSkipLink();
-await checkNoViewportScaledTypography();
 await checkGlossarySheetContract();
 checkPublicPageContentContract();
 checkPublicPageRouteContract();
@@ -72,28 +102,22 @@ async function checkWebpubContract(): Promise<void> {
   expectEqual(contract.domainStatus, "candidate", "webpub.toml domain_status must stay candidate before launch.");
   expectEqual(contract.siteUrl, "", "webpub.toml site_url must stay empty before launch.");
   expectEqual(contract.canonicalDomain, "", "webpub.toml canonical_domain must stay empty before launch.");
+  expectEqual(contract.language, defaultLocale, "webpub.toml language must match default locale.");
+  expectEqual(contract.defaultLocale, defaultLocale, "webpub.toml default_locale must be English-first.");
+  expectEqual(contract.fallbackLocale, defaultLocale, "webpub.toml fallback_locale must be English.");
+  expectEqual(contract.localePolicy, "locale-prefixed-canonical", "webpub.toml locale_policy must stay explicit.");
 
-  if (
-    contract.candidatePublicDomains.length !== 1 ||
-    contract.candidatePublicDomains[0] !== EXPECTED_CANDIDATE_DOMAIN
-  ) {
-    failures.push(
-      `webpub.toml candidate_public_domains must be exactly ["${EXPECTED_CANDIDATE_DOMAIN}"].`
-    );
-  }
-
-  for (const path of REQUIRED_WEBPUB_PAGES) {
-    if (!contract.pages.includes(path)) {
-      failures.push(`webpub.toml is missing page ${path}.`);
-    }
-  }
-
+  expectExactStringList(contract.locales, siteLocales, "webpub.toml locales must match supported site locales.");
+  expectExactStringList(
+    contract.candidatePublicDomains,
+    [EXPECTED_CANDIDATE_DOMAIN],
+    `webpub.toml candidate_public_domains must be exactly ["${EXPECTED_CANDIDATE_DOMAIN}"].`
+  );
   expectExactStringList(
     contract.pages,
     REQUIRED_WEBPUB_PAGES,
-    "webpub.toml pages must exactly match src/content/public-pages.ts."
+    "webpub.toml pages must exactly match locale-prefixed public page paths."
   );
-
   expectEqual(contract.robotsEnabled, true, "webpub.toml robots.enabled must be true before launch.");
 
   if (!contract.robotsDisallow.includes("/")) {
@@ -125,7 +149,7 @@ async function checkLlms(): Promise<void> {
   expectExactStringList(
     readLlmsCoreLinks(content),
     REQUIRED_WEBPUB_PAGES,
-    "public/llms.txt Core Links must exactly match src/content/public-pages.ts."
+    "public/llms.txt Core Links must exactly match webpub locale paths."
   );
 
   for (const { pattern, reason } of FORBIDDEN_LLMS_PATTERNS) {
@@ -143,274 +167,256 @@ async function checkForbiddenDiscoveryOutputs(): Promise<void> {
   }
 }
 
-async function checkLayoutNoindex(): Promise<void> {
+async function checkLocaleRouteContract(): Promise<void> {
+  const [entryPage, entrySurfacePage, localizedHomePage, localizedSurfacePage, localeRedirect, notFoundPage] = await Promise.all([
+    readText("src/pages/index.astro"),
+    readText("src/pages/[surface].astro"),
+    readText("src/pages/[locale]/index.astro"),
+    readText("src/pages/[locale]/[surface].astro"),
+    readText("src/components/LocaleRedirect.astro"),
+    readText("src/pages/404.astro")
+  ]);
+
+  for (const [path, content, requiredTexts] of [
+    [
+      "src/pages/index.astro",
+      entryPage,
+      ['import LocaleRedirect from "../components/LocaleRedirect.astro";', '<LocaleRedirect targetPath="/" />']
+    ],
+    [
+      "src/pages/[surface].astro",
+      entrySurfacePage,
+      ['import LocaleRedirect from "../components/LocaleRedirect.astro";', "publicPageIds", "<LocaleRedirect targetPath={targetPath} />"]
+    ],
+    [
+      "src/pages/[locale]/index.astro",
+      localizedHomePage,
+      ["siteLocales.map", "getPublicPages(locale)", 'locale={locale}', "localizedHomeText"]
+    ],
+    [
+      "src/pages/[locale]/[surface].astro",
+      localizedSurfacePage,
+      ["siteLocales.flatMap", "getPublicPage(locale, surface)", "PublicShareDock", 'locale={locale}']
+    ],
+    [
+      "src/components/LocaleRedirect.astro",
+      localeRedirect,
+      ['meta http-equiv="refresh"', "window.localStorage.getItem(localeStorageKey)", "navigator.languages", 'return "en";']
+    ],
+    [
+      "src/pages/404.astro",
+      notFoundPage,
+      ["looksLikeLocale", "fallbackSegments", "window.location.replace", "defaultLocale", "siteLocales"]
+    ]
+  ] as const) {
+    for (const requiredText of requiredTexts) {
+      if (!content.includes(requiredText)) {
+        failures.push(`${path} is missing locale routing contract ${requiredText}.`);
+      }
+    }
+  }
+}
+
+async function checkLayoutContract(): Promise<void> {
   const content = await readText("src/layouts/BaseLayout.astro");
 
-  if (!content.includes('name="robots"') || !content.includes('content="noindex,nofollow"')) {
-    failures.push("BaseLayout.astro must keep noindex,nofollow before launch.");
+  for (const requiredText of [
+    'name="robots"',
+    'content="noindex,nofollow"',
+    '<html lang={locale} data-zdp-locale={locale}',
+    "getPublicPages(locale)",
+    "siteLocales.map",
+    "data-zdp-locale-value={locale}",
+    'data-zdp-locale-option-value={optionLocale}',
+    'const supportedLocales = ["en", "ko"]',
+    "buildLocalizedCurrentPath",
+    "navigateLocale",
+    "applyLocale(pageLocale, true)",
+    "searchLocale",
+    "zdp-web-public-locale",
+    "zdp-web-public-theme",
+    "zdp-web-public-text-scale",
+    "data-site-preference-menu",
+    "site-preference-panel",
+    "site-locale-switcher__name",
+    "closePreferenceMenu"
+  ]) {
+    if (!content.includes(requiredText)) {
+      failures.push(`BaseLayout.astro is missing locale-aware layout contract ${requiredText}.`);
+    }
+  }
+
+  if (content.includes('type LocaleMode = "ko"') || content.includes('data-zdp-locale-value="ko"')) {
+    failures.push("BaseLayout.astro must not preserve the old single-locale KO switcher contract.");
+  }
+
+  if (content.includes("site-preference-trigger__divider") || content.includes("site-preference-trigger__text")) {
+    failures.push("BaseLayout.astro preference trigger must expose only the locale code, not extra text-size hints.");
+  }
+}
+
+async function checkLocalizationContract(): Promise<void> {
+  const [config, catalog, localizedAstro, homeEn, homeKo, runbook, serviceYaml] = await Promise.all([
+    readText("localization.config.ts"),
+    readText("src/lib/localization-catalog.ts"),
+    readText("src/lib/localized-astro.ts"),
+    readText("messages/en/home.json"),
+    readText("messages/ko/home.json"),
+    readText("RUNBOOK.md"),
+    readText("service.yaml")
+  ]);
+
+  for (const requiredText of [
+    'defaultLocale: "en"',
+    'locales: ["en", "ko"]',
+    'messages: "messages"',
+    'scopes: ["home"]'
+  ]) {
+    if (!config.includes(requiredText)) {
+      failures.push(`localization.config.ts is missing locale canary contract ${requiredText}.`);
+    }
+  }
+
+  for (const requiredText of [
+    'import homeEnSource from "../../messages/en/home.json";',
+    'import homeKoSource from "../../messages/ko/home.json";',
+    "defaultLocale",
+    "siteLocales",
+    '...createContents("en"',
+    '...createContents("ko"'
+  ]) {
+    if (!catalog.includes(requiredText)) {
+      failures.push(`src/lib/localization-catalog.ts is missing bilingual catalog contract ${requiredText}.`);
+    }
+  }
+
+  for (const key of ["hero.title", "hero.cta.products", "hero.cta.trust"]) {
+    if (!homeEn.includes(`"${key}"`) || !homeKo.includes(`"${key}"`)) {
+      failures.push(`messages/en and messages/ko must both define ${key}.`);
+    }
+  }
+
+  for (const requiredText of [
+    "locale: SupportedLocale = defaultLocale",
+    "getRuntime(locale)"
+  ]) {
+    if (!localizedAstro.includes(requiredText)) {
+      failures.push(`src/lib/localized-astro.ts is missing locale runtime contract ${requiredText}.`);
+    }
+  }
+
+  for (const requiredText of [
+    "Canonical public content paths are locale-prefixed",
+    "English is the default and fallback locale",
+    "complete `en` and `ko` message content"
+  ]) {
+    if (!runbook.includes(requiredText)) {
+      failures.push(`RUNBOOK.md is missing locale routing contract ${requiredText}.`);
+    }
+  }
+
+  for (const requiredText of [
+    "locale-prefixed /en and /ko pages are generated",
+    "English is the default and fallback locale",
+    "complete en and ko messages"
+  ]) {
+    if (!serviceYaml.includes(requiredText)) {
+      failures.push(`service.yaml is missing locale routing contract ${requiredText}.`);
+    }
   }
 }
 
 async function checkDesignSystemConsumerContract(): Promise<void> {
-  const [
-    packageJson,
-    serviceYaml,
-    globalCss,
-    tokensCss,
-    homePage,
-    surfacePage,
-    publicShareDock,
-    layout,
-    astroConfig,
-    runbook,
-    ciWorkflow,
-    designSystemPackageJson,
-    designSystemConsumerContract,
-    designSystemTokenCss,
-    designSystemExpressiveFontCss,
-    designSystemComponentCss
-  ] = await Promise.all([
+  const [packageJson, globalCss, tokensCss, layout, homePage, surfacePage, shareDock] = await Promise.all([
     readPackageJson("package.json"),
-    readText("service.yaml"),
     readText("src/styles/global.css"),
     readText("src/styles/tokens.css"),
-    readText("src/pages/index.astro"),
-    readText("src/pages/[surface].astro"),
-    readText("src/components/PublicShareDock.astro"),
     readText("src/layouts/BaseLayout.astro"),
-    readText("astro.config.mjs"),
-    readText("RUNBOOK.md"),
-    readText(".github/workflows/ci.yml"),
-    readPackageJson("../zdp-design-system/package.json"),
-    readText("../zdp-design-system/docs/CONSUMER_CONTRACT.md"),
-    readText("../zdp-design-system/src/styles/tokens.css"),
-    readText("../zdp-design-system/src/styles/expressive-fonts.css"),
-    readText("../zdp-design-system/src/styles/components.css")
+    readText("src/pages/[locale]/index.astro"),
+    readText("src/pages/[locale]/[surface].astro"),
+    readText("src/components/PublicShareDock.astro")
   ]);
 
   if (packageJson.version !== "0.4.69") {
-    failures.push(
-      "package.json version must be 0.4.69 for the split shared glossary source contract."
-    );
-  }
-
-  if (!serviceYaml.includes("runbook_url: RUNBOOK.md")) {
-    failures.push("service.yaml must point runbook_url at RUNBOOK.md.");
-  }
-
-  for (const requiredText of [
-    "zdp-platform-localization adoption is limited to the home hero Astro canary until a broader public-copy migration is reviewed",
-    "home hero localization dogfood only; keep static Astro copy rollback available before expanding to more public copy",
-    "feature_flag_required: false",
-    "The first zdp-platform-localization product canary is intentionally limited to the home hero title and CTA messages",
-    "Static Astro copy remains the rollback boundary for the localization canary, so this static public site does not require a runtime feature flag"
-  ]) {
-    if (!serviceYaml.includes(requiredText)) {
-      failures.push(`service.yaml is missing localization canary contract ${requiredText}.`);
-    }
-  }
-
-  for (const requiredText of [
-    "`zdp-platform-localization` canary is limited to three home hero messages",
-    "`hero.title`",
-    "`hero.cta.products`",
-    "`hero.cta.trust`",
-    "`bun run check:localization` must pass with catalog diagnostics 0 and production fallback messages 0",
-    "Keep hardcoded static Astro copy available as the rollback path",
-    "does not require a runtime feature flag",
-    "pause for product review before moving more public copy into `zdp-platform-localization`"
-  ]) {
-    if (!runbook.includes(requiredText)) {
-      failures.push(`RUNBOOK.md is missing localization canary contract ${requiredText}.`);
-    }
-  }
-
-  for (const requiredText of [
-    "public-site:",
-    "uses: actions/checkout@v6",
-    "path: projects/zdp-platforms/client-surfaces/zdp-web-public",
-    "repository: 0disoft/zdp-design-system",
-    "path: projects/zdp-platforms/client-surfaces/zdp-design-system",
-    "repository: 0disoft/zdp-platform-localization",
-    "token: ${{ secrets.ZDP_CI_READ_TOKEN || github.token }}",
-    "path: projects/zdp-platforms/platform/zdp-platform-localization",
-    "repository: 0disoft/zdp-platform-devex",
-    "path: projects/zdp-platforms/platform/zdp-platform-devex",
-    "repository: 0disoft/zdp-libs-ts",
-    "path: projects/zdp-platforms/contracts/zdp-libs-ts",
-    "bun run package:build",
-    "bun install --no-save",
-    "bun run check",
-    "bun run build"
-  ]) {
-    if (!ciWorkflow.includes(requiredText)) {
-      failures.push(`.github/workflows/ci.yml is missing public-site localization canary CI contract ${requiredText}.`);
-    }
-  }
-
-  if (!packageJson.scripts.check.startsWith("bun run check:glossary &&")) {
-    failures.push("package.json scripts.check must validate glossary freshness before Astro checks.");
-  }
-
-  if (packageJson.scripts.check.includes("bun run glossary:generate")) {
-    failures.push("package.json scripts.check must not generate glossary files before stale-manifest checks.");
-  }
-
-  if (!packageJson.scripts.check.includes("bun run check:glossary")) {
-    failures.push("package.json scripts.check must include bun run check:glossary.");
-  }
-
-  for (const requiredText of [
-    "fileURLToPath",
-    "localizationContentPackageEntry",
-    "../../platform/zdp-platform-localization/packages/content/src/index.ts",
-    "resolve:",
-    "alias:",
-    "'@zdp/localization-content': localizationContentPackageEntry"
-  ]) {
-    if (!astroConfig.includes(requiredText)) {
-      failures.push(`astro.config.mjs is missing localization content alias contract ${requiredText}.`);
-    }
-  }
-
-  if (packageJson.scripts["check:glossary"] !== "bun scripts/check-glossary.ts") {
-    failures.push('package.json scripts.check:glossary must be "bun scripts/check-glossary.ts".');
-  }
-
-  if (packageJson.scripts["glossary:generate"] !== "bun scripts/generate-glossary.ts") {
-    failures.push('package.json scripts.glossary:generate must be "bun scripts/generate-glossary.ts".');
+    failures.push("package.json version must stay 0.4.69 until a release bump is requested.");
   }
 
   if (packageJson.dependencies["zdp-design-system"] !== "file:../zdp-design-system") {
     failures.push('package.json dependencies.zdp-design-system must stay "file:../zdp-design-system".');
   }
 
-  if ("@fontsource/playwrite-au-vic-guides" in packageJson.dependencies) {
-    failures.push("zdp-web-public must use zdp-design-system/brand-fonts.css instead of owning @fontsource/playwrite-au-vic-guides.");
-  }
-
-  if (designSystemPackageJson.version !== "0.43.1") {
-    failures.push("Sibling zdp-design-system package must be version 0.43.1 for the CommandField shortcut contract.");
-  }
-
-  if (
-    designSystemPackageJson.scripts["consumer:check"] !==
-    "bun scripts/check-consumer-contract.ts"
-  ) {
-    failures.push("Sibling zdp-design-system package must expose consumer:check.");
-  }
-
   for (const requiredText of [
     '@import "zdp-design-system/styles.css";',
     '@import "zdp-design-system/brand-fonts.css";',
     '@import "zdp-design-system/locale-fonts.css";',
+    ".zdp-surface-reset .brand .brand-name",
+    ".site-preference-menu",
+    ".site-preference-trigger",
+    ".site-preference-panel",
+    ".site-locale-switcher",
+    "border-style: solid;",
+    "border-color: transparent;",
+    ".site-theme-toggle.zdp-theme-toggle",
+    ".site-text-scale-control"
+  ]) {
+    if (!globalCss.includes(requiredText)) {
+      failures.push(`src/styles/global.css is missing design-system consumer contract ${requiredText}.`);
+    }
+  }
+
+  for (const forbiddenText of [
+    ".site-preference-trigger__divider",
+    ".site-preference-trigger__text",
+    "site-preference-trigger__locale {\n  min-width",
+    "site-preference-panel__title {\n  margin: 0 0 var(--space-2);\n  color: var(--color-muted);\n  font-size: var(--zdp-font-size-xs);\n  font-weight: var(--zdp-font-weight-bold)",
+    "site-locale-switcher__name {\n  overflow: hidden;\n  font-size: var(--zdp-font-size-sm);\n  font-weight: var(--zdp-font-weight-medium)",
+    'zdp-locale-switcher__item[aria-checked="true"] {\n  background: var(--color-clay-wash)',
+    'zdp-text-scale-control__item[aria-checked="true"] {\n  background: var(--color-clay-wash)',
+    'zdp-text-scale-control__item[aria-checked="true"] {\n  background: var(--color-surface)',
+    'zdp-locale-switcher__item[aria-checked="true"] {\n  background: transparent;\n  border-block-end-color: var(--color-line)',
+    'zdp-text-scale-control__item[aria-checked="true"] {\n  background: transparent;\n  border-block-end-color: var(--color-line)',
+    'zdp-locale-switcher__item:focus-visible {\n  background: var(--zdp-color-focus-surface)',
+    'zdp-locale-switcher__item:focus-visible {\n  background: transparent;\n  border-color: var(--zdp-color-focus-line)',
+    'zdp-text-scale-control__item:focus-visible {\n  background: var(--zdp-color-focus-surface)',
+    'zdp-text-scale-control__item:focus-visible {\n  background: transparent;\n  border-color: var(--zdp-color-focus-line)'
+  ]) {
+    if (globalCss.includes(forbiddenText)) {
+      failures.push(`src/styles/global.css must keep the preference menu calm and non-bold; found ${forbiddenText}.`);
+    }
+  }
+
+  for (const requiredText of [
+    "zdp-locale-switcher__item {\n  position: relative;\n  justify-self: center;",
+    "zdp-locale-switcher__item::after {\n  position: absolute;\n  inset-inline: var(--space-3);",
+    "zdp-locale-switcher__item::after {\n  position: absolute;\n  inset-inline: var(--space-3);\n  inset-block-end: 0.22rem;\n  height: 0.16rem;\n  border-radius: var(--radius-pill);\n  background: var(--color-line);\n  content: \"\";\n  opacity: 0;\n  pointer-events: none;",
+    "zdp-locale-switcher__item:hover:not(:disabled)::after {\n  background: var(--color-line);\n  opacity: 1;",
+    'zdp-locale-switcher__item[aria-checked="true"]::after {\n  opacity: 1;',
+    "zdp-locale-switcher__item:focus-visible {\n  background: transparent;\n  border-color: transparent;",
+    "zdp-locale-switcher__item:focus-visible::after {\n  background: var(--zdp-color-focus-line);\n  opacity: 1;",
+    "zdp-text-scale-control__item {\n  position: relative;\n  justify-self: center;",
+    "zdp-text-scale-control__item::after {\n  position: absolute;\n  inset-inline: var(--space-3);",
+    "zdp-text-scale-control__item::after {\n  position: absolute;\n  inset-inline: var(--space-3);\n  inset-block-end: 0.2rem;\n  height: 0.16rem;\n  border-radius: var(--radius-pill);\n  background: var(--color-line);\n  content: \"\";\n  opacity: 0;\n  pointer-events: none;",
+    "zdp-text-scale-control__item:hover:not(:disabled)::after {\n  background: var(--color-line);\n  opacity: 1;",
+    'zdp-text-scale-control__item[aria-checked="true"]::after {\n  opacity: 1;',
+    "zdp-text-scale-control__item:focus-visible {\n  background: transparent;\n  border-color: transparent;",
+    "zdp-text-scale-control__item:focus-visible::after {\n  background: var(--zdp-color-focus-line);\n  opacity: 1;"
+  ]) {
+    if (!globalCss.includes(requiredText)) {
+      failures.push(`src/styles/global.css must use a text-width underline selected state for preference controls: ${requiredText}.`);
+    }
+  }
+
+  for (const requiredText of [
+    '[data-zdp-theme="dark"]',
+    "color-scheme: dark;",
     "--font-sans: var(--zdp-font-family-multiscript);",
     "--font-title: var(--zdp-font-family-latin);",
     "--font-logo: var(--zdp-font-family-brand,",
-    '[data-zdp-theme="dark"]',
-    "color-scheme: dark;",
     "--shadow-soft: none;",
     "--radius-pill: var(--zdp-radius-md);"
   ]) {
-    const source =
-      requiredText.startsWith("@import") ||
-      requiredText.startsWith("var(")
-        ? globalCss
-        : tokensCss;
-
-    if (!source.includes(requiredText)) {
-      failures.push(`Design system consumer contract is missing ${requiredText}.`);
-    }
-  }
-
-  for (const requiredText of [
-    "font-family: var(--font-logo);",
-    ".zdp-surface-reset .brand .brand-name",
-    "font-weight: var(--zdp-font-weight-semibold);",
-    "font-weight: var(--zdp-font-weight-regular);"
-  ]) {
-    if (!globalCss.includes(requiredText)) {
-      failures.push(`Brand wordmark style is missing ${requiredText}.`);
-    }
-  }
-
-  if (globalCss.includes(".page-hero--docs .page-hero__inner,\n.design-doc__layout")) {
-    failures.push("Design docs must not widen the hero and document layout away from the header container rail.");
-  }
-
-  if (
-    /\.page-hero--docs[\s\S]{0,220}max-inline-size:\s*var\(--zdp-breakpoint-wide\)/.test(globalCss) ||
-    /\.design-doc__layout[\s\S]{0,220}max-inline-size:\s*var\(--zdp-breakpoint-wide\)/.test(globalCss)
-  ) {
-    failures.push("Design docs must not use breakpoint-wide for the hero or document container.");
-  }
-
-  for (const requiredText of [
-    "# Consumer Contract",
-    "Astro",
-    "Svelte",
-    "Tauri",
-    "Flutter",
-    "ConfirmAction",
-    "Divider",
-    "EmptyState",
-    "Grid",
-    "Icon",
-    "Inline",
-    "Kbd",
-    "KeyValue",
-    "Link",
-    "ShareDock",
-    "ShortcutHint",
-    "SkipLink",
-    "Stack",
-    "Table",
-    "Toolbar",
-    "VisuallyHidden",
-    "tokens/zdp.tokens.json",
-    ".zdp-surface-reset",
-    ".zdp-page",
-    ".zdp-container",
-    ".zdp-section",
-    ".zdp-page-header",
-    ".zdp-visually-hidden",
-    ".zdp-stack",
-    ".zdp-inline",
-    ".zdp-divider",
-    ".zdp-grid",
-    ".zdp-icon",
-    ".zdp-share-dock",
-        ".zdp-toolbar",
-        ".zdp-command-field",
-        ".zdp-command-field__input",
-        ".zdp-kbd",
-        ".zdp-shortcut-hint",
-        "ariaKeyShortcuts",
-        "ariaAutocomplete",
-        "Button, IconButton, Link, CommandField",
-        "실제 keydown",
-        "control.choiceSize",
-    "control.switchWidth",
-    "control.scrollbarSize",
-    "font.family.brand",
-    "font.family.expressionSans",
-    "expressive-fonts.css",
-    "brand-fonts.css",
-    ".zdp-brand-wordmark",
-    "color.scrollbar.track",
-    "control.glyphMd",
-    "zdpShareIcons",
-    "zdp-design-system/share",
-    "ThemeToggle은 light/dark",
-    "TextScaleControl은 글자 크기 선택",
-    ".zdp-theme-toggle",
-    ".zdp-text-scale-control",
-    "onconfirm",
-    "readonly",
-    "zdp-design-system/src/..."
-  ]) {
-    if (!designSystemConsumerContract.includes(requiredText)) {
-      failures.push(`Sibling design-system consumer contract is missing ${requiredText}.`);
+    if (!tokensCss.includes(requiredText)) {
+      failures.push(`src/styles/tokens.css is missing theme token contract ${requiredText}.`);
     }
   }
 
@@ -419,520 +425,65 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
       "src/layouts/BaseLayout.astro",
       layout,
       [
-        'html lang="ko" data-zdp-locale="ko" data-zdp-theme="light"',
-        'data-zdp-locale="ko"',
-        'data-zdp-text-scale="base"',
         'body class="zdp-surface-reset"',
-        'zdp-web-public-theme',
-        'zdp-web-public-locale',
-        'zdp-web-public-text-scale',
-        'class="shell zdp-page zdp-page--canvas"',
-        'site-header zdp-container zdp-container--lg zdp-container--padding-md',
-        'site-footer zdp-container zdp-container--lg zdp-container--padding-md',
         'class="zdp-skip-link"',
-        'href="#content"',
-        'main id="content"',
-        'tabindex="-1"',
-        'class="zdp-link zdp-link--muted"',
-        'aria-current={item.href === currentPath ? "page" : undefined}',
         'class="brand zdp-brand-lockup"',
-        'class="brand-mark zdp-brand-lockup__mark"',
         'class="brand-name zdp-brand-wordmark zdp-brand-wordmark--compact"',
-        'data-site-locale-switcher',
-        'data-zdp-locale-switcher',
-        'data-zdp-locale-value="ko"',
-        'data-site-locale-option',
-        'data-zdp-locale-option-value="ko"',
-        'data-site-theme-toggle',
-        'data-zdp-theme-toggle',
-        'data-zdp-theme-state="light"',
-        'role="group" aria-label="화면 설정"',
-        'data-site-text-scale-control',
-        'data-zdp-text-scale-control',
-        'data-zdp-text-scale-value="base"',
-        'data-site-text-scale-option',
-        'data-zdp-text-scale-option-value="large"',
-        'data-zdp-text-scale-option-value="larger"',
-        'LocaleMode = "ko"',
-        'normalizeLocale',
-        'applyLocale',
-        'moveLocaleFocus',
-        'TextScaleMode = "base" | "large" | "larger"',
-        'normalizeTextScale',
-        'applyTextScale',
-        'moveTextScaleFocus',
-        'aria-label="다크 모드로 전환"',
-        'aria-pressed="false"',
-        "라이트 모드로 전환",
-        "다크 모드로 전환",
-        "brand-mark__ship",
-        "brand-mark__sail",
-        "brand-mark__hull",
-        'role="search" aria-label="사이트 검색"',
+        'role="search"',
         'aria-keyshortcuts="/"',
-        'aria-autocomplete="list"',
-        'aria-controls="global-search-results"',
-        'aria-expanded="false"',
-        'role="listbox"',
-        'data-global-search-results',
-        'data-global-search-option',
-        "isComposingKeyEvent(event)",
-        'Reflect.get(event, "keyCode") === 229',
-        'activeElement?.getAttribute("role") === "searchbox"',
-        '{ href: "/design", label: "디자인" }',
-        '{ href: "/security", label: "보안" }',
-        '{ href: "/labs", label: "실험실" }',
-        '{ href: "/roadmap", label: "로드맵" }'
+        'data-site-theme-toggle',
+        'data-site-preference-menu',
+        'data-site-locale-switcher',
+        'data-site-text-scale-control'
       ]
     ],
     [
-      "src/pages/index.astro",
+      "src/pages/[locale]/index.astro",
       homePage,
       [
         "zdp-button zdp-button--md zdp-button--primary",
         "zdp-button zdp-button--md zdp-button--secondary",
-        "hero zdp-section zdp-section--spacing-xl",
-        "hero-copy-block zdp-container zdp-container--lg zdp-container--padding-md",
-        "section zdp-section zdp-section--spacing-lg zdp-divider zdp-divider--horizontal zdp-divider--subtle",
-        "section-inner zdp-container zdp-container--lg zdp-container--padding-md",
-        "zdp-inline zdp-inline--gap-sm zdp-inline--align-center",
         "zdp-toolbar zdp-toolbar--gap-md zdp-toolbar--align-center",
-        "zdp-toolbar__main",
-        "zdp-toolbar__actions",
         "surface-grid zdp-grid zdp-grid--columns-three zdp-grid--gap-md",
-        "zdp-surface zdp-surface--panel zdp-surface--padding-lg",
-        "zdp-empty-state zdp-empty-state--raised",
-        "zdp-empty-state__body",
-        "zdp-empty-state__actions",
-        "zdp-badge zdp-badge--primary zdp-badge--sm",
-        "zdp-link"
+        "zdp-empty-state zdp-empty-state--raised"
       ]
     ],
     [
-      "src/pages/[surface].astro",
-      surfacePage + publicShareDock,
+      "src/pages/[locale]/[surface].astro",
+      surfacePage + shareDock,
       [
-        "page-hero zdp-section zdp-section--spacing-xl",
-        "page-hero__inner zdp-container zdp-container--lg zdp-container--padding-md",
         "zdp-page-header zdp-page-header--align-start",
-        "zdp-page-header__body",
-        "zdp-page-header__title",
-        "zdp-page-header__summary",
-        "zdp-badge zdp-badge--primary zdp-badge--sm",
-        "zdp-badge zdp-badge--neutral zdp-badge--sm",
-        "zdp-button zdp-button--md zdp-button--secondary",
-        "zdp-page-header__actions",
         "zdp-breadcrumb page-breadcrumb",
-        "zdp-breadcrumb__link",
-        "zdp-breadcrumb__current",
-        "design-doc zdp-section zdp-section--spacing-lg zdp-divider zdp-divider--horizontal zdp-divider--subtle",
         "design-doc__layout zdp-container zdp-container--lg zdp-container--padding-md",
-        "design-doc__rail",
-        "design-doc__nav",
-        "design-doc__article",
-        "design-showcase",
-        "showcase-group",
-        "swatch-grid",
-        "swatch-card",
-        "typography-specimen zdp-surface zdp-surface--panel zdp-surface--padding-md",
-        "components-preview zdp-surface zdp-surface--panel zdp-surface--padding-lg",
-        "preview-row zdp-inline",
-        "적용 범위",
-        "hasOverviewSection",
-        "hasDetailsSection",
-        "hasChecksSection",
-        "컴포넌트 & 토큰 카탈로그",
-        "Color Palette",
-        "Typography",
-        "Interactive Components",
-        "디자인 상세",
-        "검증 체크리스트",
-        "zdp-visually-hidden",
-        "zdp-key-value zdp-key-value--columns-two",
-        "zdp-table-wrap",
         "zdp-table zdp-table--density-compact",
-        "zdp-table__caption zdp-table__caption--hidden",
-        "zdp-kbd zdp-kbd--md",
-        'scope="col"',
-        'scope="row"',
-        'import PublicShareDock from "../components/PublicShareDock.astro";',
-        'import { zdpShareIcons, type ZdpShareIconName } from "zdp-design-system/share";',
-        'placement?: "side"',
-        'placement="rail"',
-        "zdp-share-dock zdp-share-dock--${placement}",
-        "zdp-share-dock__list",
-        "zdp-share-action",
-        "zdp-share-action__tooltip",
-        'icon: "telegram"',
-        'icon: "line"',
-        'icon: "whatsapp"',
-        'icon: "x"',
-        'icon: "reddit"',
-        "zdpShareIcons[action.icon]",
-        "zdpShareIcons[platform.icon]",
-        "zdp-share-icon zdp-share-icon--${platform.icon}",
-        "data-share-panel",
-        "data-share-action={action.id}",
-        'data-share-platform={platform.id}',
-        "data-share-label",
-        "링크 복사",
-        "기기 공유",
-        "텔레그램",
-        "라인",
-        "왓츠앱",
-        "레딧",
-        "buildShareHref",
-        "navigator.share",
-        "navigator.clipboard.writeText",
-        "복사 권한 필요",
-        "핵심 정보",
-        'aria-current="page"'
+        "zdp-share-dock",
+        "zdp-share-action"
       ]
     ]
   ] as const) {
     for (const requiredText of requiredTexts) {
       if (!content.includes(requiredText)) {
-        failures.push(`${path} is missing design system usage ${requiredText}.`);
+        failures.push(`${path} is missing design-system consumer markup ${requiredText}.`);
       }
-    }
-  }
-
-  for (const forbiddenText of [
-    "기본 방향",
-    "overviewText",
-    "zdp-empty-state surface-placeholder"
-  ]) {
-    if (surfacePage.includes(forbiddenText)) {
-      failures.push(`src/pages/[surface].astro must not reintroduce duplicated docs overview content ${forbiddenText}.`);
-    }
-  }
-
-  for (const requiredText of [
-    ".zdp-skip-link",
-    ".zdp-skip-link:focus-visible",
-    ".zdp-visually-hidden",
-    ".zdp-page",
-    ".zdp-page--canvas",
-    ".zdp-container",
-    ".zdp-container--lg",
-    ".zdp-container--padding-md",
-    ".zdp-section",
-    ".zdp-section--spacing-lg",
-    ".zdp-section--spacing-xl",
-    ".zdp-page-header",
-    ".zdp-page-header__body",
-    ".zdp-page-header__title",
-    ".zdp-page-header__summary",
-    ".zdp-page-header__actions",
-    ".zdp-stack",
-    ".zdp-stack--gap-md",
-    ".zdp-inline",
-    ".zdp-inline--gap-sm",
-    ".zdp-divider",
-    ".zdp-divider--horizontal",
-    ".zdp-grid",
-    ".zdp-grid--columns-three",
-    ".zdp-grid--gap-md",
-    ".zdp-icon",
-    ".zdp-icon--sm",
-    ".zdp-icon--md",
-    ".zdp-share-dock",
-    ".zdp-share-dock--side",
-    ".zdp-share-dock--rail",
-    ".zdp-share-dock--bottom",
-    ".zdp-share-dock--inline",
-    ".zdp-share-dock__list",
-    ".zdp-share-action",
-    ".zdp-share-action__tooltip",
-    ".zdp-confirm-action",
-    ".zdp-confirm-action__fill",
-    ".zdp-confirm-action--danger",
-    ".zdp-key-value",
-    ".zdp-table-wrap",
-    ".zdp-table",
-    ".zdp-empty-state",
-    ".zdp-toolbar",
-    ".zdp-toolbar__main",
-    ".zdp-toolbar__actions",
-    ".zdp-kbd",
-    ".zdp-kbd--md",
-    ".zdp-shortcut-hint",
-    ".zdp-shortcut-hint__separator",
-    ".zdp-command-field",
-    ".zdp-command-field__input",
-    ".zdp-brand-wordmark",
-    ".zdp-brand-lockup",
-    "font-size: calc(var(--zdp-type-page-title-size) - 0.8rem)",
-    "font-size: calc(var(--zdp-type-page-title-compact-size) - 0.5rem)",
-    ".zdp-theme-toggle",
-    ".zdp-theme-toggle__icon",
-    ".zdp-locale-switcher",
-    ".zdp-locale-switcher__item",
-    ".zdp-locale-switcher__label",
-    ".zdp-text-scale-control",
-    ".zdp-text-scale-control__item",
-    ".zdp-text-scale-control__sample",
-    "var(--zdp-color-focus-surface)",
-    "var(--zdp-color-focus-line)",
-    "position: fixed",
-    "pointer-events: none",
-    "pointer-events: auto",
-    "clip: rect(0 0 0 0)",
-    "clip-path: inset(50%)",
-    "white-space: nowrap"
-  ]) {
-    if (!designSystemComponentCss.includes(requiredText)) {
-      failures.push(`Sibling design-system component CSS is missing ${requiredText}.`);
-    }
-  }
-
-  for (const requiredText of [
-    ".showcase-group",
-    ".swatch-card:hover",
-    "--color-swatch-info-surface",
-    "--color-swatch-info-ink",
-    "--color-swatch-info-muted",
-    "--color-swatch-info-line",
-    "background: var(--color-swatch-info-surface)",
-    "color: var(--color-swatch-info-ink)",
-    "color: var(--color-swatch-info-muted)",
-    ".typography-specimen",
-    ".components-preview",
-    ".preview-row",
-    ".header-search-results",
-    ".header-search-results::-webkit-scrollbar",
-    ".header-search-option[data-active=\"true\"]",
-    ".site-theme-toggle",
-    ".site-preference-controls",
-    ".site-locale-switcher",
-    ".site-text-scale-control",
-    "html[data-zdp-text-scale=\"large\"]",
-    "--site-text-scale: 1.08",
-    "--site-heading-scale: 1.08",
-    "font-size: calc(var(--zdp-font-size-md) * var(--site-text-scale))"
-  ]) {
-    if (!globalCss.includes(requiredText)) {
-      failures.push(`src/styles/global.css is missing design showcase contract ${requiredText}.`);
-    }
-  }
-
-  for (const forbiddenText of [".share-dock", ".share-action", ".share-icon"]) {
-    if (globalCss.includes(forbiddenText)) {
-      failures.push(`src/styles/global.css must not keep local share dock styling ${forbiddenText}.`);
-    }
-  }
-
-  if (surfacePage.includes('class="swatch-info" style="color:')) {
-    failures.push("src/pages/[surface].astro must not override swatch-info text color inline.");
-  }
-
-  for (const forbiddenText of ["design-doc__toc", "On this page"]) {
-    if (surfacePage.includes(forbiddenText)) {
-      failures.push(`src/pages/[surface].astro must not keep duplicate page TOC text ${forbiddenText}.`);
-    }
-
-    if (globalCss.includes(forbiddenText)) {
-      failures.push(`src/styles/global.css must not keep duplicate page TOC styling ${forbiddenText}.`);
-    }
-  }
-
-  for (const requiredText of [
-    "scrollbar-color: var(--zdp-color-scrollbar-thumb) var(--zdp-color-scrollbar-track)",
-    "scrollbar-width: thin",
-    "html::-webkit-scrollbar",
-    "body::-webkit-scrollbar",
-    "height: var(--zdp-control-scrollbar-size)",
-    "width: var(--zdp-control-scrollbar-size)",
-    "background: var(--zdp-color-scrollbar-track)",
-    "background-color: var(--zdp-color-scrollbar-thumb)",
-    "background-color: var(--zdp-color-scrollbar-thumb-hover)",
-    "html::-webkit-scrollbar-corner",
-    "body::-webkit-scrollbar-corner"
-  ]) {
-    if (!globalCss.includes(requiredText)) {
-      failures.push(`src/styles/global.css is missing root themed scrollbar contract ${requiredText}.`);
-    }
-  }
-
-  for (const requiredText of [
-    "scrollbar-width: thin",
-    "::-webkit-scrollbar-thumb",
-    "var(--zdp-control-scrollbar-size)",
-    "--zdp-font-family-brand",
-    "--zdp-font-family-expression-sans",
-    "--zdp-font-family-expression-editorial",
-    "--zdp-type-page-title-size: 2.75rem",
-    "--zdp-type-page-title-compact-size: 2rem"
-  ]) {
-    if (!designSystemTokenCss.includes(requiredText)) {
-      failures.push(`Sibling design-system token CSS is missing ${requiredText}.`);
-    }
-  }
-
-  for (const requiredText of [
-    "family=Google+Sans",
-    "family=Tangerine:wght@400;700",
-    "family=Libertinus+Keyboard"
-  ]) {
-    if (!designSystemExpressiveFontCss.includes(requiredText)) {
-      failures.push(`Sibling design-system expressive font CSS is missing ${requiredText}.`);
-    }
-  }
-}
-
-async function checkNoLocalStatusBadge(): Promise<void> {
-  const [globalCss, homePage, surfacePage] = await Promise.all([
-    readText("src/styles/global.css"),
-    readText("src/pages/index.astro"),
-    readText("src/pages/[surface].astro")
-  ]);
-
-  if (/(^|\n)\s*\.status\b/.test(globalCss)) {
-    failures.push("src/styles/global.css must not define local .status badge styling.");
-  }
-
-  for (const [path, content] of [
-    ["src/pages/index.astro", homePage],
-    ["src/pages/[surface].astro", surfacePage]
-  ] as const) {
-    if (content.includes('class="status"')) {
-      failures.push(`${path} must use zdp-badge instead of local status badge markup.`);
-    }
-  }
-}
-
-async function checkNoLocalTextLink(): Promise<void> {
-  const [globalCss, homePage, layout] = await Promise.all([
-    readText("src/styles/global.css"),
-    readText("src/pages/index.astro"),
-    readText("src/layouts/BaseLayout.astro")
-  ]);
-
-  if (/(^|\n)\s*\.text-link\b/.test(globalCss)) {
-    failures.push("src/styles/global.css must not define local .text-link styling.");
-  }
-
-  if (homePage.includes('class="text-link"')) {
-    failures.push("src/pages/index.astro must use zdp-link instead of local text-link markup.");
-  }
-
-  if (layout.includes("<a href={item.href}")) {
-    failures.push("BaseLayout.astro nav links must use zdp-link instead of local anchor-only markup.");
-  }
-
-  for (const requiredText of [
-    ".zdp-surface-reset .brand:focus-visible",
-    ".site-locale-switcher .zdp-locale-switcher__item:focus-visible",
-    ".site-text-scale-control .zdp-text-scale-control__item:focus-visible",
-    ".site-theme-toggle.zdp-theme-toggle[data-zdp-theme-state=\"dark\"]",
-    ".site-theme-toggle.zdp-theme-toggle:hover:not(:disabled)",
-    ".site-theme-toggle.zdp-theme-toggle:focus-visible",
-    ".zdp-surface-reset .nav-list .zdp-link--muted:not(:focus-visible)",
-    ".zdp-surface-reset .nav-list .zdp-link--muted:not(:focus-visible)::after",
-    ".zdp-surface-reset .nav-list .zdp-link--muted:hover:not(:focus-visible)::after",
-    ".zdp-surface-reset .nav-list .zdp-link--muted[aria-current=\"page\"]:not(:focus-visible)::after",
-    ".zdp-surface-reset .nav-list .zdp-link--muted[aria-current=\"page\"]:not(:focus-visible)"
-  ]) {
-    if (!globalCss.includes(requiredText)) {
-      failures.push(`src/styles/global.css is missing shared link focus bridge ${requiredText}.`);
-    }
-  }
-}
-
-async function checkNoLocalSkipLink(): Promise<void> {
-  const [globalCss, layout] = await Promise.all([
-    readText("src/styles/global.css"),
-    readText("src/layouts/BaseLayout.astro")
-  ]);
-
-  if (/(^|\n)\s*\.skip-link\b/.test(globalCss)) {
-    failures.push("src/styles/global.css must not define local .skip-link styling.");
-  }
-
-  if (layout.includes('class="skip-link"')) {
-    failures.push("src/layouts/BaseLayout.astro must use zdp-skip-link instead of local skip-link markup.");
-  }
-}
-
-async function checkNoViewportScaledTypography(): Promise<void> {
-  const globalCss = await readText("src/styles/global.css");
-
-  if (/font-size:\s*clamp\([^;]*vw/i.test(globalCss) || /font-size:[^;]*\d(?:\.\d+)?vw/i.test(globalCss)) {
-    failures.push("src/styles/global.css must use stepped font sizes instead of viewport-scaled font-size values.");
-  }
-
-  if (/line-height:\s*(?:0\.\d+|1);/.test(globalCss)) {
-    failures.push("src/styles/global.css must avoid cramped heading line-height values that can clip text.");
-  }
-
-  for (const forbiddenText of [
-    ".page-hero h1 {\n  margin: 0;\n  max-width: 13ch",
-    "font-size: 5rem",
-    ".page-hero h1 {\n    font-size: 3.5rem"
-  ]) {
-    if (globalCss.includes(forbiddenText)) {
-      failures.push(`src/styles/global.css must not use oversized generic page title styling: ${forbiddenText}.`);
-    }
-  }
-
-  for (const requiredText of [
-    "font-size: calc(var(--zdp-type-page-title-size) * var(--site-heading-scale));",
-    "line-height: var(--zdp-type-page-title-line-height);",
-    "font-size: calc(var(--zdp-type-page-title-compact-size) * var(--site-heading-scale));"
-  ]) {
-    if (!globalCss.includes(requiredText)) {
-      failures.push(`src/styles/global.css must use moderated design-system page title token: ${requiredText}.`);
     }
   }
 }
 
 async function checkGlossarySheetContract(): Promise<void> {
-  const [
-    layout,
-    surfacePage,
-    homePage,
-    globalCss,
-    glossaryData,
-    glossaryText,
-    glossarySheet,
-    glossaryScript,
-    localGlossaryTermsYaml,
-    localGlossaryLocaleYaml,
-    commonDesignTermsYaml,
-    commonSecurityTermsYaml,
-    commonOperationsTermsYaml,
-    commonDesignLocaleYaml,
-    commonSecurityLocaleYaml,
-    glossaryManifest,
-    glossaryBuild,
-    glossaryGenerate,
-    glossaryCheck
-  ] =
-    await Promise.all([
-      readText("src/layouts/BaseLayout.astro"),
-      readText("src/pages/[surface].astro"),
-      readText("src/pages/index.astro"),
-      readText("src/styles/global.css"),
-      readText("src/content/glossary.ts"),
-      readText("src/components/GlossaryText.astro"),
-      readText("src/components/GlossarySheet.astro"),
-      readText("src/scripts/glossary-sheet.ts"),
-      readText("glossary/terms/public.yaml"),
-      readText("glossary/locales/ko/public.yaml"),
-      readText("../../contracts/zdp-libs-ts/glossary/terms/design/oklch.yaml"),
-      readText("../../contracts/zdp-libs-ts/glossary/terms/security/privacy-access-broker.yaml"),
-      readText("../../contracts/zdp-libs-ts/glossary/terms/operations/rate-limit.yaml"),
-      readText("../../contracts/zdp-libs-ts/glossary/locales/ko/design/oklch.yaml"),
-      readText("../../contracts/zdp-libs-ts/glossary/locales/ko/security/privacy-access-broker.yaml"),
-      readText("src/content/glossary-manifest.json"),
-      readText("scripts/glossary-build.ts"),
-      readText("scripts/generate-glossary.ts"),
-      readText("scripts/check-glossary.ts")
-    ]);
+  const [layout, homePage, surfacePage, globalCss, glossaryModule, glossaryText, glossarySheet, glossaryScript] = await Promise.all([
+    readText("src/layouts/BaseLayout.astro"),
+    readText("src/pages/[locale]/index.astro"),
+    readText("src/pages/[locale]/[surface].astro"),
+    readText("src/styles/global.css"),
+    readText("src/content/glossary.ts"),
+    readText("src/components/GlossaryText.astro"),
+    readText("src/components/GlossarySheet.astro"),
+    readText("src/scripts/glossary-sheet.ts")
+  ]);
 
   for (const requiredText of [
     'import GlossarySheet from "../components/GlossarySheet.astro";',
-    "<GlossarySheet />"
+    "<GlossarySheet locale={locale} />"
   ]) {
     if (!layout.includes(requiredText)) {
       failures.push(`BaseLayout.astro is missing glossary sheet shell ${requiredText}.`);
@@ -942,224 +493,71 @@ async function checkGlossarySheetContract(): Promise<void> {
   for (const [path, content, requiredTexts] of [
     [
       "src/content/glossary.ts",
-      glossaryData,
+      glossaryModule,
       [
-        "export type GlossaryLocale",
-        'import runtimeGlossaryManifest from "./glossary-manifest.json";',
-        "const publicGlossaryManifest",
-        "matchPhrases",
-        "adPolicy",
-        "getGlossaryManifest",
-        "markGlossaryText"
-      ]
-    ],
-        [
-          "src/components/GlossaryText.astro",
-          glossaryText,
-          [
-            'class="glossary-trigger"',
-            "data-glossary-term",
-            "data-term-id",
-            "data-zdp-term-id",
-            'aria-haspopup="dialog"',
-            'aria-controls="glossary-sheet"',
-            'aria-expanded="false"'
+        "export type GlossaryLocale = SupportedLocale;",
+        "locale === \"ko\" ? publicGlossaryManifest : []",
+        'getGlossaryManifest("en")'
       ]
     ],
     [
-      "src/components/GlossarySheet.astro",
-          glossarySheet,
-          [
-            "data-glossary-root",
-            'role="dialog"',
-            'aria-modal="true"',
-            'aria-hidden="true"',
-            'data-zdp-ad-exclude="true"',
-            'data-zdp-term-placement="right-sheet"',
-            'data-zdp-term-surface="sheet"',
-            "data-glossary-close",
-            "data-glossary-summary",
-            "data-glossary-detail",
-            "data-glossary-source",
-            "data-glossary-manifest"
-          ]
-        ],
+      "src/components/GlossaryText.astro",
+      glossaryText,
+      [
+        'locale = "en"',
+        'class="glossary-trigger"',
+        "data-glossary-term",
+        "data-term-id",
+        "data-zdp-term-id",
+        'aria-haspopup="dialog"',
+        'aria-controls="glossary-sheet"',
+        'aria-expanded="false"'
+      ]
+    ],
+      [
+        "src/components/GlossarySheet.astro",
+        glossarySheet,
+        [
+          "locale?: GlossaryLocale",
+          "const glossaryTerms = getGlossaryManifest(locale);",
+          "const hasGlossaryTerms = glossaryTerms.length > 0;",
+          "JSON.stringify(glossaryTerms)",
+          "{hasGlossaryTerms && (",
+          "data-glossary-root",
+          "data-glossary-locale={locale}",
+          "glossaryCopy[locale]",
+        'role="dialog"',
+        'aria-modal="true"',
+        'data-zdp-ad-exclude="true"',
+        'data-zdp-term-placement="right-sheet"',
+        'data-zdp-term-surface="sheet"',
+        "data-glossary-manifest"
+      ]
+    ],
     [
       "src/scripts/glossary-sheet.ts",
       glossaryScript,
-      [
-        "data-glossary-term",
-            "openSheet",
-            "closeSheet",
-            "renderDetailParagraphs",
-            "replaceChildren",
-            "document.createElement(\"p\")",
-            "Escape",
-            "trapFocus",
-            "dataset.zdpTermId",
-            "dataset.zdpTermPlacement",
-            "getCurrentPlacement",
-            "getClientRects().length > 0",
-            "requestAnimationFrame"
-          ]
-        ],
+      ["data-glossary-term", "openSheet", "closeSheet", "renderDetailParagraphs", "trapFocus", "Escape"]
+    ],
     [
       "src/styles/global.css",
       globalCss,
-      [
-        ".glossary-trigger",
-        ".glossary-trigger:focus-visible",
-            ".glossary-sheet__backdrop",
-            ".glossary-sheet",
-            ".glossary-sheet.is-open",
-            "transform: translateX(100%)",
-            "transform: translateY(100%)",
-            "height: min(82dvh, 34rem)"
-      ]
+      [".glossary-trigger", ".glossary-trigger:focus-visible", ".glossary-sheet", ".glossary-sheet.is-open"]
     ],
     [
-      "glossary/terms/public.yaml",
-      localGlossaryTermsYaml,
-      [
-        "terms:",
-        "terms: []"
-      ]
+      "src/pages/[locale]/index.astro",
+      homePage,
+      ['import GlossaryText from "../../components/GlossaryText.astro";', "<GlossaryText text={section.summary} locale={locale} />"]
     ],
     [
-      "glossary/locales/ko/public.yaml",
-      localGlossaryLocaleYaml,
-      [
-        "locale: ko",
-        "terms: []"
-      ]
-    ],
-    [
-      "../../contracts/zdp-libs-ts/glossary/terms/design/oklch.yaml",
-      commonDesignTermsYaml,
-      [
-        "id: design.oklch",
-        "trigger: click",
-        "surface: term-sheet",
-        "desktop_placement: right-sheet",
-        "mobile_placement: bottom-sheet",
-        "hover_card: forbidden",
-        "term_sheet: forbidden"
-      ]
-    ],
-    [
-      "../../contracts/zdp-libs-ts/glossary/terms/security/privacy-access-broker.yaml",
-      commonSecurityTermsYaml,
-      [
-        "id: security.privacy-access-broker",
-        "trigger: click",
-        "surface: term-sheet",
-        "desktop_placement: right-sheet",
-        "mobile_placement: bottom-sheet",
-        "hover_card: forbidden",
-        "term_sheet: forbidden"
-      ]
-    ],
-    [
-      "../../contracts/zdp-libs-ts/glossary/terms/operations/rate-limit.yaml",
-      commonOperationsTermsYaml,
-      [
-        "id: operations.rate-limit",
-        "owner: platform-operations",
-        "term_sheet: forbidden"
-      ]
-    ],
-    [
-      "../../contracts/zdp-libs-ts/glossary/locales/ko/design/oklch.yaml",
-      commonDesignLocaleYaml,
-      [
-        "id: design.oklch",
-        "translation_status: reviewed",
-        "aliases:",
-        "match_phrases:"
-      ]
-    ],
-    [
-      "../../contracts/zdp-libs-ts/glossary/locales/ko/security/privacy-access-broker.yaml",
-      commonSecurityLocaleYaml,
-      [
-        "id: security.privacy-access-broker",
-        "translation_status: reviewed",
-        "aliases:",
-        "match_phrases:"
-      ]
-    ],
-    [
-      "src/content/glossary-manifest.json",
-      glossaryManifest,
-      [
-        '"id": "design.oklch"',
-            '"id": "security.privacy-access-broker"',
-            '"id": "security.owasp-asvs"',
-            '"id": "operations.rate-limit"',
-            '"slot": "glossary-detail-design-oklch"',
-            '"matchPhrases"'
-          ]
-        ],
-    [
-      "scripts/glossary-build.ts",
-      glossaryBuild,
-      [
-        "buildRuntimeGlossaryManifest",
-        "buildGlossaryManifest",
-        "COMMON_GLOSSARY_TERMS_ROOT",
-        "COMMON_GLOSSARY_LOCALES_ROOT",
-        "../../contracts/zdp-libs-ts/glossary/terms",
-        "../../contracts/zdp-libs-ts/glossary/locales",
-        "WEB_PUBLIC_GLOSSARY_SOURCE_PATHS",
-            "GLOSSARY_RUNTIME_MANIFEST_PATH",
-            "src/content/glossary-manifest.json",
-            "toRuntimeGlossaryEntry",
-            "hover-card advertising",
-            "Term Sheet advertising",
-            "glossary-detail-${term.id.replaceAll"
-          ]
-        ],
-    [
-      "scripts/generate-glossary.ts",
-      glossaryGenerate,
-      [
-        "buildRuntimeGlossaryManifest",
-        "serializeRuntimeManifest",
-        "writeFile",
-        "Glossary manifest generated"
-      ]
-    ],
-    [
-      "scripts/check-glossary.ts",
-      glossaryCheck,
-      [
-        "buildRuntimeGlossaryManifest",
-        "GLOSSARY_RUNTIME_MANIFEST_PATH",
-        "is stale",
-        "Run bun run glossary:generate",
-        "Glossary check passed"
-      ]
-    ],
-    [
-      "src/pages/[surface].astro",
+      "src/pages/[locale]/[surface].astro",
       surfacePage,
       [
-        'import GlossaryText from "../components/GlossaryText.astro";',
-        "heroSummary &&",
-        "<GlossaryText text={heroSummary} />",
-        "<GlossaryText text={section.body} />",
-        "<GlossaryText text={detail.body} />",
-        "<GlossaryText text={check.note} />"
-      ]
-    ],
-    [
-      "src/pages/index.astro",
-      homePage,
-      [
-        'import GlossaryText from "../components/GlossaryText.astro";',
-        "const homeSections = publicPages.filter",
-        "section.summary &&",
-        "<GlossaryText text={item.body} />"
+        'import GlossaryText from "../../components/GlossaryText.astro";',
+        "<GlossaryText text={heroSummary} locale={locale} />",
+        "<GlossaryText text={section.body} locale={locale} />",
+        "<GlossaryText text={detail.body} locale={locale} />",
+        "<GlossaryText text={check.note} locale={locale} />"
       ]
     ]
   ] as const) {
@@ -1171,118 +569,214 @@ async function checkGlossarySheetContract(): Promise<void> {
   }
 
   for (const forbiddenText of [
+    'getGlossaryManifest("ko")',
+    'data-glossary-locale="ko"',
+    "<GlossaryText text={section.summary} />",
+    "<GlossaryText text={item.body} />",
+    "<GlossaryText text={heroSummary} />",
+    "<GlossaryText text={copy.showcaseSummary} />",
+    "<GlossaryText text={section.body} />",
+    "<GlossaryText text={detail.body} />",
+    "<GlossaryText text={check.note} />",
+    "JSON.stringify(getGlossaryManifest(locale))",
     "mouseenter",
     "mouseover",
     "data-glossary-hover",
     "data-glossary-ads",
     "data-glossary-ad-slot",
-    "data-glossary-ad-note",
     ".glossary-sheet__ad-slot",
     'root.getAttribute("data-glossary-ads")',
     ":hover .glossary-sheet",
-    "role=\"tooltip\""
+    'role="tooltip"'
   ]) {
     if (
+      glossaryModule.includes(forbiddenText) ||
+      glossaryText.includes(forbiddenText) ||
       glossaryScript.includes(forbiddenText) ||
       glossarySheet.includes(forbiddenText) ||
-      globalCss.includes(forbiddenText)
+      globalCss.includes(forbiddenText) ||
+      homePage.includes(forbiddenText) ||
+      surfacePage.includes(forbiddenText) ||
+      layout.includes(forbiddenText)
     ) {
-      failures.push(`Glossary contract must stay click-sheet based, not hover-tooltip based: ${forbiddenText}.`);
+      failures.push(`Glossary contract contains forbidden stale or unsafe pattern: ${forbiddenText}.`);
     }
   }
 
-  if (
-    /\.glossary-trigger(?:\s|\{)[\s\S]{0,260}color:\s*var\(--color-ink\);/.test(globalCss) ||
-    /\.glossary-trigger:hover(?:\s|\{)[\s\S]{0,160}color:\s*var\(--color-accent-strong\);/.test(globalCss)
-  ) {
-    failures.push("Glossary trigger text must inherit the surrounding sentence color in light and dark themes.");
+  const glossaryTermsByLocale = Object.fromEntries(
+    siteLocales.map((locale) => [locale, getGlossaryManifest(locale)])
+  ) as Record<SupportedLocale, readonly GlossaryManifestEntry[]>;
+
+  if (glossaryTermsByLocale.ko.length === 0) {
+    failures.push("Korean glossary manifest must keep reviewed glossary terms.");
   }
 
-  if (
-    !globalCss.includes(
-      ".glossary-trigger:hover {\n  background: var(--color-accent-wash);\n  color: inherit;"
-    )
-  ) {
+  checkGlossaryLocaleIsolation(glossaryTermsByLocale, glossarySheet);
+
+  if (!globalCss.includes(".glossary-trigger:hover {\n  background: var(--color-accent-wash);\n  color: inherit;")) {
     failures.push("Glossary trigger hover must keep color: inherit.");
   }
+}
 
-  if (!/\.glossary-trigger\s*\{[\s\S]{0,180}padding:\s*0 0\.2rem;/.test(globalCss)) {
-    failures.push("Glossary trigger must reserve readable inline padding.");
+function checkGlossaryLocaleIsolation(
+  glossaryTermsByLocale: Record<SupportedLocale, readonly GlossaryManifestEntry[]>,
+  glossarySheet: string
+): void {
+  for (const locale of siteLocales) {
+    const terms = glossaryTermsByLocale[locale];
+    const texts = collectGlossaryCandidateTexts(locale);
+    const matchedTerms = texts.flatMap((text) =>
+      markGlossaryText(text, terms).filter((token) => token.type === "term")
+    );
+
+    if (terms.length === 0 && matchedTerms.length > 0) {
+      failures.push(`${locale} public content must not render glossary triggers before ${locale} glossary copy is reviewed.`);
+    }
+
+    const otherLocaleTerms = siteLocales
+      .filter((otherLocale) => otherLocale !== locale)
+      .flatMap((otherLocale) => glossaryTermsByLocale[otherLocale]);
+
+    if (terms.length === 0 && otherLocaleTerms.length > 0) {
+      const crossLocaleCanaryMatches = texts.flatMap((text) =>
+        markGlossaryText(text, otherLocaleTerms).filter((token) => token.type === "term")
+      );
+
+      if (crossLocaleCanaryMatches.length === 0) {
+        failures.push(`${locale} glossary isolation check must keep a cross-locale canary that would fail if another locale's terms were reused.`);
+      }
+    }
   }
 
-  for (const forbiddenText of [
-    "publicGlossaryManifestTerms",
-    "Privacy Access Broker",
-    "OWASP ASVS",
-    "사람이 느끼는 밝기와 색 차이",
-    "웹 애플리케이션 보안을 점검"
-  ]) {
-    if (glossaryData.includes(forbiddenText)) {
-      failures.push(`src/content/glossary.ts must not duplicate YAML glossary source text: ${forbiddenText}.`);
+  for (const locale of siteLocales) {
+    for (const otherLocale of siteLocales) {
+      if (locale === otherLocale) {
+        continue;
+      }
+
+      const terms = glossaryTermsByLocale[locale];
+      const otherTermsById = new Map(glossaryTermsByLocale[otherLocale].map((term) => [term.id, term]));
+
+      for (const term of terms) {
+        const otherTerm = otherTermsById.get(term.id);
+        if (otherTerm === undefined) {
+          continue;
+        }
+
+        for (const field of ["label", "summary", "detail"] as const) {
+          if (normalizeComparableGlossaryText(term[field]) === normalizeComparableGlossaryText(otherTerm[field])) {
+            failures.push(
+              `${locale} glossary term ${term.id} must not reuse ${otherLocale} ${field}; localized glossary cards need locale-owned short and long copy.`
+            );
+          }
+        }
+      }
+    }
+  }
+
+  for (const hardcodedLocale of siteLocales) {
+    if (glossarySheet.includes(`getGlossaryManifest("${hardcodedLocale}")`)) {
+      failures.push(`GlossarySheet.astro must not hard-code ${hardcodedLocale}; sheet content must come from the current route locale.`);
     }
   }
 }
 
-function checkPublicPageContentContract(): void {
-  const pagesThatMustHaveTrustCards = [
-    "design"
-  ] as const;
+function collectGlossaryCandidateTexts(locale: SupportedLocale): readonly string[] {
+  return [
+    ...collectPublicPageTexts(publicPagesByLocale[locale]),
+    ...glossaryCanaryTextsByLocale[locale]
+  ];
+}
 
-  for (const pageId of pagesThatMustHaveTrustCards) {
-    const page = publicPages.find((entry) => entry.id === pageId);
-    if (page === undefined) {
-      failures.push(`publicPages is missing ${pageId}.`);
+function collectPublicPageTexts(pages: readonly PublicPage[]): readonly string[] {
+  return pages.flatMap((page) => [
+    page.label,
+    page.heading,
+    page.summary ?? "",
+    ...page.items.flatMap((item) => [item.title, item.body, item.status]),
+    ...page.details.flatMap((detail) => [detail.title, detail.body]),
+    ...page.checks.flatMap((check) => [check.item, check.status, check.note])
+  ]).filter((text) => text.trim().length > 0);
+}
+
+function normalizeComparableGlossaryText(value: string): string {
+  return value.replace(/\s+/g, " ").trim().toLocaleLowerCase();
+}
+
+function checkPublicPageContentContract(): void {
+  for (const locale of siteLocales) {
+    const pages = publicPagesByLocale[locale];
+
+    if (pages.length !== publicPageIds.length) {
+      failures.push(`publicPagesByLocale.${locale} must define every public page id.`);
+    }
+
+    const designPage = pages.find((entry) => entry.id === "design");
+    if (designPage === undefined) {
+      failures.push(`publicPagesByLocale.${locale} is missing design.`);
       continue;
     }
 
-    if (page.items.length === 0) {
-      failures.push(`publicPages.${pageId} must expose at least one public trust card.`);
+    if (designPage.items.length === 0) {
+      failures.push(`publicPagesByLocale.${locale}.design must expose at least one public trust card.`);
     }
 
-    if (page.checks.length === 0) {
-      failures.push(`publicPages.${pageId} must expose at least one public trust evidence check.`);
+    if (designPage.checks.length === 0) {
+      failures.push(`publicPagesByLocale.${locale}.design must expose at least one public trust evidence check.`);
     }
   }
 }
 
 function checkPublicPageRouteContract(): void {
-  const seenIds = new Set<string>();
-  const seenPaths = new Set<string>();
+  for (const locale of siteLocales) {
+    const seenIds = new Set<string>();
+    const seenPaths = new Set<string>();
 
-  for (const page of publicPages) {
-    if (seenIds.has(page.id)) {
-      failures.push(`publicPages has duplicate id ${page.id}.`);
-    }
+    for (const page of publicPagesByLocale[locale]) {
+      if (seenIds.has(page.id)) {
+        failures.push(`publicPagesByLocale.${locale} has duplicate id ${page.id}.`);
+      }
 
-    if (seenPaths.has(page.path)) {
-      failures.push(`publicPages has duplicate path ${page.path}.`);
-    }
+      if (seenPaths.has(page.path)) {
+        failures.push(`publicPagesByLocale.${locale} has duplicate path ${page.path}.`);
+      }
 
-    seenIds.add(page.id);
-    seenPaths.add(page.path);
+      seenIds.add(page.id);
+      seenPaths.add(page.path);
 
-    if (page.path !== `/${page.id}`) {
-      failures.push(`publicPages.${page.id} path must be /${page.id}. Found ${page.path}.`);
-    }
+      if (!publicPageIds.includes(page.id as (typeof publicPageIds)[number])) {
+        failures.push(`publicPagesByLocale.${locale} includes unknown id ${page.id}.`);
+      }
 
-    if (page.label.trim().length === 0 || page.heading.trim().length === 0) {
-      failures.push(`publicPages.${page.id} must expose a non-empty label and heading.`);
-    }
+      if (page.basePath !== `/${page.id}`) {
+        failures.push(`publicPagesByLocale.${locale}.${page.id} basePath must be /${page.id}. Found ${page.basePath}.`);
+      }
 
-    if (page.summary !== undefined && page.summary.trim().length === 0) {
-      failures.push(`publicPages.${page.id} summary must be omitted instead of left empty.`);
-    }
+      if (page.path !== `/${locale}/${page.id}`) {
+        failures.push(`publicPagesByLocale.${locale}.${page.id} path must be /${locale}/${page.id}. Found ${page.path}.`);
+      }
 
-    for (const forbiddenSummary of [
-      "정리할 자리입니다",
-      "모아둘 자리입니다",
-      "준비 중입니다"
-    ]) {
-      if (page.summary?.includes(forbiddenSummary)) {
-        failures.push(`publicPages.${page.id} summary must not expose scaffold copy: ${forbiddenSummary}.`);
+      if (page.label.trim().length === 0 || page.heading.trim().length === 0) {
+        failures.push(`publicPagesByLocale.${locale}.${page.id} must expose a non-empty label and heading.`);
+      }
+
+      if (page.summary !== undefined && page.summary.trim().length === 0) {
+        failures.push(`publicPagesByLocale.${locale}.${page.id} summary must be omitted instead of left empty.`);
+      }
+
+      for (const forbiddenSummary of ["정리할 자리입니다", "모아둘 자리입니다", "준비 중입니다"]) {
+        if (page.summary?.includes(forbiddenSummary)) {
+          failures.push(`publicPagesByLocale.${locale}.${page.id} summary must not expose scaffold copy: ${forbiddenSummary}.`);
+        }
       }
     }
   }
+
+  expectExactStringList(
+    publicEntryPaths,
+    ["/", ...publicPageIds.map((id) => `/${id}`)],
+    "publicEntryPaths must list non-locale negotiation entries."
+  );
 }
 
 function parseWebpubCandidateContract(content: string): WebpubCandidateContract {
@@ -1290,6 +784,11 @@ function parseWebpubCandidateContract(content: string): WebpubCandidateContract 
     siteUrl: readTomlString(content, "site_url"),
     canonicalDomain: readTomlString(content, "canonical_domain"),
     domainStatus: readTomlString(content, "domain_status"),
+    language: readTomlString(content, "language"),
+    defaultLocale: readTomlString(content, "default_locale"),
+    fallbackLocale: readTomlString(content, "fallback_locale"),
+    locales: readTomlStringArray(content, "locales"),
+    localePolicy: readTomlString(content, "locale_policy"),
     candidatePublicDomains: readTomlStringArray(content, "candidate_public_domains"),
     pages: readTomlPageUrls(content),
     robotsEnabled: readRobotsBoolean(content, "enabled"),
