@@ -1,0 +1,22 @@
+locale: en
+id: design.light-mode
+label: Light Mode
+slug: light-mode
+short: "Light mode uses brighter backgrounds and darker text for daytime readability. It is still required as a first-class mode even when dark mode is supported."
+long: |-
+
+  Light mode stays the default choice on many platforms because it provides highest contrast for many users. It helps in bright environments and is easy to inspect during design QA. The important part is not brightness, but predictable contrast around interactive states. A broken light mode can make links, focus, and disabled controls feel confusing.
+
+  In production, teams usually keep light and dark theme tokens in the same scale. That allows labels and surfaces to keep meaning while changing palette values. A button should stay a button in both modes, not just appear similar by accident. This keeps testing, logs, and screenshot diffing much easier.
+example: null
+translation_status: reviewed
+aliases:
+  - Light Mode
+  - light mode
+match_phrases:
+  - phrase: Light Mode
+    auto_match: true
+    priority: 95
+  - phrase: light mode
+    auto_match: true
+    priority: 85

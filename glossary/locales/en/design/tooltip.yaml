@@ -1,0 +1,23 @@
+locale: en
+id: design.tooltip
+label: Tooltip
+slug: tooltip
+short: "A tooltip is a small helper box that appears on focus or hover to explain an element. It provides extra context without forcing users to leave the current flow."
+long: |-
+
+  Tooltips are best used for short clarifications that are not worth a full label in normal layout. They should be concise and appear where users already are. If the content is critical, it should not be hidden in a tooltip. Place essential meaning directly near controls instead.
+
+  For accessibility, tooltips should not rely only on hover interaction. Keyboard users need the same info path through focus or explicit labels. Delay and positioning must be predictable to avoid jumpy behavior. Keep content plain and short so it can be read quickly.
+example: null
+translation_status: reviewed
+aliases:
+  - Tooltip
+  - tooltip
+  - hint
+match_phrases:
+  - phrase: Tooltip
+    auto_match: true
+    priority: 95
+  - phrase: tooltip
+    auto_match: true
+    priority: 90

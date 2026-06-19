@@ -1,0 +1,22 @@
+locale: en
+id: platform.astro
+label: Astro
+slug: astro
+short: "Astro is a static-focused web framework that ships JavaScript only where needed. It is designed to keep pages lean and fast by default."
+long: |-
+
+  Astro builds pages mostly as static HTML and then hydrates only selected interactive islands. This means most routes can stay lightweight while still using modern component frameworks. The approach lowers initial script size, especially on content-heavy pages. It can also improve crawl and rendering performance on older devices.
+
+  For teams moving from SPAs, Astro requires a mindset change: interaction is opt-in, not automatic. Components using React, Svelte, or Vue are still possible, but each one is intentionally scoped. That model improves predictability and often simplifies audits. It is a practical fit for public marketing and documentation surfaces.
+example: null
+translation_status: reviewed
+aliases:
+  - Astro
+  - Astro framework
+match_phrases:
+  - phrase: Astro
+    auto_match: true
+    priority: 100
+  - phrase: Astro framework
+    auto_match: true
+    priority: 85

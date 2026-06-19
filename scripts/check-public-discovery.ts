@@ -496,7 +496,9 @@ async function checkGlossarySheetContract(): Promise<void> {
       glossaryModule,
       [
         "export type GlossaryLocale = SupportedLocale;",
-        "locale === \"ko\" ? publicGlossaryManifest : []",
+        "publicGlossaryManifestsByLocale",
+        "runtimeGlossaryManifestEn",
+        "runtimeGlossaryManifestKo",
         'getGlossaryManifest("en")'
       ]
     ],
@@ -649,12 +651,31 @@ function checkGlossaryLocaleIsolation(
   }
 
   for (const locale of siteLocales) {
+    const terms = glossaryTermsByLocale[locale];
+
+    if (locale === "en") {
+      for (const term of terms) {
+        for (const field of ["summary", "detail"] as const) {
+          if (containsHangul(term[field])) {
+            failures.push(
+              `en glossary term ${term.id} must not include Korean text in ${field}; English glossary cards need locale-owned English copy.`
+            );
+          }
+        }
+
+        if (containsHangul(term.adPolicy.note)) {
+          failures.push(
+            `en glossary term ${term.id} must not include Korean text in adPolicy.note; English glossary payloads must stay locale-owned.`
+          );
+        }
+      }
+    }
+
     for (const otherLocale of siteLocales) {
       if (locale === otherLocale) {
         continue;
       }
 
-      const terms = glossaryTermsByLocale[locale];
       const otherTermsById = new Map(glossaryTermsByLocale[otherLocale].map((term) => [term.id, term]));
 
       for (const term of terms) {
@@ -663,7 +684,7 @@ function checkGlossaryLocaleIsolation(
           continue;
         }
 
-        for (const field of ["label", "summary", "detail"] as const) {
+        for (const field of ["summary", "detail"] as const) {
           if (normalizeComparableGlossaryText(term[field]) === normalizeComparableGlossaryText(otherTerm[field])) {
             failures.push(
               `${locale} glossary term ${term.id} must not reuse ${otherLocale} ${field}; localized glossary cards need locale-owned short and long copy.`
@@ -701,6 +722,10 @@ function collectPublicPageTexts(pages: readonly PublicPage[]): readonly string[]
 
 function normalizeComparableGlossaryText(value: string): string {
   return value.replace(/\s+/g, " ").trim().toLocaleLowerCase();
+}
+
+function containsHangul(value: string): boolean {
+  return /[가-힣]/u.test(value);
 }
 
 function checkPublicPageContentContract(): void {

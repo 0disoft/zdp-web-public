@@ -1,0 +1,22 @@
+locale: en
+id: platform.flutter
+label: Flutter
+slug: flutter
+short: "Flutter is an open-source UI toolkit for building cross-platform apps from one codebase. It compiles to native-like outputs for web, mobile, and desktop flows."
+long: |-
+
+  Flutter apps are written in Dart and use a widget-based model for most UI work. Because widgets are reusable, teams can keep a common visual system across target platforms. The framework handles drawing, layout, and interaction layers consistently. This reduces divergence between platform-specific code branches.
+
+  In web projects, Flutter is still different from typical HTML-based rendering. Bundle size and startup behavior need special care for content-first pages. For public surfaces, many teams still prefer lightweight web stacks for SEO and low-end devices. Flutter shines when app-like interaction and rich composition are priorities.
+example: null
+translation_status: reviewed
+aliases:
+  - Flutter
+  - Dart
+match_phrases:
+  - phrase: Flutter
+    auto_match: true
+    priority: 100
+  - phrase: Dart
+    auto_match: true
+    priority: 85

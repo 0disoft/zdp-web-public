@@ -1,0 +1,23 @@
+locale: en
+id: platform.font-stack
+label: Font Stack
+slug: font-stack
+short: "A font stack is a prioritized list of fallback fonts for a text style. It keeps typography readable when the preferred font is unavailable."
+long: |-
+
+  When a user does not have the first font installed, the browser moves to the next one in the list. A good stack gives predictable width, weight, and language coverage across devices. It also prevents layout jumps from missing glyphs or odd metrics. Designers use this to keep stable rhythm in long reading areas.
+
+  Include a generic fallback at the end so rendering never breaks completely. For mixed-language content, add coverage entries that support target scripts clearly. Test fallback behavior across OS families, not just one desktop. A stable stack is an invisible quality marker users only notice when it is missing.
+example: null
+translation_status: reviewed
+aliases:
+  - Font Stack
+  - font stack
+  - font fallback
+match_phrases:
+  - phrase: Font Stack
+    auto_match: true
+    priority: 100
+  - phrase: font stack
+    auto_match: true
+    priority: 90

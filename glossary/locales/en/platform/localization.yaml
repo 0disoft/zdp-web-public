@@ -1,0 +1,23 @@
+locale: en
+id: platform.localization
+label: Localization
+slug: localization
+short: "Localization is adapting a product for a target language and region beyond literal translation. It includes copy, formatting, and cultural fit for each audience."
+long: |-
+
+  Translation alone is not enough for localization. A proper localized surface changes date formats, number separators, and text order logic as needed. It may also adapt examples, legal wording, and tone to match regional expectations. This avoids awkward phrasing and reduces user confusion.
+
+  Good localization connects with product discovery and search workflows too. Locale-aware URLs, metadata, and fallback rules matter for visibility. Teams should validate length changes because some languages expand much more than others. Monitoring missing keys per locale catches silent regressions early.
+example: null
+translation_status: reviewed
+aliases:
+  - Localization
+  - i18n
+  - internationalization
+match_phrases:
+  - phrase: Localization
+    auto_match: true
+    priority: 100
+  - phrase: localize
+    auto_match: true
+    priority: 85

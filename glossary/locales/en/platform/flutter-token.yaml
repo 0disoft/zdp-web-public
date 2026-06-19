@@ -1,0 +1,28 @@
+locale: en
+id: platform.flutter-token
+label: Flutter Tokens
+slug: flutter-tokens
+short: "Flutter tokens are design values stored as Dart constants that define how an app should look. They keep style decisions shared across screens and theme modes."
+long: |-
+
+  Flutter teams often model color, spacing, type, and radius as token values.
+  Each token becomes a named constant used across components and screens.
+  Teams can move style values quickly during redesign without touching every widget.
+  This keeps intent clear and reduces visual side effects when refactoring.
+
+  When tokens are organized into semantic groups, developers can swap light and dark values cleanly.
+  Raw token maps stay implementation-friendly, while semantic aliases stay design-friendly.
+  This split helps teams align code with visual direction quickly and safely.
+  It also shortens the time needed to apply a new brand profile.
+example: null
+translation_status: reviewed
+aliases:
+  - Flutter Tokens
+  - Flutter token
+match_phrases:
+  - phrase: Flutter Tokens
+    auto_match: true
+    priority: 100
+  - phrase: Flutter token
+    auto_match: true
+    priority: 85

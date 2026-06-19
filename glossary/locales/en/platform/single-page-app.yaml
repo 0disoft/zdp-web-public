@@ -1,0 +1,26 @@
+locale: en
+id: platform.single-page-app
+label: Single Page App
+slug: single-page-app
+short: "A single-page app keeps navigation inside one HTML shell while loading content dynamically. It can feel fast, but complexity rises as the app grows."
+long: |-
+
+  In a single-page app, route changes happen client-side instead of full document reloads. This can reduce page transition delay for action-heavy interfaces. It also increases the need for robust state and cache management on the client. Without careful handling, first paint and SEO can degrade.
+
+  Modern SPAs need careful code splitting, prefetching, and progress states to avoid perceived hangs. Public surfaces often mix static pages with small interactive islands for this reason. Accessibility and deep-link quality must be re-tested for dynamic updates. Not every surface benefits equally from an SPA architecture.
+example: null
+translation_status: reviewed
+aliases:
+  - Single Page App
+  - SPA
+  - single-page app
+match_phrases:
+  - phrase: Single Page App
+    auto_match: true
+    priority: 100
+  - phrase: SPA
+    auto_match: true
+    priority: 85
+  - phrase: single-page app
+    auto_match: true
+    priority: 90

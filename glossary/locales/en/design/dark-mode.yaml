@@ -1,0 +1,22 @@
+locale: en
+id: design.dark-mode
+label: Dark Mode
+slug: dark-mode
+short: "Dark mode is a low-luminance visual mode that lowers screen brightness and glare. It is often used in low-light situations or for long reading sessions."
+long: |-
+
+  Dark mode lowers contrast in light intensity while preserving enough difference between text and background. This can improve comfort for many users during evening or dim environments. It does not automatically improve accessibility; contrast must be audited like any other theme. If the UI uses colors copied from a light palette, dark mode will still look weak or hard to read.
+
+  A usable dark mode needs explicit token tuning for shadows, borders, and semantic states. Error, warning, and disabled states must remain visually clear even when colors are dimmed. Teams often set a dedicated dark palette instead of inverting every token. That is the key difference between a theme and a simple color flip.
+example: null
+translation_status: reviewed
+aliases:
+  - Dark Mode
+  - dark mode
+match_phrases:
+  - phrase: Dark Mode
+    auto_match: true
+    priority: 100
+  - phrase: dark mode
+    auto_match: true
+    priority: 90

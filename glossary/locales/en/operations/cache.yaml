@@ -1,0 +1,23 @@
+locale: en
+id: operations.cache
+label: Cache
+slug: cache
+short: "A cache is a fast temporary store used to serve repeated data more quickly. It helps reduce backend load and improves perceived performance for users."
+long: |-
+
+  Cache sits between the app and a slower source of truth such as a database or external API. When data is reused, the system reads it from the cache first. This can cut response time and smooth spikes during peak traffic. The tradeoff is that cached data can become stale.
+
+  For web surfaces, cache keys must be consistent and invalidation must be explicit. Without clear invalidation, users may see outdated content and lose trust. Teams combine time-based expiry, version-based purge, and event-driven resets. Monitoring hit rate and stale reads is part of cache health.
+example: null
+translation_status: reviewed
+aliases:
+  - Cache
+  - caching
+  - cached data
+match_phrases:
+  - phrase: Cache
+    auto_match: true
+    priority: 100
+  - phrase: cached data
+    auto_match: true
+    priority: 90

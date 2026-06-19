@@ -1,0 +1,23 @@
+locale: en
+id: design.accessibility
+label: Accessibility
+slug: accessibility
+short: "Accessibility means building digital experiences so people can use them with different abilities. It covers interface behavior, structure, and content quality so no one gets blocked by a default assumption."
+long: |-
+
+  Accessibility is the practice of designing software for real people, not for one ideal setup. It asks how easy it is to read, navigate, and complete tasks with assistive tech. A good accessible page supports screen readers, keyboard navigation, and clear focus behavior. If a core action fails when the pointer is missing, the design is not yet complete.
+
+  In design, accessibility is a quality baseline, not an add-on switch. Text contrast, label clarity, and predictable focus order are still the top checks. Automated checks catch obvious gaps, but human review is needed for real workflows. Teams usually run accessibility checks as part of every release, not as a late cleanup step.
+example: null
+translation_status: reviewed
+aliases:
+  - Accessibility
+  - access
+  - accessible
+match_phrases:
+  - phrase: Accessibility
+    auto_match: true
+    priority: 100
+  - phrase: accessible
+    auto_match: true
+    priority: 90

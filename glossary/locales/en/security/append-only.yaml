@@ -1,0 +1,23 @@
+locale: en
+id: security.append-only
+label: Append-Only
+slug: append-only
+short: "Append-only means new records are only added and existing records are never edited in place. This is useful for audit and history-sensitive systems."
+long: |-
+
+  In append-only design, updates are represented as new rows that describe state changes. Old rows remain for inspection while current state is derived from latest values. That approach supports traceability and post-incident analysis. It also makes accidental tampering much harder.
+
+  The downside is storage growth and more expensive state reads, so teams usually add rollup tables. You need efficient indexing to query latest status quickly. This pattern is standard for logs, financial events, and compliance evidence. The key tradeoff is speed versus perfect mutation simplicity.
+example: null
+translation_status: reviewed
+aliases:
+  - Append-Only
+  - append only
+  - immutable logs
+match_phrases:
+  - phrase: Append-Only
+    auto_match: true
+    priority: 100
+  - phrase: append only
+    auto_match: true
+    priority: 90

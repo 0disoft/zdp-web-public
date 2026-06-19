@@ -1,0 +1,22 @@
+locale: en
+id: design.oklch
+label: OKLCH
+slug: oklch
+short: "OKLCH is a color notation that splits color into lightness, chroma, and hue. It is used to create palettes that stay visually even across interfaces."
+long: |-
+
+  Traditional hex color editing is easy, but it does not model human perception directly. OKLCH separates lightness from chroma and hue, so designers can adjust one trait at a time. That makes it easier to keep contrast stable when moving between themes. It is a practical fit for modern design token workflows.
+
+  In token systems, using OKLCH helps when generating many shades from one brand hue. A small move in lightness should produce a predictable jump in perceived brightness. Chroma and hue adjustments become clearer when designers review the full scale. This often reduces failed contrast checks in production.
+example: null
+translation_status: reviewed
+aliases:
+  - OKLCH
+  - oklch
+match_phrases:
+  - phrase: OKLCH
+    auto_match: true
+    priority: 100
+  - phrase: oklch
+    auto_match: true
+    priority: 90

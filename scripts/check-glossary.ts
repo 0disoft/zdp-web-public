@@ -1,33 +1,37 @@
 import { readFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import {
-  buildRuntimeGlossaryManifest,
-  GLOSSARY_RUNTIME_MANIFEST_PATH,
+  buildRuntimeGlossaryManifests,
+  GLOSSARY_RUNTIME_MANIFEST_PATH_BY_LOCALE,
   serializeRuntimeManifest
 } from "./glossary-build";
 
 const root = resolve(".");
 const failures: string[] = [];
-const result = await buildRuntimeGlossaryManifest(root);
+const results = await buildRuntimeGlossaryManifests(root);
 
-for (const diagnostic of result.diagnostics) {
-  failures.push(diagnostic);
-}
+for (const result of results) {
+  for (const diagnostic of result.diagnostics) {
+    failures.push(`[${result.locale}] ${diagnostic}`);
+  }
 
-let currentRuntimeManifest = "";
-try {
-  currentRuntimeManifest = await readFile(join(root, GLOSSARY_RUNTIME_MANIFEST_PATH), "utf8");
-} catch (error) {
-  failures.push(
-    `${GLOSSARY_RUNTIME_MANIFEST_PATH} is missing. Run bun run glossary:generate before checking.`
-  );
-}
+  const manifestPath = GLOSSARY_RUNTIME_MANIFEST_PATH_BY_LOCALE[result.locale];
+  let currentRuntimeManifest = "";
+  try {
+    currentRuntimeManifest = await readFile(join(root, manifestPath), "utf8");
+  } catch (error) {
+    failures.push(
+      `${manifestPath} is missing. Run bun run glossary:generate before checking.`
+    );
+    continue;
+  }
 
-const expectedRuntimeManifest = serializeRuntimeManifest(result.runtimeManifest);
-if (currentRuntimeManifest !== "" && currentRuntimeManifest !== expectedRuntimeManifest) {
-  failures.push(
-    `${GLOSSARY_RUNTIME_MANIFEST_PATH} is stale. Run bun run glossary:generate after editing common or local glossary YAML.`
-  );
+  const expectedRuntimeManifest = serializeRuntimeManifest(result.runtimeManifest);
+  if (currentRuntimeManifest !== "" && currentRuntimeManifest !== expectedRuntimeManifest) {
+    failures.push(
+      `${manifestPath} is stale. Run bun run glossary:generate after editing common or local glossary YAML.`
+    );
+  }
 }
 
 if (failures.length > 0) {
@@ -39,5 +43,7 @@ if (failures.length > 0) {
 }
 
 console.log(
-  `Glossary check passed: ${result.runtimeManifest.length} terms from ${result.sourceFiles.length} source file(s).`
+  `Glossary check passed: ${results
+    .map((result) => `${result.locale}:${result.runtimeManifest.length}`)
+    .join(", ")}`
 );

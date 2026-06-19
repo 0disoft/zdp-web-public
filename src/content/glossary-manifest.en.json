@@ -1,0 +1,837 @@
+[
+  {
+    "id": "design.accessibility",
+    "label": "Accessibility",
+    "summary": "Accessibility means building digital experiences so people can use them with different abilities. It covers interface behavior, structure, and content quality so no one gets blocked by a default assumption.",
+    "detail": "\nAccessibility is the practice of designing software for real people, not for one ideal setup. It asks how easy it is to read, navigate, and complete tasks with assistive tech. A good accessible page supports screen readers, keyboard navigation, and clear focus behavior. If a core action fails when the pointer is missing, the design is not yet complete.\n\nIn design, accessibility is a quality baseline, not an add-on switch. Text contrast, label clarity, and predictable focus order are still the top checks. Automated checks catch obvious gaps, but human review is needed for real workflows. Teams usually run accessibility checks as part of every release, not as a late cleanup step.",
+    "category": "design",
+    "aliases": [
+      "Accessibility",
+      "access",
+      "accessible"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "Accessibility",
+        "autoMatch": true,
+        "priority": 100
+      },
+      {
+        "phrase": "accessible",
+        "autoMatch": true,
+        "priority": 90
+      }
+    ],
+    "sourcePath": "/design#design-tokens",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-design-accessibility",
+      "note": "Reserved for future experiments on a dedicated glossary detail page."
+    }
+  },
+  {
+    "id": "security.append-only",
+    "label": "Append-Only",
+    "summary": "Append-only means new records are only added and existing records are never edited in place. This is useful for audit and history-sensitive systems.",
+    "detail": "\nIn append-only design, updates are represented as new rows that describe state changes. Old rows remain for inspection while current state is derived from latest values. That approach supports traceability and post-incident analysis. It also makes accidental tampering much harder.\n\nThe downside is storage growth and more expensive state reads, so teams usually add rollup tables. You need efficient indexing to query latest status quickly. This pattern is standard for logs, financial events, and compliance evidence. The key tradeoff is speed versus perfect mutation simplicity.",
+    "category": "security",
+    "aliases": [
+      "Append-Only",
+      "append only",
+      "immutable logs"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "Append-Only",
+        "autoMatch": true,
+        "priority": 100
+      },
+      {
+        "phrase": "append only",
+        "autoMatch": true,
+        "priority": 90
+      }
+    ],
+    "sourcePath": "/security#design-checks",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-security-append-only",
+      "note": "Reserved for future experiments on a dedicated glossary detail page."
+    }
+  },
+  {
+    "id": "platform.astro",
+    "label": "Astro",
+    "summary": "Astro is a static-focused web framework that ships JavaScript only where needed. It is designed to keep pages lean and fast by default.",
+    "detail": "\nAstro builds pages mostly as static HTML and then hydrates only selected interactive islands. This means most routes can stay lightweight while still using modern component frameworks. The approach lowers initial script size, especially on content-heavy pages. It can also improve crawl and rendering performance on older devices.\n\nFor teams moving from SPAs, Astro requires a mindset change: interaction is opt-in, not automatic. Components using React, Svelte, or Vue are still possible, but each one is intentionally scoped. That model improves predictability and often simplifies audits. It is a practical fit for public marketing and documentation surfaces.",
+    "category": "platform",
+    "aliases": [
+      "Astro",
+      "Astro framework"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "Astro",
+        "autoMatch": true,
+        "priority": 100
+      },
+      {
+        "phrase": "Astro framework",
+        "autoMatch": true,
+        "priority": 85
+      }
+    ],
+    "sourcePath": "/design#design-start",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-platform-astro",
+      "note": "Reserved for future experiments on a dedicated glossary detail page."
+    }
+  },
+  {
+    "id": "security.audit-trail",
+    "label": "Audit Trail",
+    "summary": "An audit trail is a chronological record of important system events. It helps explain how data or permissions changed over time.",
+    "detail": "\nAudit trail data includes event name, actor, target, and timestamp, often with request context. It is used after incidents to understand root causes and timeline impact. Because actions can be disputed, completeness and integrity are critical. Losing one event can hide the full chain of responsibility.\n\nA reliable audit trail is usually queryable by user and action in short time. Keep retention aligned with legal and product policy. It should support both analysts and engineers with clear filters. Without a proper trail, teams spend longer during recovery and audit periods.",
+    "category": "security",
+    "aliases": [
+      "Audit Trail",
+      "audit trail",
+      "trace history"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "Audit Trail",
+        "autoMatch": true,
+        "priority": 100
+      },
+      {
+        "phrase": "audit trail",
+        "autoMatch": true,
+        "priority": 90
+      }
+    ],
+    "sourcePath": "/security#design-checks",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-security-audit-trail",
+      "note": "Reserved for future experiments on a dedicated glossary detail page."
+    }
+  },
+  {
+    "id": "operations.cache",
+    "label": "Cache",
+    "summary": "A cache is a fast temporary store used to serve repeated data more quickly. It helps reduce backend load and improves perceived performance for users.",
+    "detail": "\nCache sits between the app and a slower source of truth such as a database or external API. When data is reused, the system reads it from the cache first. This can cut response time and smooth spikes during peak traffic. The tradeoff is that cached data can become stale.\n\nFor web surfaces, cache keys must be consistent and invalidation must be explicit. Without clear invalidation, users may see outdated content and lose trust. Teams combine time-based expiry, version-based purge, and event-driven resets. Monitoring hit rate and stale reads is part of cache health.",
+    "category": "operations",
+    "aliases": [
+      "Cache",
+      "caching",
+      "cached data"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "Cache",
+        "autoMatch": true,
+        "priority": 100
+      },
+      {
+        "phrase": "cached data",
+        "autoMatch": true,
+        "priority": 90
+      }
+    ],
+    "sourcePath": "/design#design-start",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-operations-cache",
+      "note": "Reserved for future experiments on a dedicated glossary detail page."
+    }
+  },
+  {
+    "id": "design.color-scheme",
+    "label": "Color Scheme",
+    "summary": "A color scheme is the visual theme mode that changes surface colors for user comfort. It sets how light and dark palettes are used across the interface.",
+    "detail": "\nColor schemes usually include a light and a dark variant so users can pick what feels comfortable in each context. The choice affects readability, fatigue, and perceived contrast on different screens. A good scheme uses tone and contrast with the same hierarchy, only shifting brightness levels. The content structure should stay stable no matter which scheme is active.\n\nIn implementation, color scheme changes can be driven by system preference or explicit user choice. Designers must avoid baking in one set of contrast assumptions for all modes. Token-based color systems help keep semantic meanings consistent across both modes. If a dark scheme makes primary text look dim, it will break trust faster than style polish would show.",
+    "category": "design",
+    "aliases": [
+      "Color Scheme",
+      "color scheme",
+      "theme mode"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "Color Scheme",
+        "autoMatch": true,
+        "priority": 95
+      },
+      {
+        "phrase": "color scheme",
+        "autoMatch": true,
+        "priority": 85
+      }
+    ],
+    "sourcePath": "/design#design-tokens",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-design-color-scheme",
+      "note": "Reserved for future experiments on a dedicated glossary detail page."
+    }
+  },
+  {
+    "id": "security.consent",
+    "label": "Consent",
+    "summary": "Consent is explicit user approval before collecting or using specific personal data. It must be clear, unforced, and easy to withdraw.",
+    "detail": "\nConsent is more than a checkbox at checkout or signup. It should explain what will happen to data and the legal purpose. Timestamped evidence should capture what was shown and what action the user took. Vague wording can create legal risk even when the system seems functional.\n\nGood consent flows allow users to change their decision later without friction. Systems should link preferences to request handling and marketing tools. This avoids stale permissions from old accounts. Consent should fail safe: no action beyond necessary usage when permission is missing.",
+    "category": "security",
+    "aliases": [
+      "Consent",
+      "user consent",
+      "permission choice"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "Consent",
+        "autoMatch": true,
+        "priority": 100
+      },
+      {
+        "phrase": "user consent",
+        "autoMatch": true,
+        "priority": 90
+      }
+    ],
+    "sourcePath": "/security#design-checks",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-security-consent",
+      "note": "Reserved for future experiments on a dedicated glossary detail page."
+    }
+  },
+  {
+    "id": "design.dark-mode",
+    "label": "Dark Mode",
+    "summary": "Dark mode is a low-luminance visual mode that lowers screen brightness and glare. It is often used in low-light situations or for long reading sessions.",
+    "detail": "\nDark mode lowers contrast in light intensity while preserving enough difference between text and background. This can improve comfort for many users during evening or dim environments. It does not automatically improve accessibility; contrast must be audited like any other theme. If the UI uses colors copied from a light palette, dark mode will still look weak or hard to read.\n\nA usable dark mode needs explicit token tuning for shadows, borders, and semantic states. Error, warning, and disabled states must remain visually clear even when colors are dimmed. Teams often set a dedicated dark palette instead of inverting every token. That is the key difference between a theme and a simple color flip.",
+    "category": "design",
+    "aliases": [
+      "Dark Mode",
+      "dark mode"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "Dark Mode",
+        "autoMatch": true,
+        "priority": 100
+      },
+      {
+        "phrase": "dark mode",
+        "autoMatch": true,
+        "priority": 90
+      }
+    ],
+    "sourcePath": "/design#design-tokens",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-design-dark-mode",
+      "note": "Reserved for future experiments on a dedicated glossary detail page."
+    }
+  },
+  {
+    "id": "platform.flutter",
+    "label": "Flutter",
+    "summary": "Flutter is an open-source UI toolkit for building cross-platform apps from one codebase. It compiles to native-like outputs for web, mobile, and desktop flows.",
+    "detail": "\nFlutter apps are written in Dart and use a widget-based model for most UI work. Because widgets are reusable, teams can keep a common visual system across target platforms. The framework handles drawing, layout, and interaction layers consistently. This reduces divergence between platform-specific code branches.\n\nIn web projects, Flutter is still different from typical HTML-based rendering. Bundle size and startup behavior need special care for content-first pages. For public surfaces, many teams still prefer lightweight web stacks for SEO and low-end devices. Flutter shines when app-like interaction and rich composition are priorities.",
+    "category": "platform",
+    "aliases": [
+      "Flutter",
+      "Dart"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "Flutter",
+        "autoMatch": true,
+        "priority": 100
+      },
+      {
+        "phrase": "Dart",
+        "autoMatch": true,
+        "priority": 85
+      }
+    ],
+    "sourcePath": "/design#design-tokens",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-platform-flutter",
+      "note": "Reserved for future experiments on a dedicated glossary detail page."
+    }
+  },
+  {
+    "id": "platform.flutter-token",
+    "label": "Flutter Tokens",
+    "summary": "Flutter tokens are design values stored as Dart constants that define how an app should look. They keep style decisions shared across screens and theme modes.",
+    "detail": "\nFlutter teams often model color, spacing, type, and radius as token values.\nEach token becomes a named constant used across components and screens.\nTeams can move style values quickly during redesign without touching every widget.\nThis keeps intent clear and reduces visual side effects when refactoring.\n\nWhen tokens are organized into semantic groups, developers can swap light and dark values cleanly.\nRaw token maps stay implementation-friendly, while semantic aliases stay design-friendly.\nThis split helps teams align code with visual direction quickly and safely.\nIt also shortens the time needed to apply a new brand profile.",
+    "category": "platform",
+    "aliases": [
+      "Flutter Tokens",
+      "Flutter token"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "Flutter Tokens",
+        "autoMatch": true,
+        "priority": 100
+      },
+      {
+        "phrase": "Flutter token",
+        "autoMatch": true,
+        "priority": 85
+      }
+    ],
+    "sourcePath": "/design#design-tokens",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-platform-flutter-token",
+      "note": "Reserved for future experiments on a dedicated glossary detail page."
+    }
+  },
+  {
+    "id": "platform.font-stack",
+    "label": "Font Stack",
+    "summary": "A font stack is a prioritized list of fallback fonts for a text style. It keeps typography readable when the preferred font is unavailable.",
+    "detail": "\nWhen a user does not have the first font installed, the browser moves to the next one in the list. A good stack gives predictable width, weight, and language coverage across devices. It also prevents layout jumps from missing glyphs or odd metrics. Designers use this to keep stable rhythm in long reading areas.\n\nInclude a generic fallback at the end so rendering never breaks completely. For mixed-language content, add coverage entries that support target scripts clearly. Test fallback behavior across OS families, not just one desktop. A stable stack is an invisible quality marker users only notice when it is missing.",
+    "category": "platform",
+    "aliases": [
+      "Font Stack",
+      "font stack",
+      "font fallback"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "Font Stack",
+        "autoMatch": true,
+        "priority": 100
+      },
+      {
+        "phrase": "font stack",
+        "autoMatch": true,
+        "priority": 90
+      }
+    ],
+    "sourcePath": "/design#design-tokens",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-platform-font-stack",
+      "note": "Reserved for future experiments on a dedicated glossary detail page."
+    }
+  },
+  {
+    "id": "design.light-mode",
+    "label": "Light Mode",
+    "summary": "Light mode uses brighter backgrounds and darker text for daytime readability. It is still required as a first-class mode even when dark mode is supported.",
+    "detail": "\nLight mode stays the default choice on many platforms because it provides highest contrast for many users. It helps in bright environments and is easy to inspect during design QA. The important part is not brightness, but predictable contrast around interactive states. A broken light mode can make links, focus, and disabled controls feel confusing.\n\nIn production, teams usually keep light and dark theme tokens in the same scale. That allows labels and surfaces to keep meaning while changing palette values. A button should stay a button in both modes, not just appear similar by accident. This keeps testing, logs, and screenshot diffing much easier.",
+    "category": "design",
+    "aliases": [
+      "Light Mode",
+      "light mode"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "Light Mode",
+        "autoMatch": true,
+        "priority": 95
+      },
+      {
+        "phrase": "light mode",
+        "autoMatch": true,
+        "priority": 85
+      }
+    ],
+    "sourcePath": "/design#design-tokens",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-design-light-mode",
+      "note": "Reserved for future experiments on a dedicated glossary detail page."
+    }
+  },
+  {
+    "id": "platform.locale",
+    "label": "Locale",
+    "summary": "A locale identifies language and regional settings used to format text, dates, and numbers. It affects UI wording and sometimes layout behavior.",
+    "detail": "\nLocale is usually written as language and region like en, ko, or en-US. It helps the app choose correct grammar, punctuation, and formatting rules. Locale-sensitive features include date style, digit shapes, and pluralization. A wrong locale quickly makes the interface feel broken to native readers.\n\nIn localization systems, locale is part of both content routing and runtime formatting. Keep locale identifiers normalized to a stable list to avoid mixed behavior. Fallback logic should always provide safe defaults for unsupported languages. Logging locale by request helps catch unexpected audience patterns early.",
+    "category": "platform",
+    "aliases": [
+      "Locale",
+      "locale",
+      "language locale"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "Locale",
+        "autoMatch": true,
+        "priority": 100
+      },
+      {
+        "phrase": "locale",
+        "autoMatch": true,
+        "priority": 90
+      }
+    ],
+    "sourcePath": "/design#design-start",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-platform-locale",
+      "note": "Reserved for future experiments on a dedicated glossary detail page."
+    }
+  },
+  {
+    "id": "platform.localization",
+    "label": "Localization",
+    "summary": "Localization is adapting a product for a target language and region beyond literal translation. It includes copy, formatting, and cultural fit for each audience.",
+    "detail": "\nTranslation alone is not enough for localization. A proper localized surface changes date formats, number separators, and text order logic as needed. It may also adapt examples, legal wording, and tone to match regional expectations. This avoids awkward phrasing and reduces user confusion.\n\nGood localization connects with product discovery and search workflows too. Locale-aware URLs, metadata, and fallback rules matter for visibility. Teams should validate length changes because some languages expand much more than others. Monitoring missing keys per locale catches silent regressions early.",
+    "category": "platform",
+    "aliases": [
+      "Localization",
+      "i18n",
+      "internationalization"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "Localization",
+        "autoMatch": true,
+        "priority": 100
+      },
+      {
+        "phrase": "localize",
+        "autoMatch": true,
+        "priority": 85
+      }
+    ],
+    "sourcePath": "/design#design-start",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-platform-localization",
+      "note": "Reserved for future experiments on a dedicated glossary detail page."
+    }
+  },
+  {
+    "id": "design.menu",
+    "label": "Menu",
+    "summary": "A menu is a group of linked options or commands shown in one area of the interface. It helps users decide what to do next without flooding the screen.",
+    "detail": "\nMenus appear in many shapes, from desktop dropdown lists to mobile bottom sheets. The shared goal is always clear grouping and predictable order. A menu should show primary actions first, then secondary options. Users should always know where they are and how to escape.\n\nGood menus use one interaction pattern and keep naming consistent across routes. Avoid hiding critical paths behind complex nested menus without fallback flow. Keyboard and screen-reader order should match visual order so navigation is not a puzzle. On small screens, spacing and hit targets need bigger room than desktop.",
+    "category": "design",
+    "aliases": [
+      "Menu",
+      "menu"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "Menu",
+        "autoMatch": true,
+        "priority": 95
+      },
+      {
+        "phrase": "menu",
+        "autoMatch": true,
+        "priority": 85
+      }
+    ],
+    "sourcePath": "/design#design-tokens",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-design-menu",
+      "note": "Reserved for future experiments on a dedicated glossary detail page."
+    }
+  },
+  {
+    "id": "design.oklch",
+    "label": "OKLCH",
+    "summary": "OKLCH is a color notation that splits color into lightness, chroma, and hue. It is used to create palettes that stay visually even across interfaces.",
+    "detail": "\nTraditional hex color editing is easy, but it does not model human perception directly. OKLCH separates lightness from chroma and hue, so designers can adjust one trait at a time. That makes it easier to keep contrast stable when moving between themes. It is a practical fit for modern design token workflows.\n\nIn token systems, using OKLCH helps when generating many shades from one brand hue. A small move in lightness should produce a predictable jump in perceived brightness. Chroma and hue adjustments become clearer when designers review the full scale. This often reduces failed contrast checks in production.",
+    "category": "design",
+    "aliases": [
+      "OKLCH",
+      "oklch"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "OKLCH",
+        "autoMatch": true,
+        "priority": 100
+      },
+      {
+        "phrase": "oklch",
+        "autoMatch": true,
+        "priority": 90
+      }
+    ],
+    "sourcePath": "/design#design-foundation",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-design-oklch",
+      "note": "Reserved for future experiments on a dedicated glossary detail page."
+    }
+  },
+  {
+    "id": "security.permission",
+    "label": "Permission",
+    "summary": "A permission is a defined right for a user or service to perform an action. It is usually narrower than role and enforced at runtime.",
+    "detail": "\nPermissions describe what can be done on specific resources under a given condition. They should be checked consistently at the boundary of sensitive operations. A role defines a person type, while permission defines a concrete capability. This separation keeps access control understandable.\n\nIn systems with many features, permission lists can become noisy and over-broad. Keep each permission tied to a meaningful business action. Regular permission reviews catch privilege creep from team growth. Logging denied actions helps spot missing rules and bad defaults.",
+    "category": "security",
+    "aliases": [
+      "Permission",
+      "permission",
+      "access permission"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "Permission",
+        "autoMatch": true,
+        "priority": 100
+      },
+      {
+        "phrase": "access permission",
+        "autoMatch": true,
+        "priority": 90
+      }
+    ],
+    "sourcePath": "/security#design-tokens",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-security-permission",
+      "note": "Reserved for future experiments on a dedicated glossary detail page."
+    }
+  },
+  {
+    "id": "security.plaintext",
+    "label": "Plaintext",
+    "summary": "Plaintext means data stored or transmitted without encryption. It is readable by anyone who gets access to that data.",
+    "detail": "\nPlaintext storage is risky because backup, logs, and memory snapshots can expose secrets. Passwords and API tokens must never stay in plaintext for long. Even temporary plaintext in debug output should be treated as a data leak risk. Use hashing and managed secrets for sensitive values.\n\nIn transfer, plaintext over plain channels can be intercepted during network hops. TLS and secure storage are baseline requirements for modern web systems. Rotate and monitor secrets so leaks become visible quickly. Build checks around accidental secret print and config dumps.",
+    "category": "security",
+    "aliases": [
+      "Plaintext",
+      "plain text",
+      "unencrypted"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "Plaintext",
+        "autoMatch": true,
+        "priority": 100
+      },
+      {
+        "phrase": "unencrypted",
+        "autoMatch": true,
+        "priority": 90
+      }
+    ],
+    "sourcePath": "/security#design-checks",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-security-plaintext",
+      "note": "Reserved for future experiments on a dedicated glossary detail page."
+    }
+  },
+  {
+    "id": "platform.runtime",
+    "label": "Runtime",
+    "summary": "A runtime is the environment where application code is executed and interacts with host APIs. It defines what resources, permissions, and limits are available.",
+    "detail": "\nFor web projects, runtime usually means the browser and related APIs at the client side. Server-side runtime is often Node, edge, or function-style execution with stricter time limits. Each runtime has tradeoffs in cold start, startup time, and available libraries. Choosing the wrong runtime can make latency and cost unpredictable.\n\nRuntime decisions also affect observability and error handling behavior.\nYou need to know which exceptions are retriable in that environment.\nLogging and tracing should be configured per runtime from day one.\nOperational alerts and dashboards should map to the same runtime boundaries.",
+    "category": "platform",
+    "aliases": [
+      "Runtime",
+      "Runtime environment"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "Runtime",
+        "autoMatch": true,
+        "priority": 100
+      },
+      {
+        "phrase": "runtime",
+        "autoMatch": true,
+        "priority": 90
+      }
+    ],
+    "sourcePath": "/design#design-start",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-platform-runtime",
+      "note": "Reserved for future experiments on a dedicated glossary detail page."
+    }
+  },
+  {
+    "id": "platform.search-index",
+    "label": "Search Index",
+    "summary": "A search index is a structured index that helps find content quickly. It stores searchable signals instead of scanning everything each time.",
+    "detail": "\nA search index precomputes key terms and ranking signals for documents. Without it, search runs as a full scan and slows as content grows. Indexes support typo tolerance and filtering when designed with proper tokenization. That can reduce frustration and cut unnecessary server work.\n\nIn public sites, search indexes are also used for discovery and internal link quality. A fresh index needs rebuild strategies for content edits and deletions. Query behavior should match user intent, not just keyword exactness. Track no-result and zero-click patterns as quality signals after launch.",
+    "category": "platform",
+    "aliases": [
+      "Search Index",
+      "search index",
+      "site search"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "Search Index",
+        "autoMatch": true,
+        "priority": 100
+      },
+      {
+        "phrase": "search index",
+        "autoMatch": true,
+        "priority": 90
+      }
+    ],
+    "sourcePath": "/design#design-start",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-platform-search-index",
+      "note": "Reserved for future experiments on a dedicated glossary detail page."
+    }
+  },
+  {
+    "id": "security.audit-log",
+    "label": "Security Audit Log",
+    "summary": "A security audit log records security-relevant events with enough detail to review later. It tracks who did what, when, and why.",
+    "detail": "\nA security audit log is not a normal application log, it is evidence data for trust and incident response. It should capture authentication events, permission changes, and sensitive data access attempts. Entries need immutable retention rules and controlled read access. If logs are mutable, the evidence value drops quickly.\n\nFor operations, log events should be forwarded to a dedicated store with retention and alerting. Query and search workflows must support incident replay and timeline reconstruction. Teams should test whether logs can be generated and exported under failure. Accessing audit records should itself be monitored.",
+    "category": "security",
+    "aliases": [
+      "Security Audit Log",
+      "audit log",
+      "audit trail"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "Security Audit Log",
+        "autoMatch": true,
+        "priority": 100
+      },
+      {
+        "phrase": "audit log",
+        "autoMatch": true,
+        "priority": 90
+      }
+    ],
+    "sourcePath": "/security#design-checks",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-security-audit-log",
+      "note": "Reserved for future experiments on a dedicated glossary detail page."
+    }
+  },
+  {
+    "id": "platform.single-page-app",
+    "label": "Single Page App",
+    "summary": "A single-page app keeps navigation inside one HTML shell while loading content dynamically. It can feel fast, but complexity rises as the app grows.",
+    "detail": "\nIn a single-page app, route changes happen client-side instead of full document reloads. This can reduce page transition delay for action-heavy interfaces. It also increases the need for robust state and cache management on the client. Without careful handling, first paint and SEO can degrade.\n\nModern SPAs need careful code splitting, prefetching, and progress states to avoid perceived hangs. Public surfaces often mix static pages with small interactive islands for this reason. Accessibility and deep-link quality must be re-tested for dynamic updates. Not every surface benefits equally from an SPA architecture.",
+    "category": "platform",
+    "aliases": [
+      "Single Page App",
+      "SPA",
+      "single-page app"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "Single Page App",
+        "autoMatch": true,
+        "priority": 100
+      },
+      {
+        "phrase": "SPA",
+        "autoMatch": true,
+        "priority": 85
+      },
+      {
+        "phrase": "single-page app",
+        "autoMatch": true,
+        "priority": 90
+      }
+    ],
+    "sourcePath": "/design#design-start",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-platform-single-page-app",
+      "note": "Reserved for future experiments on a dedicated glossary detail page."
+    }
+  },
+  {
+    "id": "platform.svelte",
+    "label": "Svelte",
+    "summary": "Svelte is a component framework that compiles away runtime framework overhead. It produces small bundles and simple component code for high-performance UI.",
+    "detail": "\nUnlike virtual DOM-heavy frameworks, Svelte compiles template logic at build time. Components become minimal JavaScript in the output, which can improve startup performance. This is useful for content pages that still need some interactivity. It also works well for teams that want predictable bundle behavior.\n\nIn mixed environments like Astro, Svelte can be loaded for only the interactive parts. That lets teams reduce JavaScript footprint while keeping component ergonomics. The approach fits when you need islands that are easy to reason about. Build output is often easier to profile at surface level.",
+    "category": "platform",
+    "aliases": [
+      "Svelte",
+      "Svelte framework"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "Svelte",
+        "autoMatch": true,
+        "priority": 100
+      },
+      {
+        "phrase": "Svelte framework",
+        "autoMatch": true,
+        "priority": 85
+      }
+    ],
+    "sourcePath": "/design#design-start",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-platform-svelte",
+      "note": "Reserved for future experiments on a dedicated glossary detail page."
+    }
+  },
+  {
+    "id": "platform.tauri",
+    "label": "Tauri",
+    "summary": "Tauri is a framework for building desktop apps with web technologies and a native shell. It focuses on reducing app size and attack surface compared to heavier alternatives.",
+    "detail": "\nTauri combines a web frontend with a small Rust-based core for desktop integrations. The app can use HTML, CSS, and JavaScript for UI while relying on Rust for privileged operations. This model is attractive when teams want web-style iteration with native access.\"\n\nOn desktop, security and permission boundaries are explicit in the packaging model. Window, file, and system APIs are exposed through controlled commands. Teams still need careful input validation for messages crossing the web-to-native boundary. That boundary is the real source of cross-platform risk.",
+    "category": "platform",
+    "aliases": [
+      "Tauri",
+      "tauri",
+      "desktop app shell"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "Tauri",
+        "autoMatch": true,
+        "priority": 100
+      },
+      {
+        "phrase": "desktop app shell",
+        "autoMatch": true,
+        "priority": 85
+      }
+    ],
+    "sourcePath": "/design#design-start",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-platform-tauri",
+      "note": "Reserved for future experiments on a dedicated glossary detail page."
+    }
+  },
+  {
+    "id": "design.text-selection",
+    "label": "Text Selection",
+    "summary": "Text selection is the browser action that marks characters so users can copy or replace content. It must stay usable because selection supports reading and editing workflows.",
+    "detail": "\nSome interfaces disable selection by default to avoid accidental copy, but this often hurts usability. People use selection to copy error codes, instructions, and long commands. Losing selection makes basic tasks feel broken even when the UI still looks correct. A usable interface keeps selection available where content is meant to be read.\n\nIn forms and documentation pages, text selection should respect expected drag behavior. Keyboard-based selection is also part of accessible editing and review flows. If an element has no clear reason to block selection, do not disable it. Keep the exception small, usually only decorative controls.",
+    "category": "design",
+    "aliases": [
+      "Text Selection",
+      "text selection",
+      "select text"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "Text Selection",
+        "autoMatch": true,
+        "priority": 95
+      },
+      {
+        "phrase": "text selection",
+        "autoMatch": true,
+        "priority": 90
+      }
+    ],
+    "sourcePath": "/design#design-tokens",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-design-text-selection",
+      "note": "Reserved for future experiments on a dedicated glossary detail page."
+    }
+  },
+  {
+    "id": "design.theme",
+    "label": "Theme",
+    "summary": "A theme is a named set of design values like colors, spacing, and typography. It gives the product a stable look while allowing easy mode or brand variations.",
+    "detail": "\nA theme is usually built from tokens, then applied through shared component styles. This keeps repeated colors and spacing consistent across the whole UI. Without a theme, one screen might drift from another over time. Teams then pay for visual debt in every release.\n\nTheme systems help scale by separating design decisions from component implementation. You can switch a full visual mode by changing a small set of values. This also makes dark mode and future brand shifts safer. The quality of a theme is measured by consistency under change, not by its novelty.",
+    "category": "design",
+    "aliases": [
+      "Theme",
+      "themes"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "Theme",
+        "autoMatch": true,
+        "priority": 100
+      },
+      {
+        "phrase": "themed",
+        "autoMatch": true,
+        "priority": 85
+      }
+    ],
+    "sourcePath": "/design#design-tokens",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-design-theme",
+      "note": "Reserved for future experiments on a dedicated glossary detail page."
+    }
+  },
+  {
+    "id": "design.tooltip",
+    "label": "Tooltip",
+    "summary": "A tooltip is a small helper box that appears on focus or hover to explain an element. It provides extra context without forcing users to leave the current flow.",
+    "detail": "\nTooltips are best used for short clarifications that are not worth a full label in normal layout. They should be concise and appear where users already are. If the content is critical, it should not be hidden in a tooltip. Place essential meaning directly near controls instead.\n\nFor accessibility, tooltips should not rely only on hover interaction. Keyboard users need the same info path through focus or explicit labels. Delay and positioning must be predictable to avoid jumpy behavior. Keep content plain and short so it can be read quickly.",
+    "category": "design",
+    "aliases": [
+      "Tooltip",
+      "tooltip",
+      "hint"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "Tooltip",
+        "autoMatch": true,
+        "priority": 95
+      },
+      {
+        "phrase": "tooltip",
+        "autoMatch": true,
+        "priority": 90
+      }
+    ],
+    "sourcePath": "/design#design-tokens",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-design-tooltip",
+      "note": "Reserved for future experiments on a dedicated glossary detail page."
+    }
+  },
+  {
+    "id": "platform.web-app-manifest",
+    "label": "Web App Manifest",
+    "summary": "The Web App Manifest is a JSON file that defines metadata for installing a website. It controls name, icons, theme color, and launch behavior.",
+    "detail": "\nA manifest lets browsers treat a site more like an installed app when saving to home screen. It defines startup URL, display mode, background color, and icon resources. Combined with service worker support, users can get a more app-like flow. It does not replace server-side authentication or backend state rules.\n\nFor quality checks, manifest values should be validated for each target platform. Missing icons or wrong start URLs are common launch issues. Keep splash, icons, and names in sync with release versioning. A broken manifest causes installation confusion even when pages work normally.",
+    "category": "platform",
+    "aliases": [
+      "Web App Manifest",
+      "PWA manifest",
+      "manifest.json"
+    ],
+    "matchPhrases": [
+      {
+        "phrase": "Web App Manifest",
+        "autoMatch": true,
+        "priority": 100
+      },
+      {
+        "phrase": "manifest.json",
+        "autoMatch": true,
+        "priority": 85
+      }
+    ],
+    "sourcePath": "/design#design-start",
+    "adPolicy": {
+      "eligible": true,
+      "slot": "glossary-detail-platform-web-app-manifest",
+      "note": "Reserved for future experiments on a dedicated glossary detail page."
+    }
+  }
+]

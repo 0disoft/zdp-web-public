@@ -1,4 +1,5 @@
-import runtimeGlossaryManifest from "./glossary-manifest.json";
+import runtimeGlossaryManifestEn from "./glossary-manifest.en.json";
+import runtimeGlossaryManifestKo from "./glossary-manifest.json";
 import type { SupportedLocale } from "../lib/site-locales";
 
 export type GlossaryLocale = SupportedLocale;
@@ -39,13 +40,15 @@ export type GlossaryTextToken =
       readonly term: GlossaryManifestEntry;
     };
 
-const publicGlossaryManifest =
-  runtimeGlossaryManifest as readonly GlossaryManifestEntry[];
+const publicGlossaryManifestsByLocale = {
+  en: runtimeGlossaryManifestEn as readonly GlossaryManifestEntry[],
+  ko: runtimeGlossaryManifestKo as readonly GlossaryManifestEntry[]
+} satisfies Record<GlossaryLocale, readonly GlossaryManifestEntry[]>;
 
 export function getGlossaryManifest(
   locale: GlossaryLocale = "en"
 ): readonly GlossaryManifestEntry[] {
-  return locale === "ko" ? publicGlossaryManifest : [];
+  return publicGlossaryManifestsByLocale[locale];
 }
 
 export function markGlossaryText(

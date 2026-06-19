@@ -1,0 +1,22 @@
+locale: en
+id: design.theme
+label: Theme
+slug: theme
+short: "A theme is a named set of design values like colors, spacing, and typography. It gives the product a stable look while allowing easy mode or brand variations."
+long: |-
+
+  A theme is usually built from tokens, then applied through shared component styles. This keeps repeated colors and spacing consistent across the whole UI. Without a theme, one screen might drift from another over time. Teams then pay for visual debt in every release.
+
+  Theme systems help scale by separating design decisions from component implementation. You can switch a full visual mode by changing a small set of values. This also makes dark mode and future brand shifts safer. The quality of a theme is measured by consistency under change, not by its novelty.
+example: null
+translation_status: reviewed
+aliases:
+  - Theme
+  - themes
+match_phrases:
+  - phrase: Theme
+    auto_match: true
+    priority: 100
+  - phrase: themed
+    auto_match: true
+    priority: 85

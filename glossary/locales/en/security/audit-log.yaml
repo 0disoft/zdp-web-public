@@ -1,0 +1,23 @@
+locale: en
+id: security.audit-log
+label: Security Audit Log
+slug: security-audit-log
+short: "A security audit log records security-relevant events with enough detail to review later. It tracks who did what, when, and why."
+long: |-
+
+  A security audit log is not a normal application log, it is evidence data for trust and incident response. It should capture authentication events, permission changes, and sensitive data access attempts. Entries need immutable retention rules and controlled read access. If logs are mutable, the evidence value drops quickly.
+
+  For operations, log events should be forwarded to a dedicated store with retention and alerting. Query and search workflows must support incident replay and timeline reconstruction. Teams should test whether logs can be generated and exported under failure. Accessing audit records should itself be monitored.
+example: null
+translation_status: reviewed
+aliases:
+  - Security Audit Log
+  - audit log
+  - audit trail
+match_phrases:
+  - phrase: Security Audit Log
+    auto_match: true
+    priority: 100
+  - phrase: audit log
+    auto_match: true
+    priority: 90

@@ -1,0 +1,23 @@
+locale: en
+id: platform.locale
+label: Locale
+slug: locale
+short: "A locale identifies language and regional settings used to format text, dates, and numbers. It affects UI wording and sometimes layout behavior."
+long: |-
+
+  Locale is usually written as language and region like en, ko, or en-US. It helps the app choose correct grammar, punctuation, and formatting rules. Locale-sensitive features include date style, digit shapes, and pluralization. A wrong locale quickly makes the interface feel broken to native readers.
+
+  In localization systems, locale is part of both content routing and runtime formatting. Keep locale identifiers normalized to a stable list to avoid mixed behavior. Fallback logic should always provide safe defaults for unsupported languages. Logging locale by request helps catch unexpected audience patterns early.
+example: null
+translation_status: reviewed
+aliases:
+  - Locale
+  - locale
+  - language locale
+match_phrases:
+  - phrase: Locale
+    auto_match: true
+    priority: 100
+  - phrase: locale
+    auto_match: true
+    priority: 90

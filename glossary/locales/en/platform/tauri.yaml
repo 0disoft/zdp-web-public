@@ -1,0 +1,23 @@
+locale: en
+label: Tauri
+id: platform.tauri
+slug: tauri
+short: "Tauri is a framework for building desktop apps with web technologies and a native shell. It focuses on reducing app size and attack surface compared to heavier alternatives."
+long: |-
+
+  Tauri combines a web frontend with a small Rust-based core for desktop integrations. The app can use HTML, CSS, and JavaScript for UI while relying on Rust for privileged operations. This model is attractive when teams want web-style iteration with native access."
+
+  On desktop, security and permission boundaries are explicit in the packaging model. Window, file, and system APIs are exposed through controlled commands. Teams still need careful input validation for messages crossing the web-to-native boundary. That boundary is the real source of cross-platform risk.
+example: null
+translation_status: reviewed
+aliases:
+  - Tauri
+  - tauri
+  - desktop app shell
+match_phrases:
+  - phrase: Tauri
+    auto_match: true
+    priority: 100
+  - phrase: desktop app shell
+    auto_match: true
+    priority: 85

@@ -1,0 +1,23 @@
+locale: en
+id: security.consent
+label: Consent
+slug: consent
+short: "Consent is explicit user approval before collecting or using specific personal data. It must be clear, unforced, and easy to withdraw."
+long: |-
+
+  Consent is more than a checkbox at checkout or signup. It should explain what will happen to data and the legal purpose. Timestamped evidence should capture what was shown and what action the user took. Vague wording can create legal risk even when the system seems functional.
+
+  Good consent flows allow users to change their decision later without friction. Systems should link preferences to request handling and marketing tools. This avoids stale permissions from old accounts. Consent should fail safe: no action beyond necessary usage when permission is missing.
+example: null
+translation_status: reviewed
+aliases:
+  - Consent
+  - user consent
+  - permission choice
+match_phrases:
+  - phrase: Consent
+    auto_match: true
+    priority: 100
+  - phrase: user consent
+    auto_match: true
+    priority: 90

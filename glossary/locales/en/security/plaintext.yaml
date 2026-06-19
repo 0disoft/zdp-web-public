@@ -1,0 +1,23 @@
+locale: en
+id: security.plaintext
+label: Plaintext
+slug: plaintext
+short: "Plaintext means data stored or transmitted without encryption. It is readable by anyone who gets access to that data."
+long: |-
+
+  Plaintext storage is risky because backup, logs, and memory snapshots can expose secrets. Passwords and API tokens must never stay in plaintext for long. Even temporary plaintext in debug output should be treated as a data leak risk. Use hashing and managed secrets for sensitive values.
+
+  In transfer, plaintext over plain channels can be intercepted during network hops. TLS and secure storage are baseline requirements for modern web systems. Rotate and monitor secrets so leaks become visible quickly. Build checks around accidental secret print and config dumps.
+example: null
+translation_status: reviewed
+aliases:
+  - Plaintext
+  - plain text
+  - unencrypted
+match_phrases:
+  - phrase: Plaintext
+    auto_match: true
+    priority: 100
+  - phrase: unencrypted
+    auto_match: true
+    priority: 90

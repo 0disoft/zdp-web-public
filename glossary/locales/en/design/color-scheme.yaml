@@ -1,0 +1,23 @@
+locale: en
+id: design.color-scheme
+label: Color Scheme
+slug: color-scheme
+short: "A color scheme is the visual theme mode that changes surface colors for user comfort. It sets how light and dark palettes are used across the interface."
+long: |-
+
+  Color schemes usually include a light and a dark variant so users can pick what feels comfortable in each context. The choice affects readability, fatigue, and perceived contrast on different screens. A good scheme uses tone and contrast with the same hierarchy, only shifting brightness levels. The content structure should stay stable no matter which scheme is active.
+
+  In implementation, color scheme changes can be driven by system preference or explicit user choice. Designers must avoid baking in one set of contrast assumptions for all modes. Token-based color systems help keep semantic meanings consistent across both modes. If a dark scheme makes primary text look dim, it will break trust faster than style polish would show.
+example: null
+translation_status: reviewed
+aliases:
+  - Color Scheme
+  - color scheme
+  - theme mode
+match_phrases:
+  - phrase: Color Scheme
+    auto_match: true
+    priority: 95
+  - phrase: color scheme
+    auto_match: true
+    priority: 85

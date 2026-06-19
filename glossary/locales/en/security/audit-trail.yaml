@@ -1,0 +1,23 @@
+locale: en
+id: security.audit-trail
+label: Audit Trail
+slug: audit-trail
+short: "An audit trail is a chronological record of important system events. It helps explain how data or permissions changed over time."
+long: |-
+
+  Audit trail data includes event name, actor, target, and timestamp, often with request context. It is used after incidents to understand root causes and timeline impact. Because actions can be disputed, completeness and integrity are critical. Losing one event can hide the full chain of responsibility.
+
+  A reliable audit trail is usually queryable by user and action in short time. Keep retention aligned with legal and product policy. It should support both analysts and engineers with clear filters. Without a proper trail, teams spend longer during recovery and audit periods.
+example: null
+translation_status: reviewed
+aliases:
+  - Audit Trail
+  - audit trail
+  - trace history
+match_phrases:
+  - phrase: Audit Trail
+    auto_match: true
+    priority: 100
+  - phrase: audit trail
+    auto_match: true
+    priority: 90

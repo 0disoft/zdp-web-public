@@ -1,0 +1,23 @@
+locale: en
+id: platform.search-index
+label: Search Index
+slug: search-index
+short: "A search index is a structured index that helps find content quickly. It stores searchable signals instead of scanning everything each time."
+long: |-
+
+  A search index precomputes key terms and ranking signals for documents. Without it, search runs as a full scan and slows as content grows. Indexes support typo tolerance and filtering when designed with proper tokenization. That can reduce frustration and cut unnecessary server work.
+
+  In public sites, search indexes are also used for discovery and internal link quality. A fresh index needs rebuild strategies for content edits and deletions. Query behavior should match user intent, not just keyword exactness. Track no-result and zero-click patterns as quality signals after launch.
+example: null
+translation_status: reviewed
+aliases:
+  - Search Index
+  - search index
+  - site search
+match_phrases:
+  - phrase: Search Index
+    auto_match: true
+    priority: 100
+  - phrase: search index
+    auto_match: true
+    priority: 90

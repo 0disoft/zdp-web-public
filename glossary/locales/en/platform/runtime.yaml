@@ -1,0 +1,25 @@
+locale: en
+id: platform.runtime
+label: Runtime
+slug: runtime
+short: "A runtime is the environment where application code is executed and interacts with host APIs. It defines what resources, permissions, and limits are available."
+long: |-
+
+  For web projects, runtime usually means the browser and related APIs at the client side. Server-side runtime is often Node, edge, or function-style execution with stricter time limits. Each runtime has tradeoffs in cold start, startup time, and available libraries. Choosing the wrong runtime can make latency and cost unpredictable.
+
+  Runtime decisions also affect observability and error handling behavior.
+  You need to know which exceptions are retriable in that environment.
+  Logging and tracing should be configured per runtime from day one.
+  Operational alerts and dashboards should map to the same runtime boundaries.
+example: null
+translation_status: reviewed
+aliases:
+  - Runtime
+  - Runtime environment
+match_phrases:
+  - phrase: Runtime
+    auto_match: true
+    priority: 100
+  - phrase: runtime
+    auto_match: true
+    priority: 90

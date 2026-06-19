@@ -1,0 +1,22 @@
+locale: en
+id: design.menu
+label: Menu
+slug: menu
+short: "A menu is a group of linked options or commands shown in one area of the interface. It helps users decide what to do next without flooding the screen."
+long: |-
+
+  Menus appear in many shapes, from desktop dropdown lists to mobile bottom sheets. The shared goal is always clear grouping and predictable order. A menu should show primary actions first, then secondary options. Users should always know where they are and how to escape.
+
+  Good menus use one interaction pattern and keep naming consistent across routes. Avoid hiding critical paths behind complex nested menus without fallback flow. Keyboard and screen-reader order should match visual order so navigation is not a puzzle. On small screens, spacing and hit targets need bigger room than desktop.
+example: null
+translation_status: reviewed
+aliases:
+  - Menu
+  - menu
+match_phrases:
+  - phrase: Menu
+    auto_match: true
+    priority: 95
+  - phrase: menu
+    auto_match: true
+    priority: 85

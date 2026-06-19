@@ -8,12 +8,17 @@ import {
 
 export const GLOSSARY_TERMS_ROOT = "glossary/terms";
 export const GLOSSARY_LOCALE = "ko";
-export const GLOSSARY_LOCALES_ROOT = `glossary/locales/${GLOSSARY_LOCALE}`;
+export const GLOSSARY_LOCALES = ["en", "ko"] as const;
+export const GLOSSARY_LOCALES_ROOT = `glossary/locales`;
 export const COMMON_GLOSSARY_TERMS_ROOT = "../../contracts/zdp-libs-ts/glossary/terms";
-export const COMMON_GLOSSARY_LOCALES_ROOT = `../../contracts/zdp-libs-ts/glossary/locales/${GLOSSARY_LOCALE}`;
+export const COMMON_GLOSSARY_LOCALES_ROOT = `../../contracts/zdp-libs-ts/glossary/locales`;
 export const GLOSSARY_PRODUCT = "zdp-web-public";
 export const GLOSSARY_SITE = "web-public-home";
 export const GLOSSARY_RUNTIME_MANIFEST_PATH = "src/content/glossary-manifest.json";
+export const GLOSSARY_RUNTIME_MANIFEST_PATH_BY_LOCALE: Readonly<Record<string, string>> = {
+  en: "src/content/glossary-manifest.en.json",
+  ko: "src/content/glossary-manifest.json"
+};
 export const STABLE_GENERATED_AT = "2026-06-05T00:00:00.000Z";
 
 const WEB_PUBLIC_GLOSSARY_SOURCE_PATHS: Readonly<Record<string, string>> = {
@@ -139,12 +144,16 @@ export interface RuntimeGlossaryManifestEntry {
 
 export interface RuntimeGlossaryBuildResult {
   readonly sourceFiles: readonly string[];
+  readonly locale: string;
   readonly runtimeManifest: readonly RuntimeGlossaryManifestEntry[];
   readonly diagnostics: readonly string[];
 }
 
-export async function buildRuntimeGlossaryManifest(root = resolve(".")): Promise<RuntimeGlossaryBuildResult> {
-  const sourceFiles = await readGlossarySourceFiles(root);
+export async function buildRuntimeGlossaryManifest(
+  root = resolve("."),
+  locale = GLOSSARY_LOCALE
+): Promise<RuntimeGlossaryBuildResult> {
+  const sourceFiles = await readGlossarySourceFiles(root, locale);
   const diagnostics: string[] = [];
 
   if (sourceFiles.length === 0) {
@@ -158,13 +167,17 @@ export async function buildRuntimeGlossaryManifest(root = resolve(".")): Promise
         source: await readFile(file, "utf8")
       }))
     ),
-    locale: GLOSSARY_LOCALE,
+    locale,
     product: GLOSSARY_PRODUCT,
     site: GLOSSARY_SITE,
     generatedAt: STABLE_GENERATED_AT
   });
 
-  for (const diagnostic of result.report.diagnostics) {
+  const includedTermIds = new Set(result.report.includedTermIds);
+  for (const diagnostic of result.report.diagnostics.filter(
+    (diagnostic) =>
+      !includedTermIds.has(diagnostic.file) ? !isLocaleCoverageDiagnostic(diagnostic.code) : true
+  )) {
     if (diagnostic.severity === "error") {
       diagnostics.push(
         `${diagnostic.file}.${diagnostic.path}: ${diagnostic.code} ${diagnostic.message}`
@@ -172,8 +185,8 @@ export async function buildRuntimeGlossaryManifest(root = resolve(".")): Promise
     }
   }
 
-  if (result.manifest.locale !== GLOSSARY_LOCALE) {
-    diagnostics.push(`Glossary locale must be ${GLOSSARY_LOCALE}. Found ${result.manifest.locale}.`);
+  if (result.manifest.locale !== locale) {
+    diagnostics.push(`Glossary locale must be ${locale}. Found ${result.manifest.locale}.`);
   }
 
   if (result.report.product !== GLOSSARY_PRODUCT || result.report.site !== GLOSSARY_SITE) {
@@ -207,15 +220,38 @@ export async function buildRuntimeGlossaryManifest(root = resolve(".")): Promise
   }
 
   return {
+    locale,
     sourceFiles: sourceFiles.map((file) => toPortablePath(relative(root, file))),
     runtimeManifest: result.manifest.terms
-      .map(toRuntimeGlossaryEntry)
-      .sort((left, right) => left.label.localeCompare(right.label, GLOSSARY_LOCALE)),
+      .map((term) => toRuntimeGlossaryEntry(term, locale))
+      .sort((left, right) => left.label.localeCompare(right.label, locale)),
     diagnostics
   };
 }
 
-export function toRuntimeGlossaryEntry(term: DevexGlossaryManifestEntry): RuntimeGlossaryManifestEntry {
+const LOCALE_COVERAGE_ONLY_DIAGNOSTICS = new Set([
+  "GLOSSARY_ALIASES_MISSING",
+  "GLOSSARY_MATCH_PHRASES_MISSING"
+]);
+
+function isLocaleCoverageDiagnostic(code: string): boolean {
+  return LOCALE_COVERAGE_ONLY_DIAGNOSTICS.has(code);
+}
+
+export async function buildRuntimeGlossaryManifests(
+  root = resolve(".")
+): Promise<readonly RuntimeGlossaryBuildResult[]> {
+  const results = await Promise.all(
+    GLOSSARY_LOCALES.map((locale) => buildRuntimeGlossaryManifest(root, locale))
+  );
+
+  return results;
+}
+
+export function toRuntimeGlossaryEntry(
+  term: DevexGlossaryManifestEntry,
+  locale = GLOSSARY_LOCALE
+): RuntimeGlossaryManifestEntry {
   return {
     id: term.id,
     label: term.label,
@@ -227,8 +263,8 @@ export function toRuntimeGlossaryEntry(term: DevexGlossaryManifestEntry): Runtim
     sourcePath: WEB_PUBLIC_GLOSSARY_SOURCE_PATHS[term.id] ?? term.canonicalPath ?? "/",
     adPolicy:
       term.adPolicy.detailPage === "future-experiment-only"
-        ? createReservedDetailAdPolicy(`glossary-detail-${term.id.replaceAll(".", "-")}`)
-        : createForbiddenAdPolicy()
+        ? createReservedDetailAdPolicy(`glossary-detail-${term.id.replaceAll(".", "-")}`, locale)
+        : createForbiddenAdPolicy(locale)
   };
 }
 
@@ -238,12 +274,16 @@ export function serializeRuntimeManifest(
   return `${JSON.stringify(manifest, null, 2)}\n`;
 }
 
-async function readGlossarySourceFiles(root: string): Promise<readonly string[]> {
+function localeDirectoryFor(root: string, basePath: string, locale: string): string {
+  return join(root, `${basePath}/${locale}`);
+}
+
+async function readGlossarySourceFiles(root: string, locale: string): Promise<readonly string[]> {
   const files: string[] = [];
   await collectYamlFiles(join(root, COMMON_GLOSSARY_TERMS_ROOT), files);
-  await collectYamlFiles(join(root, COMMON_GLOSSARY_LOCALES_ROOT), files);
+  await collectYamlFiles(localeDirectoryFor(root, COMMON_GLOSSARY_LOCALES_ROOT, locale), files);
   await collectYamlFiles(join(root, GLOSSARY_TERMS_ROOT), files);
-  await collectYamlFiles(join(root, GLOSSARY_LOCALES_ROOT), files);
+  await collectYamlFiles(localeDirectoryFor(root, GLOSSARY_LOCALES_ROOT, locale), files);
   return files.sort((left, right) => left.localeCompare(right));
 }
 
@@ -276,19 +316,25 @@ async function collectYamlFiles(directory: string, files: string[]): Promise<voi
   }
 }
 
-function createReservedDetailAdPolicy(slot: string): RuntimeGlossaryAdPolicy {
+function createReservedDetailAdPolicy(slot: string, locale: string): RuntimeGlossaryAdPolicy {
   return {
     eligible: true,
     slot,
-    note: "별도 용어 상세 페이지에서만 실험할 수 있는 예약 슬롯입니다."
+    note:
+      locale === "en"
+        ? "Reserved for future experiments on a dedicated glossary detail page."
+        : "별도 용어 상세 페이지에서만 실험할 수 있는 예약 슬롯입니다."
   };
 }
 
-function createForbiddenAdPolicy(): RuntimeGlossaryAdPolicy {
+function createForbiddenAdPolicy(locale: string): RuntimeGlossaryAdPolicy {
   return {
     eligible: false,
     slot: null,
-    note: "이 용어 설명에는 광고를 배치하지 않습니다."
+    note:
+      locale === "en"
+        ? "Advertising is not placed in this glossary explanation."
+        : "이 용어 설명에는 광고를 배치하지 않습니다."
   };
 }
 

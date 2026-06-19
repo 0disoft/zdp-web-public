@@ -1,0 +1,22 @@
+locale: en
+id: platform.svelte
+label: Svelte
+slug: svelte
+short: "Svelte is a component framework that compiles away runtime framework overhead. It produces small bundles and simple component code for high-performance UI."
+long: |-
+
+  Unlike virtual DOM-heavy frameworks, Svelte compiles template logic at build time. Components become minimal JavaScript in the output, which can improve startup performance. This is useful for content pages that still need some interactivity. It also works well for teams that want predictable bundle behavior.
+
+  In mixed environments like Astro, Svelte can be loaded for only the interactive parts. That lets teams reduce JavaScript footprint while keeping component ergonomics. The approach fits when you need islands that are easy to reason about. Build output is often easier to profile at surface level.
+example: null
+translation_status: reviewed
+aliases:
+  - Svelte
+  - Svelte framework
+match_phrases:
+  - phrase: Svelte
+    auto_match: true
+    priority: 100
+  - phrase: Svelte framework
+    auto_match: true
+    priority: 85

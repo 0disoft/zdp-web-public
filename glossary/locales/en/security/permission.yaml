@@ -1,0 +1,23 @@
+locale: en
+label: Permission
+id: security.permission
+slug: permission
+short: "A permission is a defined right for a user or service to perform an action. It is usually narrower than role and enforced at runtime."
+long: |-
+
+    Permissions describe what can be done on specific resources under a given condition. They should be checked consistently at the boundary of sensitive operations. A role defines a person type, while permission defines a concrete capability. This separation keeps access control understandable.
+
+  In systems with many features, permission lists can become noisy and over-broad. Keep each permission tied to a meaningful business action. Regular permission reviews catch privilege creep from team growth. Logging denied actions helps spot missing rules and bad defaults.
+example: null
+translation_status: reviewed
+aliases:
+  - Permission
+  - permission
+  - access permission
+match_phrases:
+  - phrase: Permission
+    auto_match: true
+    priority: 100
+  - phrase: access permission
+    auto_match: true
+    priority: 90

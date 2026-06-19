@@ -1,0 +1,23 @@
+locale: en
+id: platform.web-app-manifest
+label: Web App Manifest
+slug: web-app-manifest
+short: "The Web App Manifest is a JSON file that defines metadata for installing a website. It controls name, icons, theme color, and launch behavior."
+long: |-
+
+  A manifest lets browsers treat a site more like an installed app when saving to home screen. It defines startup URL, display mode, background color, and icon resources. Combined with service worker support, users can get a more app-like flow. It does not replace server-side authentication or backend state rules.
+
+  For quality checks, manifest values should be validated for each target platform. Missing icons or wrong start URLs are common launch issues. Keep splash, icons, and names in sync with release versioning. A broken manifest causes installation confusion even when pages work normally.
+example: null
+translation_status: reviewed
+aliases:
+  - Web App Manifest
+  - PWA manifest
+  - manifest.json
+match_phrases:
+  - phrase: Web App Manifest
+    auto_match: true
+    priority: 100
+  - phrase: manifest.json
+    auto_match: true
+    priority: 85

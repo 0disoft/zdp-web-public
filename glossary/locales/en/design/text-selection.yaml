@@ -1,0 +1,23 @@
+locale: en
+id: design.text-selection
+label: Text Selection
+slug: text-selection
+short: "Text selection is the browser action that marks characters so users can copy or replace content. It must stay usable because selection supports reading and editing workflows."
+long: |-
+
+  Some interfaces disable selection by default to avoid accidental copy, but this often hurts usability. People use selection to copy error codes, instructions, and long commands. Losing selection makes basic tasks feel broken even when the UI still looks correct. A usable interface keeps selection available where content is meant to be read.
+
+  In forms and documentation pages, text selection should respect expected drag behavior. Keyboard-based selection is also part of accessible editing and review flows. If an element has no clear reason to block selection, do not disable it. Keep the exception small, usually only decorative controls.
+example: null
+translation_status: reviewed
+aliases:
+  - Text Selection
+  - text selection
+  - select text
+match_phrases:
+  - phrase: Text Selection
+    auto_match: true
+    priority: 95
+  - phrase: text selection
+    auto_match: true
+    priority: 90
