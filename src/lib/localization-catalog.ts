@@ -25,8 +25,8 @@ type SourceSchema = {
 type SourceMessages = Record<string, string>;
 
 const homeSchema = readSourceSchema(homeSchemaSource);
-const homeEnMessages = readSourceMessages(homeEnSource);
-const homeKoMessages = readSourceMessages(homeKoSource);
+const homeEnMessages = readSourceMessages(homeEnSource, "en");
+const homeKoMessages = readSourceMessages(homeKoSource, "ko");
 
 export const publicLocalizationSnapshot: CatalogSnapshot = {
   defaultLocale,
@@ -99,16 +99,16 @@ function readSourceSchema(value: unknown): SourceSchema {
   };
 }
 
-function readSourceMessages(value: unknown): SourceMessages {
+function readSourceMessages(value: unknown, locale: string): SourceMessages {
   if (!isRecord(value)) {
-    throw new Error("Invalid Korean localization messages for home.");
+    throw new Error(`Invalid ${locale} localization messages for home.`);
   }
 
   const messages: SourceMessages = {};
 
   for (const [key, message] of Object.entries(value)) {
     if (typeof message !== "string") {
-      throw new Error(`Invalid Korean localization message: ${key}`);
+      throw new Error(`Invalid ${locale} localization message: ${key}`);
     }
 
     messages[key] = message;

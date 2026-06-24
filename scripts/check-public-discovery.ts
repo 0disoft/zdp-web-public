@@ -609,8 +609,10 @@ async function checkGlossarySheetContract(): Promise<void> {
     siteLocales.map((locale) => [locale, getGlossaryManifest(locale)])
   ) as Record<SupportedLocale, readonly GlossaryManifestEntry[]>;
 
-  if (glossaryTermsByLocale.ko.length === 0) {
-    failures.push("Korean glossary manifest must keep reviewed glossary terms.");
+  for (const locale of siteLocales) {
+    if (glossaryTermsByLocale[locale].length < 10) {
+      failures.push(`${locale} glossary manifest must keep at least 10 reviewed glossary terms.`);
+    }
   }
 
   checkGlossaryLocaleIsolation(glossaryTermsByLocale, glossarySheet);
