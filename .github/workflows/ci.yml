@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Check automation contract
         shell: bash
@@ -47,33 +47,33 @@ jobs:
 
     steps:
       - name: Checkout web public
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: projects/zdp-platforms/client-surfaces/zdp-web-public
 
       - name: Checkout design system
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: 0disoft/zdp-design-system
           token: ${{ secrets.ZDP_CI_READ_TOKEN || github.token }}
           path: projects/zdp-platforms/client-surfaces/zdp-design-system
 
       - name: Checkout localization platform
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: 0disoft/zdp-platform-localization
           token: ${{ secrets.ZDP_CI_READ_TOKEN || github.token }}
           path: projects/zdp-platforms/platform/zdp-platform-localization
 
       - name: Checkout platform devex
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: 0disoft/zdp-platform-devex
           token: ${{ secrets.ZDP_CI_READ_TOKEN || github.token }}
           path: projects/zdp-platforms/platform/zdp-platform-devex
 
       - name: Checkout library contracts
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: 0disoft/zdp-libs-ts
           token: ${{ secrets.ZDP_CI_READ_TOKEN || github.token }}
