@@ -795,7 +795,7 @@ code {
   padding: var(--space-4);
   border: 1px dashed var(--color-line-subtle);
   border-radius: var(--radius-sm);
-  background: rgba(245, 239, 230, 0.15);
+  background: var(--color-showcase-group-surface);
   display: flex;
   flex-direction: column;
   gap: var(--space-3);

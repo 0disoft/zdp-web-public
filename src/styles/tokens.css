@@ -24,6 +24,7 @@
   --color-swatch-info-ink: #2f2418;
   --color-swatch-info-muted: #4a3826;
   --color-swatch-info-line: #d8c8ac;
+  --color-showcase-group-surface: var(--zdp-color-surface-raised);
   --font-sans: var(--zdp-font-family-multiscript);
   --font-title: var(--zdp-font-family-latin);
   --font-logo: var(--zdp-font-family-brand, "Playwrite AU VIC Guides", "Pretendard Variable", Pretendard, "Manrope Variable", Manrope, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
@@ -61,5 +62,12 @@
 
   [data-zdp-theme="dark"] {
     --color-nav-active: var(--zdp-color-ink-strong);
+  }
+}
+
+@supports (background: color-mix(in srgb, var(--zdp-color-surface-raised) 15%, transparent)) {
+  :root,
+  [data-zdp-theme] {
+    --color-showcase-group-surface: color-mix(in srgb, var(--zdp-color-surface-raised) 15%, transparent);
   }
 }
