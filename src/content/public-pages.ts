@@ -87,7 +87,7 @@ const publicPagesByLocaleSource: Record<SupportedLocale, readonly BasePublicPage
         {
           title: "Language settings shape type and wrapping",
           body:
-            "The site starts with English and Korean, then expands toward Spanish, Chinese, Hindi, French, Japanese, German, Portuguese, and Indonesian. Font and line-breaking rules must follow the selected language.",
+            "The site starts with English and Korean, then expands toward Chinese, Spanish, French, Hindi, Japanese, Vietnamese, Russian, Indonesian, Malay, and Thai. Font and line-breaking rules must follow the selected language.",
           status: "Localization"
         }
       ],
@@ -373,7 +373,7 @@ const publicPagesByLocaleSource: Record<SupportedLocale, readonly BasePublicPage
         {
           title: "언어 설정에 맞는 서체와 줄바꿈이 자동으로 적용됩니다",
           body:
-            "한국어·영어로 시작하며, 스페인어·중국어·힌디어·프랑스어·일본어·독일어·포르투갈어·인도네시아어까지 10개 언어로 확대합니다. 언어별 서체와 줄바꿈 방식은 자동으로 선택됩니다.",
+            "한국어·영어로 시작하며, 중국어·스페인어·프랑스어·힌디어·일본어·베트남어·러시아어·인도네시아어·말레이어·태국어까지 확대합니다. 언어별 서체와 줄바꿈 방식은 자동으로 선택됩니다.",
           status: "현지화"
         }
       ],
