@@ -80,6 +80,7 @@ await checkForbiddenDiscoveryOutputs();
 await checkLocaleRouteContract();
 await checkLayoutContract();
 await checkLocalizationContract();
+await checkClientInfraEnvContract();
 await checkDesignSystemConsumerContract();
 await checkGlossarySheetContract();
 checkPublicPageContentContract();
@@ -477,6 +478,21 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
       if (!content.includes(requiredText)) {
         failures.push(`${path} is missing design-system consumer markup ${requiredText}.`);
       }
+    }
+  }
+}
+
+async function checkClientInfraEnvContract(): Promise<void> {
+  const serviceYaml = await readText("service.yaml");
+
+  for (const requiredText of [
+    "client-infra",
+    "zdp-client-infra contracts/env-contract.yaml",
+    "public build and preview env names remain aligned",
+    "does not define its own secret or deployment variable policy"
+  ]) {
+    if (!serviceYaml.includes(requiredText)) {
+      failures.push(`service.yaml is missing client-infra env contract handoff ${requiredText}.`);
     }
   }
 }

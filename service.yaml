@@ -176,6 +176,7 @@ observability:
 dependencies:
   services:
     - platform-localization
+    - client-infra
   datastores: []
   queues: []
   workers: []
@@ -307,6 +308,7 @@ exit:
     - first public home-site information architecture is reviewable without backend dependencies
     - locale-prefixed /en and /ko pages are generated, and non-locale or unsupported-locale entry paths fall back to English when visitor language is unsupported
     - bun run check:localization passes with catalog diagnostics 0 and production fallback count 0
+    - public build and preview env names remain aligned with zdp-client-infra contracts/env-contract.yaml before deployment
   kill_criteria:
     - 8ailors.xyz becomes unavailable or is replaced before public launch
     - the public home site starts requiring login, payment, or user data before core boundaries exist
@@ -331,3 +333,4 @@ notes:
   - bun run check:localization runs zdp-platform-localization catalog check and strict production compile; fallback messages are not allowed in the public site localization manifest.
   - Static Astro copy remains the rollback boundary for the localization canary, so this static public site does not require a runtime feature flag.
   - Glossary term sheets do not include ad slots; AdSense, Ezoic, or another provider may only be considered through a separate detail-page experiment contract.
+  - Client deployment environment naming and preview/production contamination rules are consumed from zdp-client-infra contracts/env-contract.yaml; this public site does not define its own secret or deployment variable policy.
