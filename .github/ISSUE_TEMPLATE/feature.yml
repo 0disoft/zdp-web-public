@@ -5,7 +5,7 @@ labels: ["feature", "triage"]
 body:
   - type: markdown
     attributes:
-      value: "로그인, 결제, 원장, 권한 판단, 개인정보 접근, AI 사용자 데이터 접근은 이 저장소 범위가 아니야."
+      value: "비밀값, 토큰, API key, 결제 payload, 고객 원문 데이터는 적지 마. 로그인, 원장, 권한 판단, 개인정보 접근, AI 사용자 데이터 접근은 이 저장소 범위가 아니야."
   - type: textarea
     id: problem
     attributes:

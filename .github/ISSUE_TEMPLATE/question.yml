@@ -5,7 +5,7 @@ labels: ["question", "triage"]
 body:
   - type: markdown
     attributes:
-      value: "내부 아키텍처 문서, staging URL, 비밀값, 고객 데이터는 붙이지 마."
+      value: "내부 아키텍처 문서, staging URL, 비밀값, 토큰, API key, 결제 payload, 고객 원문 데이터는 붙이지 마."
   - type: textarea
     id: question
     attributes:
