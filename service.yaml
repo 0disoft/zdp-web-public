@@ -324,6 +324,7 @@ notes:
   - Cross-cutting product standards are owned by zdp-architecture/docs/45-cross-cutting-product-standards.md.
   - Performance budget follows the initial public-web defaults from zdp-architecture/docs/45-cross-cutting-product-standards.md, including LCP <= 2.5s, INP <= 200ms, CLS <= 0.1, and initial JS gzip <= 200KB unless a reviewed exception is added.
   - Performance measurement method is the zdp_web_public_bundle_analyze CI build gate plus Lighthouse or Core Web Vitals review before public launch.
+  - Security headers for the public web deployment must declare Content-Security-Policy, Strict-Transport-Security, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, and frame-ancestors; CSP unsafe-inline and unsafe-eval stay disabled unless a nonce, hash, or reviewed exception is added.
   - Public discovery files must not contain internal URLs, staging URLs, private customer data, or non-public architecture documents.
   - Public feeds must be generated as static build artifacts once real public content exists; runtime feed generation is not the default.
   - Glossary explanations use stable term_id values, click-triggered right sheet and bottom sheet surfaces, and data-zdp-ad-exclude sheet roots. Hover-only glossary UI is not allowed because it fails touch and focus constraints.
