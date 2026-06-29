@@ -239,7 +239,13 @@ async function checkLayoutContract(): Promise<void> {
     "data-site-preference-menu",
     "site-preference-panel",
     "site-locale-switcher__name",
-    "closePreferenceMenu"
+    "closePreferenceMenu",
+    "authEntryRoutes",
+    'signIn: "/login"',
+    'signUp: "/signup"',
+    "site-auth-actions",
+    "site-auth-actions__link",
+    "site-auth-actions__button"
   ]) {
     if (!content.includes(requiredText)) {
       failures.push(`BaseLayout.astro is missing locale-aware layout contract ${requiredText}.`);
@@ -354,6 +360,9 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     ".site-preference-trigger",
     ".site-preference-panel",
     ".site-locale-switcher",
+    ".site-auth-actions",
+    ".site-auth-actions__link",
+    ".site-auth-actions__button",
     "border-style: solid;",
     "border-color: transparent;",
     ".site-theme-toggle.zdp-theme-toggle",
@@ -434,7 +443,10 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
         'data-site-theme-toggle',
         'data-site-preference-menu',
         'data-site-locale-switcher',
-        'data-site-text-scale-control'
+        'data-site-text-scale-control',
+        'class="site-auth-actions"',
+        'href={authEntryRoutes.signIn}',
+        'href={authEntryRoutes.signUp}'
       ]
     ],
     [

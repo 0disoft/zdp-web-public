@@ -26,6 +26,11 @@ const footerItems = localizedPages.filter((page) => ["privacy", "terms", "refund
 const currentLocalizedPath = currentPath ?? localizePath("/", locale);
 const currentLocaleLabel = siteLocaleLabels[locale].short;
 const textSample = locale === "ko" ? "가" : "Aa";
+// Public links only; auth/session logic is owned outside this static site.
+const authEntryRoutes = {
+  signIn: "/login",
+  signUp: "/signup"
+} as const;
 const layoutCopy = {
   en: {
     skip: "Skip to content",
@@ -43,7 +48,10 @@ const layoutCopy = {
     darkMode: "Switch to dark mode",
     lightMode: "Switch to light mode",
     nav: "Primary links",
-    footer: "Policies and contact"
+    footer: "Policies and contact",
+    account: "Account",
+    signIn: "Sign in",
+    signUp: "Sign up"
   },
   ko: {
     skip: "본문으로 건너뛰기",
@@ -61,7 +69,10 @@ const layoutCopy = {
     darkMode: "다크 모드로 전환",
     lightMode: "라이트 모드로 전환",
     nav: "주요 링크",
-    footer: "정책 및 문의"
+    footer: "정책 및 문의",
+    account: "계정",
+    signIn: "로그인",
+    signUp: "회원가입"
   }
 }[locale];
 
@@ -327,6 +338,15 @@ const searchOptions = [
             ))}
           </ul>
         </nav>
+
+        <div class="site-auth-actions" role="group" aria-label={layoutCopy.account}>
+          <a class="zdp-link zdp-link--muted site-auth-actions__link" href={authEntryRoutes.signIn}>
+            {layoutCopy.signIn}
+          </a>
+          <a class="zdp-button zdp-button--md zdp-button--secondary site-auth-actions__button" href={authEntryRoutes.signUp}>
+            {layoutCopy.signUp}
+          </a>
+        </div>
       </header>
       <main id="content" tabindex="-1">
         <slot />
