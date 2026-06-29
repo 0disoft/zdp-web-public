@@ -327,6 +327,7 @@ notes:
   - bun run check must fail on stale glossary-manifest.json instead of regenerating it before the freshness check.
   - Canonical public content paths are locale-prefixed; English is the default and fallback locale, non-locale paths are static negotiation entries, and unsupported locale prefixes use the static 404 fallback until an edge route contract exists.
   - The first zdp-platform-localization product canary is intentionally limited to the home hero title and CTA messages; it must include complete en and ko messages, and broader public copy migration needs a separate review.
+  - home hero localization dogfood only; keep static Astro copy rollback available before expanding to more public copy.
   - bun run check:localization runs zdp-platform-localization catalog check and strict production compile; fallback messages are not allowed in the public site localization manifest.
   - Static Astro copy remains the rollback boundary for the localization canary, so this static public site does not require a runtime feature flag.
   - Glossary term sheets do not include ad slots; AdSense, Ezoic, or another provider may only be considered through a separate detail-page experiment contract.
