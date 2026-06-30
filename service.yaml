@@ -1,3 +1,8 @@
+# mf:anchor zdp.web-public.service-contract
+# purpose: Locate the public Astro site contract for static content, discovery files, policy links, SEO, and candidate domains.
+# search: web public, Astro static site, discovery files, SEO, policy links, candidate domain
+# invariant: Public web content cannot expose internal docs, secrets, account data, unverified claims, login, payment, ledger, or privacy access logic.
+# risk: privacy, security, config
 contract:
   schema_version: 2
   contract_version: 1
