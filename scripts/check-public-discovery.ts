@@ -374,8 +374,8 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     failures.push("package.json version must stay 0.4.70 after the public design-system dependency adoption.");
   }
 
-  if (packageJson.dependencies["zdp-design-system"] !== "^0.45.0") {
-    failures.push('package.json dependencies.zdp-design-system must stay "^0.45.0".');
+  if (packageJson.dependencies["zdp-design-system"] !== "^0.46.1") {
+    failures.push('package.json dependencies.zdp-design-system must stay "^0.46.1".');
   }
 
   for (const requiredText of [

@@ -20,7 +20,7 @@
     "@zdp/localization-core": "file:../../platform/zdp-platform-localization/packages/core",
     "@zdp/localization-runtime": "file:../../platform/zdp-platform-localization/packages/runtime",
     "@zdp/localization-vite": "file:../../platform/zdp-platform-localization/packages/vite",
-    "zdp-design-system": "^0.45.0"
+    "zdp-design-system": "^0.46.1"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
