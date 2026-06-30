@@ -48,6 +48,13 @@ export const publicPageIds = [
 
 export type PublicPageId = (typeof publicPageIds)[number];
 
+/*
+ * mf:anchor zdp.web-public.public-page-catalog
+ * purpose: Locate the public page catalog that drives static route and discovery content.
+ * search: public pages, locale paths, trust pages, privacy, terms
+ * invariant: Public content stays locale-owned and avoids private architecture, customer, or secret-bearing claims.
+ * risk: privacy, config
+ */
 const publicPagesByLocaleSource: Record<SupportedLocale, readonly BasePublicPage[]> = {
   en: [
     {

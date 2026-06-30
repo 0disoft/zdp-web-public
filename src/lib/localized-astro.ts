@@ -5,6 +5,13 @@ import { defaultLocale, type SupportedLocale } from "./site-locales";
 
 const runtimes = new Map<SupportedLocale, ReturnType<typeof createPublicLocalizationRuntime>>();
 
+/**
+ * mf:anchor zdp.web-public.localized-astro-runtime
+ * purpose: Locate public-site locale runtime reuse for Astro-rendered copy.
+ * search: localization runtime, locale, home scope, Astro text, fallback
+ * invariant: Public Astro copy renders through the locale catalog, not hard-coded route text.
+ * risk: config, privacy
+ */
 function getRuntime(locale: SupportedLocale) {
   const existing = runtimes.get(locale);
   if (existing !== undefined) {

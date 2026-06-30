@@ -73,6 +73,13 @@ interface PackageJson {
 const root = readRootArgument();
 const failures: string[] = [];
 
+/*
+ * mf:anchor zdp.web-public.public-discovery-check
+ * purpose: Locate the public discovery gate for robots, llms, webpub, locale routes, and glossary surfaces.
+ * search: webpub, robots, llms, locale routes, glossary sheet, discovery outputs
+ * invariant: Discovery files must not expose staging URLs, internal paths, secrets, or unlaunched public feeds.
+ * risk: privacy, security, config
+ */
 await checkWebpubContract();
 await checkRobots();
 await checkLlms();
