@@ -51,13 +51,6 @@ jobs:
         with:
           path: projects/zdp-platforms/client-surfaces/zdp-web-public
 
-      - name: Checkout design system
-        uses: actions/checkout@v7
-        with:
-          repository: 0disoft/zdp-design-system
-          token: ${{ secrets.ZDP_CI_READ_TOKEN || github.token }}
-          path: projects/zdp-platforms/client-surfaces/zdp-design-system
-
       - name: Checkout localization platform
         uses: actions/checkout@v7
         with:
@@ -85,14 +78,6 @@ jobs:
       - name: Install localization platform dependencies
         working-directory: projects/zdp-platforms/platform/zdp-platform-localization
         run: bun install --frozen-lockfile
-
-      - name: Install design system dependencies
-        working-directory: projects/zdp-platforms/client-surfaces/zdp-design-system
-        run: bun install --frozen-lockfile
-
-      - name: Build design system package
-        working-directory: projects/zdp-platforms/client-surfaces/zdp-design-system
-        run: bun run package:build
 
       - name: Install web public dependencies
         run: bun install --no-save

@@ -63,7 +63,7 @@ bun run build
 
 현재 `zdp-platform-localization` 적용 범위는 홈 hero의 제목과 두 CTA 문구로 제한한다. 이 세 메시지는 `en`, `ko` catalog를 모두 제공해야 하며, production compile에서 fallback message가 0개여야 한다. 나머지 공개 문구는 locale별 정적 Astro 콘텐츠로 유지하고, 더 많은 문구를 localization catalog로 옮기기 전까지는 정적 Astro 문구로 되돌릴 수 있어야 한다. 이 정적 공개 사이트 안에 별도 런타임 feature flag를 만들지 않는다.
 
-GitHub Actions의 `public-site` job은 `zdp-web-public`, sibling `zdp-design-system`, `zdp-platform-localization`, `zdp-platform-devex`, `zdp-libs-ts`를 같은 workspace 상대 경로로 checkout한 뒤 `bun run check`와 `bun run build`를 실행한다. 공개 sibling은 `github.token`으로 읽고, private sibling은 `ZDP_CI_READ_TOKEN`이 있으면 그 토큰을 쓴다. provider repo는 frozen install을 유지하고, file dependency consumer인 public site install은 CI에서 lockfile을 쓰지 않도록 `bun install --no-save`를 사용한다.
+GitHub Actions의 `public-site` job은 `zdp-web-public`, `zdp-platform-localization`, `zdp-platform-devex`, `zdp-libs-ts`를 같은 workspace 상대 경로로 checkout한 뒤 `bun run check`와 `bun run build`를 실행한다. `zdp-design-system`은 공개 npm 패키지 `^0.45.0`으로 소비하고, private sibling은 `ZDP_CI_READ_TOKEN`이 있으면 그 토큰을 쓴다. provider repo는 frozen install을 유지하고, file dependency consumer인 public site install은 CI에서 lockfile을 쓰지 않도록 `bun install --no-save`를 사용한다.
 
 `glossary:generate`는 `../../contracts/zdp-libs-ts/glossary/terms/*.yaml` 공통 용어 계약, `../../contracts/zdp-libs-ts/glossary/locales/ko/*.yaml` 공통 한국어 문구, `glossary/terms/*.yaml` 사이트 전용 용어 계약, `glossary/locales/ko/*.yaml` 사이트 전용 한국어 문구를 `zdp-platform-devex`의 glossary manifest 빌더로 함께 읽고 `src/content/glossary-manifest.json`을 만든다. Astro 런타임은 이 JSON만 소비하며, `src/content/glossary.ts`에는 용어 본문을 중복해서 넣지 않는다.
 

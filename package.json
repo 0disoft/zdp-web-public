@@ -1,6 +1,6 @@
 {
   "name": "zdp-web-public",
-  "version": "0.4.69",
+  "version": "0.4.70",
   "private": true,
   "type": "module",
   "description": "ZDP public web surface for the candidate 8ailors home site.",
@@ -20,7 +20,7 @@
     "@zdp/localization-core": "file:../../platform/zdp-platform-localization/packages/core",
     "@zdp/localization-runtime": "file:../../platform/zdp-platform-localization/packages/runtime",
     "@zdp/localization-vite": "file:../../platform/zdp-platform-localization/packages/vite",
-    "zdp-design-system": "file:../zdp-design-system"
+    "zdp-design-system": "^0.45.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",

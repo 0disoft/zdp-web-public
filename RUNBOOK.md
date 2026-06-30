@@ -5,7 +5,7 @@
 - Validate this repository with `zdp-architecture-linter`.
 - Keep `webpub.toml`, `robots.txt`, and `llms.txt` aligned with the candidate-domain state before launch.
 - Run `bun run check:localization`, `bun run check:glossary`, `bun run check:discovery`, and `bun run build` after public copy, glossary, or localization changes.
-- Keep sibling `zdp-design-system` available at `../zdp-design-system` and `zdp-platform-localization` available at `../../platform/zdp-platform-localization` for local checks and CI.
+- Keep `zdp-design-system` on the public npm package range declared in `package.json`, and keep `zdp-platform-localization` available at `../../platform/zdp-platform-localization` for local checks and CI.
 
 ## Locale Routing
 

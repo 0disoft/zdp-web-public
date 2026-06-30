@@ -351,12 +351,12 @@ async function checkDesignSystemConsumerContract(): Promise<void> {
     readText("src/components/PublicShareDock.astro")
   ]);
 
-  if (packageJson.version !== "0.4.69") {
-    failures.push("package.json version must stay 0.4.69 until a release bump is requested.");
+  if (packageJson.version !== "0.4.70") {
+    failures.push("package.json version must stay 0.4.70 after the public design-system dependency adoption.");
   }
 
-  if (packageJson.dependencies["zdp-design-system"] !== "file:../zdp-design-system") {
-    failures.push('package.json dependencies.zdp-design-system must stay "file:../zdp-design-system".');
+  if (packageJson.dependencies["zdp-design-system"] !== "^0.45.0") {
+    failures.push('package.json dependencies.zdp-design-system must stay "^0.45.0".');
   }
 
   for (const requiredText of [
