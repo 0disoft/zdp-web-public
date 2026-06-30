@@ -153,6 +153,13 @@ export async function buildRuntimeGlossaryManifest(
   root = resolve("."),
   locale = GLOSSARY_LOCALE
 ): Promise<RuntimeGlossaryBuildResult> {
+  /**
+   * mf:anchor zdp.web-public.glossary-manifest-build
+   * purpose: Locate glossary manifest derivation from local and common YAML sources before runtime sheet rendering.
+   * search: glossary manifest, locale YAML, common terms, runtime manifest, freshness
+   * invariant: Runtime glossary manifests are derived from reviewed YAML sources and must not become hand-edited public copy.
+   * risk: config, data_consistency
+   */
   const sourceFiles = await readGlossarySourceFiles(root, locale);
   const diagnostics: string[] = [];
 
