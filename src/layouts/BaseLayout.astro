@@ -7,6 +7,7 @@ import {
   localizePath,
   siteLocaleLabels,
   siteLocales,
+  stripLocalePrefix,
   type SupportedLocale
 } from "../lib/site-locales";
 
@@ -24,6 +25,17 @@ const navItems = localizedPages.filter((page) =>
 );
 const footerItems = localizedPages.filter((page) => ["privacy", "terms", "refunds", "contact", "about"].includes(page.id));
 const currentLocalizedPath = currentPath ?? localizePath("/", locale);
+const { path: currentBasePath } = stripLocalePrefix(currentLocalizedPath);
+const canonicalPath = localizePath(currentBasePath, locale);
+const alternateLinks = siteLocales.map((alternateLocale) => ({
+  locale: alternateLocale,
+  href: localizePath(currentBasePath, alternateLocale)
+}));
+const defaultAlternatePath = localizePath(currentBasePath, defaultLocale);
+const ogLocale = locale === "ko" ? "ko_KR" : "en_US";
+const alternateOgLocales = siteLocales
+  .filter((alternateLocale) => alternateLocale !== locale)
+  .map((alternateLocale) => (alternateLocale === "ko" ? "ko_KR" : "en_US"));
 const currentLocaleLabel = siteLocaleLabels[locale].short;
 const textSample = locale === "ko" ? "가" : "Aa";
 // Public links only; auth/session logic is owned outside this static site.
@@ -116,6 +128,23 @@ const searchOptions = [
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <meta name="robots" content="noindex,nofollow" />
+    <link rel="canonical" href={canonicalPath} />
+    {alternateLinks.map((link) => (
+      <link rel="alternate" hreflang={link.locale} href={link.href} />
+    ))}
+    <link rel="alternate" hreflang="x-default" href={defaultAlternatePath} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="8ailors" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:locale" content={ogLocale} />
+    {alternateOgLocales.map((alternateLocale) => (
+      <meta property="og:locale:alternate" content={alternateLocale} />
+    ))}
+    <meta property="og:url" content={canonicalPath} />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
     <script is:inline>
       (() => {
         const themeStorageKey = "zdp-web-public-theme";
